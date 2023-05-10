@@ -84,7 +84,7 @@ app.post("/register",(req,res) => {
   });
 
 app.listen(3001,function(){
-    console.log("Server started on 123");
+    console.log("Server started on 3000");
 
 
 
