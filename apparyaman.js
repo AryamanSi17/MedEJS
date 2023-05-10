@@ -9,7 +9,7 @@ app.get("/login",function(req,res){
     res.render("login");
 });
 app.listen(3000,function(){
-    console.log("Server started");
+    console.log("Server started on 123");
 
 
 })
