@@ -16,7 +16,7 @@ const app=express();
 
 app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended:true}));
-app.use(express.static(path.join(__dirname,'assets')));
+app.use(express.static(path.join(__dirname,'/')));
 
 
 
@@ -61,7 +61,7 @@ passport.deserializeUser(function(id, done) {
 
 
 
-app.get("/register",function(req,res){
+app.get("/login",function(req,res){
     res.render("login");
 });
 
@@ -82,8 +82,10 @@ app.post("/register",(req,res) => {
     })
   
   });
-
-app.listen(3001,function(){
+app.get("/",function(req,res){
+  res.render("index");
+});
+app.listen(3000,function(){
     console.log("Server started on 3000");
 
 
