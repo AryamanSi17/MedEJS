@@ -54,14 +54,23 @@ passport.serializeUser(function(user, done) {
 
 
 passport.deserializeUser(function(id, done) {
-    User.findById(id, function(err, user) {
-        done(err, user);
-    });
+    // User.findById(id, function(err, user) {
+    //     done(err, user);
+    // });
+
+    User.findById(id)
+     .then( user => {
+      done(null ,user);
+     })
+
+     .catch(err => {
+      done(err , null);
+     })
 });
 
 
 
-app.get("/login",function(req,res){
+app.get("/register",function(req,res){
     res.render("login");
 });
 
