@@ -10,6 +10,8 @@ const session = require("express-session");
 const mongoose = require("mongoose");
 // var nodemailer = require('nodemailer');
 const mongodb = require("mongodb");
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const findOrCreate = require('mongoose-findorcreate');
 
 
 const app=express();
@@ -32,7 +34,22 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// google stratrgy starts
 
+passport.use(new GoogleStrategy({
+  clientID: process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET,
+  callbackURL: "http://localhost:3000/auth/google/data",
+  userProfileURL: "https://www.googleapis.com/oauth2/v2/userinfo"
+},
+function(accessToken, refreshToken, profile, cb) {
+  User.findOrCreate({ googleId: profile.id }, function (err, user) {
+    return cb(err, user);
+  });
+}
+));
+
+//  (rrp)
 
 
 const UserSchema = new mongoose.Schema ({
@@ -68,6 +85,26 @@ passport.deserializeUser(function(id, done) {
      })
 });
 
+app.get("/",function(req,res){
+  res.render("index");
+});
+
+app.get("/data", (req,res) => {
+  res.render("data");
+})
+
+app.get("/auth/google",
+  passport.authenticate('google', {
+    scope: ['profile', 'email']
+  })
+);
+
+app.get("/auth/google/data",
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/data');
+  });
 
 
 app.get("/register",function(req,res){
@@ -91,9 +128,7 @@ app.post("/register",(req,res) => {
     })
   
   });
-app.get("/",function(req,res){
-  res.render("index");
-});
+
 app.listen(3000,function(){
     console.log("Server started on 3000");
 
