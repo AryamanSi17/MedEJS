@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname,'/')));
 
 
 
-mongoose.connect("mongodb+srv://priyanshurajroy02659:rajroy4u@cluster0.1wcljxd.mongodb.net/GUserDB");
+mongoose.connect("mongodb://localhost:27017/globalmedDB");
 
 
 app.use(session({
@@ -87,8 +87,7 @@ app.get("/",function(req,res){
 });
 app.listen(3000,function(){
     console.log("Server started on 3000");
-
-
-
-
+});
+app.get("/course-masonry",function(req,res){
+  res.render("course-masonry");
 })

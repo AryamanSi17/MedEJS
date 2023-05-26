@@ -1,4 +1,6 @@
-<%- include("header");-%>
+<%- include('header'); -%>
+<a class="close_side_menu" href="javascript:void(0);"></a>
+
 <div class="rbt-page-banner-wrapper">
     <!-- Start Banner BG Image  -->
     <div class="rbt-banner-image"></div>
@@ -35,6 +37,118 @@
         <!-- Start Course Top  -->
         <div class="rbt-course-top-wrapper mt--40">
             <div class="container">
+                <div class="row g-5 align-items-center">
+                    <div class="col-lg-5 col-md-12">
+                        <div class="rbt-sorting-list d-flex flex-wrap align-items-center">
+                            <div class="rbt-short-item">
+                                <span class="course-index">Showing 1-9 of 19 results</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-7 col-md-12">
+                        <div class="rbt-sorting-list d-flex flex-wrap align-items-center justify-content-start justify-content-lg-end">
+                            <div class="rbt-short-item">
+                                <form action="#" class="rbt-search-style me-0">
+                                    <input type="text" placeholder="Search Your Course..">
+                                    <button type="submit" class="rbt-search-btn rbt-round-btn">
+                                        <i class="feather-search"></i>
+                                    </button>
+                                </form>
+                            </div>
+
+                            <div class="rbt-short-item">
+                                <div class="view-more-btn text-start text-sm-end">
+                                    <button class="discover-filter-button discover-filter-activation rbt-btn btn-white btn-md radius-round">Filter<i class="feather-filter"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Start Filter Toggle  -->
+                <div class="default-exp-wrapper default-exp-expand">
+                    <div class="filter-inner">
+                        <div class="filter-select-option">
+                            <div class="filter-select rbt-modern-select">
+                                <span class="select-label d-block">Short By</span>
+                                <select>
+                                    <option>Default</option>
+                                    <option>Latest</option>
+                                    <option>Popularity</option>
+                                    <option>Trending</option>
+                                    <option>Price: low to high</option>
+                                    <option>Price: high to low</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="filter-select-option">
+                            <div class="filter-select rbt-modern-select">
+                                <span class="select-label d-block">Short By Author</span>
+                                <select data-live-search="true" title="Select Author" multiple data-size="7" data-actions-box="true" data-selected-text-format="count > 2">
+                                    <option data-subtext="Experts">Janin Afsana</option>
+                                    <option data-subtext="Experts">Joe Biden</option>
+                                    <option data-subtext="Experts">Fatima Asrafy</option>
+                                    <option data-subtext="Experts">Aysha Baby</option>
+                                    <option data-subtext="Experts">Mohamad Ali</option>
+                                    <option data-subtext="Experts">Jone Li</option>
+                                    <option data-subtext="Experts">Alberd Roce</option>
+                                    <option data-subtext="Experts">Zeliski Noor</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="filter-select-option">
+                            <div class="filter-select rbt-modern-select">
+                                <span class="select-label d-block">Short By Offer</span>
+                                <select>
+                                    <option>Free</option>
+                                    <option>Paid</option>
+                                    <option>Premium</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="filter-select-option">
+                            <div class="filter-select rbt-modern-select">
+                                <span class="select-label d-block">Short By Category</span>
+                                <select data-live-search="true">
+                                    <option>Web Design</option>
+                                    <option>Graphic</option>
+                                    <option>App Development</option>
+                                    <option>Figma Design</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="filter-select-option">
+                            <div class="filter-select">
+                                <span class="select-label d-block">Price Range</span>
+
+                                <div class="price_filter s-filter clear">
+                                    <form action="#" method="GET">
+                                        <div id="slider-range"></div>
+                                        <div class="slider__range--output">
+                                            <div class="price__output--wrap">
+                                                <div class="price--output">
+                                                    <span>Price :</span><input type="text" id="amount">
+                                                </div>
+                                                <div class="price--filter">
+                                                    <a class="rbt-btn btn-gradient btn-sm" href="#">Filter</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Filter Toggle  -->
+
                 <div class="row mt--60">
                     <div class="col-lg-12">
                         <div class="rbt-portfolio-filter filter-button-default messonry-button text-start justify-content-start">
@@ -1290,4 +1404,4 @@
         <hr class="rbt-separator m-0">
     </div>
 </div>
-<%- include("footer");-%>
+<%inlcude ("footer"); -%>
