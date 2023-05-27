@@ -23,7 +23,7 @@ app.use(express.static(path.join(__dirname,'/')));
 
 
 mongoose.connect("mongodb+srv://priyanshurajroy02659:rajroy4u@cluster0.1wcljxd.mongodb.net/GUserDB");
-
+// mogodb running
 
 app.use(session({
   secret: "global med academy is way to success",
