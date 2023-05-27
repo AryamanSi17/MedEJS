@@ -18,11 +18,8 @@ const app=express();
 
 app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended:true}));
-app.use(express.static(path.join(__dirname,'/')));
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-
-
-// mongoose.connect("mongodb+srv://priyanshurajroy02659:rajroy4u@cluster0.1wcljxd.mongodb.net/GUserDB");
 mongoose.connect("mongodb://localhost:27017/globalmedDB");
 
 
@@ -132,8 +129,10 @@ app.post("/register",(req,res) => {
 
 app.listen(3000,function(){
     console.log("Server started on 3000");
-
-
-
-
+});
+app.get("/course-masonry",function(req,res){
+  res.render("course-masonry");
+});
+app.get("/course-details",function(req,res){
+  res.render("course-details")
 })
