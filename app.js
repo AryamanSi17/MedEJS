@@ -16,7 +16,7 @@ const app=express();
 
 app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended:true}));
-app.use(express.static(path.join(__dirname,'/')));
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 
 
@@ -90,4 +90,7 @@ app.listen(3000,function(){
 });
 app.get("/course-masonry",function(req,res){
   res.render("course-masonry");
+});
+app.get("/course-details",function(req,res){
+  res.render("course-details")
 })
