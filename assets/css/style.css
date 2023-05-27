@@ -1453,9 +1453,9 @@ ul.rbt-dropdown-menu li .sub-menu li a, ul.rbt-dropdown-menu li a .right-icon, u
   background: var(--gradient-9) !important;
 }
 
-.bg-gradient-15 {
+/* .bg-gradient-15 {
   background: linear-gradient(151.71deg, #29C986 0%, #2FC8E5 100%) !important;
-}
+} */
 
 .bg-gradient-16 {
   background: linear-gradient(151.71deg, #FF652D 0%, #FFA426 100%) !important;
