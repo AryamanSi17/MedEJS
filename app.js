@@ -135,4 +135,7 @@ app.get("/course-masonry",function(req,res){
 });
 app.get("/course-details",function(req,res){
   res.render("course-details")
+});
+app.get("/auth_index",function(req,res){
+  res.render("auth_index");
 })
