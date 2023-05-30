@@ -34,18 +34,18 @@ app.use(passport.session());
 
 // google stratrgy starts
 
-passport.use(new GoogleStrategy({
-  clientID: process.env.CLIENT_ID,
-  clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: "http://localhost:3000/auth/google/data",
-  userProfileURL: "https://www.googleapis.com/oauth2/v2/userinfo"
-},
-function(accessToken, refreshToken, profile, cb) {
-  User.findOrCreate({ googleId: profile.id }, function (err, user) {
-    return cb(err, user);
-  });
-}
-));
+// passport.use(new GoogleStrategy({
+//   clientID: process.env.CLIENT_ID,
+//   clientSecret: process.env.CLIENT_SECRET,
+//   callbackURL: "http://localhost:3000/auth/google/data",
+//   userProfileURL: "https://www.googleapis.com/oauth2/v2/userinfo"
+// },
+// function(accessToken, refreshToken, profile, cb) {
+//   User.findOrCreate({ googleId: profile.id }, function (err, user) {
+//     return cb(err, user);
+//   });
+// }
+// ));
 
 //  (rrp)
 
@@ -87,6 +87,7 @@ app.get("/",function(req,res){
   res.render("index");
 });
 
+
 app.get("/data", (req,res) => {
   res.render("data");
 })
@@ -104,11 +105,15 @@ app.get("/auth/google/data",
     res.redirect('/data');
   });
 
+  
 
 app.get("/login",function(req,res){
     res.render("login");
 });
 
+app.get("/login",function(req,res){
+  res.render("login");
+});
 
 
 app.post("/register",(req,res) => {
@@ -120,12 +125,50 @@ app.post("/register",(req,res) => {
       } else
       {
         passport.authenticate("local")(req,res,function(){
-          res.redirect("/data");
+          res.redirect("/test");
         })
       }
     })
   
   });
+
+  app.post("/login",function(req,res){
+
+    const user = new User ({
+      username:req.body.username,
+      password:req.body.password
+    })
+  
+      req.login(user,function(err){
+        if (err) {
+          console.log(err);
+        } else {
+          passport.authenticate("local")(req,res,function(){
+            res.redirect("/test");
+          });
+        }
+      });
+  
+       
+  });
+
+  app.post("/login", (req,res) => {
+
+    const username = req.body.username;
+     
+    req.session.username = username;
+
+    res.redirect("/test");
+  });
+
+  app.get("/test", (req,res) => {
+
+    const username = req.session.username;
+  
+    res.render("auth_index", { username: username});
+  });
+  
+  
 
 app.listen(3000,function(){
     console.log("Server started on 3000");
