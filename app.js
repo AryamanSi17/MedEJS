@@ -99,7 +99,7 @@ app.get("/auth/google",
   })
 );
 
-app.get("/auth/google/data",
+app.get("/auth/google/test",
   passport.authenticate('google', { failureRedirect: '/login' }),
   function(req, res) {
     // Successful authentication, redirect home.
@@ -161,18 +161,19 @@ app.post("/register",(req,res) => {
 
   app.post("/login", (req,res) => {
 
-    const username = req.body.name;
+    const user1name = req.body.name;
      
-    req.session.username = username;
-
+    req.session.user1name = user1name;
+   
     res.redirect("/test");
   });
 
   app.get("/test", (req,res) => {
 
-    const username = req.session.username;
-  
-    res.render("auth_index", { username: username});
+    const user1name = req.session.user1name;
+    console.log(user1name);
+    res.render("auth_index", { user1name: user1name});
+
   });
   
   
