@@ -34,23 +34,24 @@ app.use(passport.session());
 
 // google stratrgy starts
 
-// passport.use(new GoogleStrategy({
-//   clientID: process.env.CLIENT_ID,
-//   clientSecret: process.env.CLIENT_SECRET,
-//   callbackURL: "http://localhost:3000/auth/google/data",
-//   userProfileURL: "https://www.googleapis.com/oauth2/v2/userinfo"
-// },
-// function(accessToken, refreshToken, profile, cb) {
-//   User.findOrCreate({ googleId: profile.id }, function (err, user) {
-//     return cb(err, user);
-//   });
-// }
-// ));
+passport.use(new GoogleStrategy({
+  clientID: process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET,
+  callbackURL: "http://localhost:3000/auth/google/data",
+  userProfileURL: "https://www.googleapis.com/oauth2/v2/userinfo"
+},
+function(accessToken, refreshToken, profile, cb) {
+  User.findOrCreate({ googleId: profile.id }, function (err, user) {
+    return cb(err, user);
+  });
+}
+));
 
 //  (rrp)
 
 
 const UserSchema = new mongoose.Schema ({
+  name: String,
   username: String,
   passwword: String
 });
@@ -118,7 +119,7 @@ app.get("/login",function(req,res){
 
 app.post("/register",(req,res) => {
 
-    User.register({username:req.body.username},req.body.password,function(err,user){
+    User.register({username:req.body.username,name:req.body.name},req.body.password,function(err,user){
       if(err)
       {
         console.log(err);
@@ -136,7 +137,8 @@ app.post("/register",(req,res) => {
 
     const user = new User ({
       username:req.body.username,
-      password:req.body.password
+      password:req.body.password,
+      name : req.body.name
     })
   
       req.login(user,function(err){
@@ -154,7 +156,7 @@ app.post("/register",(req,res) => {
 
   app.post("/login", (req,res) => {
 
-    const username = req.body.username;
+    const username = req.body.name;
      
     req.session.username = username;
 
