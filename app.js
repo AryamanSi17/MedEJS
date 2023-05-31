@@ -125,7 +125,12 @@ app.post("/register",(req,res) => {
       } else
       {
         passport.authenticate("local")(req,res,function(){
+          if(req.isAuthenticated ()){
           res.redirect("/test");
+          }
+          else{
+            console.log("ERRROR");
+          }
         })
       }
     })
@@ -148,7 +153,7 @@ app.post("/register",(req,res) => {
           });
         }
       });
-  
+      res.render('auth_index.ejs', { username: user.username });
        
   });
 

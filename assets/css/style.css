@@ -1481,7 +1481,9 @@ ul.rbt-dropdown-menu li .sub-menu li a, ul.rbt-dropdown-menu li a .right-icon, u
   background: var(--primary-opacity) !important;
   color: var(--color-primary) !important;
 }
-
+.loggedInUsername{
+background-color: white;
+}
 .bg-secondary-opacity {
   background: var(--secondary-opacity) !important;
   color: var(--color-secondary) !important;
