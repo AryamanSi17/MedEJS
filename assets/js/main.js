@@ -1011,31 +1011,25 @@
     eduJs.i();
 
 })(window, document, jQuery);
-if (document.readyState !== 'loading') {
+window.onload = function() {
     myInitCode();
-} else {
-    document.addEventListener('DOMContentLoaded', function() {
-        myInitCode();
-    });
-}
-
-function myInitCode() {
+  };
+  
+  function myInitCode() {
     // Get the trending courses link from the URL hash
     const trendingCoursesLink = window.location.hash === "#trending-filter";
-
+  
     // Get the trending filter button
     const trendingFilterButton = document.getElementById("trending-filter");
-
+  
     // Trigger the click event on the trending filter button if the link is trending courses
     if (trendingCoursesLink) {
-        setTimeout(function() {
-            trendingFilterButton.click();
-
-            // Add the "is-checked" class to the button
-            trendingFilterButton.classList.add("is-checked");
-        }, 100); // Adjust the delay as needed
-    }
-}
-
+      setTimeout(function() {
+        trendingFilterButton.click();
   
+        // Add the "is-checked" class to the button
+        trendingFilterButton.classList.add("is-checked");
+      }, 100); // Adjust the delay as needed
+    }
+  }
   
