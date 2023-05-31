@@ -37,7 +37,7 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: "http://localhost:3000/auth/google/data",
+  callbackURL: "https://localhost:3000/auth/google/test",
   userProfileURL: "https://www.googleapis.com/oauth2/v2/userinfo"
 },
 function(accessToken, refreshToken, profile, cb) {
@@ -99,11 +99,11 @@ app.get("/auth/google",
   })
 );
 
-app.get("/auth/google/data",
+app.get("/auth/google/test",
   passport.authenticate('google', { failureRedirect: '/login' }),
   function(req, res) {
     // Successful authentication, redirect home.
-    res.redirect('/data');
+    res.redirect('/test');
   });
 
   
