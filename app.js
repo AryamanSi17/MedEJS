@@ -194,5 +194,5 @@ app.get("/auth_index",function(req,res){
   res.render("auth_index");
 })
 app.get("/becometeacher",function(req,res){
-  res.render("/becometeacher");
+  res.render("becometeacher");
 })
