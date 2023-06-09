@@ -1029,7 +1029,7 @@ window.onload = function() {
       setTimeout(function() {
         trendingFilterButton.click();
   
-        // Add the "is-checked" class to the button
+        // Add the "is-checked" class to the button 
         trendingFilterButton.classList.add("is-checked");
       }, 100); // Adjust the delay as needed
     }
