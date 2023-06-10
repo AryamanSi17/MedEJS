@@ -192,7 +192,13 @@ app.get("/course-details",function(req,res){
 });
 app.get("/auth_index",function(req,res){
   res.render("auth_index");
-})
+});
 app.get("/becometeacher",function(req,res){
   res.render("becometeacher");
-})
+});
+app.get("/privacy-policy",function(req,res){
+  res.render("privacy-policy");
+});
+app.get("/admission-guide",function(req,res){
+  res.render("admission-guide");
+});
