@@ -20,7 +20,10 @@ app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-mongoose.connect("mongodb://localhost:27017/globalmedDB");
+// mongoose.connect("mongodb+srv://globalmed:globalmedcloud@globalmedacademy.v6hvz4f.mongodb.net/globalmedDB");
+mongoose.connect("mongodb+srv://priyanshurajroy02659:globalmed@cluster0.1wcljxd.mongodb.net/GlobalDB");
+
+
 
 
 app.use(session({
