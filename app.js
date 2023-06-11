@@ -165,7 +165,14 @@ app.post("/register",(req,res) => {
    
     res.redirect("/test");
   });
+  app.post("/register", (req,res) => {
 
+    const username = req.body.name;
+     
+    req.session.username = username;
+   
+    res.redirect("/test");
+  });
   app.get("/test", (req,res) => {
 
     const username = req.session.username;
