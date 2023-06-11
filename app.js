@@ -39,7 +39,7 @@ passport.use(new GoogleStrategy({
   clientSecret: process.env.CLIENT_SECRET,
 
  
-  callbackURL: "https://localhost:3000/auth/google/test",
+  callbackURL: "https://globalmedacademy.com/auth/google/test",
 
   userProfileURL: "https://www.googleapis.com/oauth2/v2/userinfo"
 },
