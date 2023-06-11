@@ -20,7 +20,7 @@ app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-mongoose.connect("mongodb+srv://priyanshu:priyanshu@globalmedacademy.v6hvz4f.mongodb.net/?retryWrites=true&w=majority");
+mongoose.connect(`${process.env.DB_URL}`);
 
 
 app.use(session({
@@ -126,6 +126,7 @@ app.post("/register",(req,res) => {
       if(err)
       {
         console.log(err);
+        
       } else
       {
         passport.authenticate("local")(req,res,function(){
