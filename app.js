@@ -157,12 +157,31 @@ app.post("/register",(req,res) => {
   
        
   });
+  app.post("/register",function(req,res){
 
+    const user = new User ({
+      username:req.body.username,
+      password:req.body.password,
+      name : req.body.name
+    })
+  
+      req.login(user,function(err){
+        if (err) {
+          console.log(err);
+        } else {
+          passport.authenticate("local")(req,res,function(){
+            res.redirect("/test");
+          });
+        }
+      });
+  
+       
+  });
   app.post("/login", (req,res) => {
 
-    const username = req.body.name;
+    const name = req.body.name;
      
-    req.session.username = username;
+    req.session.name = name;
    
     res.redirect("/test");
   });
@@ -176,9 +195,9 @@ app.post("/register",(req,res) => {
   });
   app.get("/test", (req,res) => {
 
-    const username = req.session.username;
-    console.log(username);
-    res.render("auth_index", { username: username});
+    const name = req.session.name;
+    console.log(name);
+    res.render("auth_index", { name: name});
 
   });
   
