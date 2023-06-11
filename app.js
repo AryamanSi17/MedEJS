@@ -20,7 +20,7 @@ app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-mongoose.connect("mongodb://localhost:27017/globalmedDB");
+mongoose.connect("mongodb+srv://priyanshu:priyanshu@globalmedacademy.v6hvz4f.mongodb.net/?retryWrites=true&w=majority");
 
 
 app.use(session({
@@ -164,18 +164,18 @@ app.post("/register",(req,res) => {
 
   app.post("/login", (req,res) => {
 
-    const user1name = req.body.name;
+    const username = req.body.name;
      
-    req.session.user1name = user1name;
+    req.session.username = username;
    
     res.redirect("/test");
   });
 
   app.get("/test", (req,res) => {
 
-    const user1name = req.session.user1name;
-    console.log(user1name);
-    res.render("auth_index", { user1name: user1name});
+    const username = req.session.username;
+    console.log(username);
+    res.render("auth_index", { username: username});
 
   });
   
