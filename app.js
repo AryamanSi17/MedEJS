@@ -13,7 +13,6 @@ const mongodb = require("mongodb");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
 
-
 const app=express();
 
 app.set('view engine','ejs');
@@ -34,6 +33,20 @@ app.use(passport.session());
 
 // google stratrgy starts
 
+
+
+//  (rrp)
+
+
+const UserSchema = new mongoose.Schema ({
+  name: String,
+  username: String,
+  passwword: String
+});
+
+UserSchema.plugin(passportlocalmongoose);
+UserSchema.plugin(findOrCreate);
+const User = mongoose.model("User" , UserSchema);
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
@@ -49,20 +62,6 @@ function(accessToken, refreshToken, profile, cb) {
   });
 }
 ));
-
-//  (rrp)
-
-
-const UserSchema = new mongoose.Schema ({
-  name: String,
-  username: String,
-  passwword: String
-});
-
-UserSchema.plugin(passportlocalmongoose);
-
-const User = mongoose.model("User" , UserSchema);
-
 
 passport.use(User.createStrategy());
 
