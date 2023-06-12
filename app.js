@@ -192,6 +192,21 @@ app.post("/register",(req,res) => {
     req.session.username = username;
    
     res.redirect("/test");
+    const mailOptions={
+      from:'gsun1517@gmail.com',
+      to:req.body.name,
+      subject:'GlobalMed Academy',
+      text:'Welcome to GlobalMed Academy'
+    
+    };
+    transporter.sendMail(mailOptions,function(error,info){
+      if(error){
+        console.log(error);
+      }
+      else{
+        console.log('Email sent:'+info.response);
+      }
+    });
   });
   app.get("/test", (req,res) => {
 
@@ -203,10 +218,11 @@ app.post("/register",(req,res) => {
 const transporter=nodemailer.createTransport({
   service:'gmail',
   auth:{
-    user:'onlinemedcourses@'
+    user:'gsun1517@gmail.com',
+    pass:'06ewt0xm0T@'
   }
-})
-  
+});
+
 
 app.listen(3000,function(){
     console.log("Server started on 3000");
