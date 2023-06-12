@@ -13,17 +13,13 @@ const mongodb = require("mongodb");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
 
-
 const app=express();
 
 app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-// mongoose.connect("mongodb+srv://globalmed:globalmedcloud@globalmedacademy.v6hvz4f.mongodb.net/globalmedDB");
-mongoose.connect("mongodb+srv://priyanshurajroy02659:globalmed@cluster0.1wcljxd.mongodb.net/GlobalDB");
-
-
+mongoose.connect(`${process.env.DB_URL}`);
 
 
 app.use(session({
@@ -37,21 +33,7 @@ app.use(passport.session());
 
 // google stratrgy starts
 
-passport.use(new GoogleStrategy({
-  clientID: process.env.CLIENT_ID,
-  clientSecret: process.env.CLIENT_SECRET,
 
- 
-  callbackURL: "https://localhost:3000/auth/google/test",
-
-  userProfileURL: "https://www.googleapis.com/oauth2/v2/userinfo"
-},
-function(accessToken, refreshToken, profile, cb) {
-  User.findOrCreate({ googleId: profile.id }, function (err, user) {
-    return cb(err, user);
-  });
-}
-));
 
 //  (rrp)
 
@@ -64,9 +46,23 @@ const UserSchema = new mongoose.Schema ({
 });
 
 UserSchema.plugin(passportlocalmongoose);
-
+UserSchema.plugin(findOrCreate);
 const User = mongoose.model("User" , UserSchema);
+passport.use(new GoogleStrategy({
+  clientID: process.env.CLIENT_ID,
+  clientSecret: process.env.CLIENT_SECRET,
 
+ 
+  callbackURL: "https://globalmedacademy.com/auth/google/test",
+
+  userProfileURL: "https://www.googleapis.com/oauth2/v2/userinfo"
+},
+function(accessToken, refreshToken, profile, cb) {
+  User.findOrCreate({ googleId: profile.id }, function (err, user) {
+    return cb(err, user);
+  });
+}
+));
 
 passport.use(User.createStrategy());
 
@@ -130,6 +126,7 @@ app.post("/register",(req,res) => {
       if(err)
       {
         console.log(err);
+        
       } else
       {
         passport.authenticate("local")(req,res,function(){
@@ -160,21 +157,47 @@ app.post("/register",(req,res) => {
   
        
   });
+  app.post("/register",function(req,res){
 
+    const user = new User ({
+      username:req.body.username,
+      password:req.body.password,
+      name : req.body.name
+    })
+  
+      req.login(user,function(err){
+        if (err) {
+          console.log(err);
+        } else {
+          passport.authenticate("local")(req,res,function(){
+            res.redirect("/test");
+          });
+        }
+      });
+  
+       
+  });
   app.post("/login", (req,res) => {
 
-    const user1name = req.body.name;
+    const name = req.body.name;
      
-    req.session.user1name = user1name;
+    req.session.name = name;
    
     res.redirect("/test");
   });
+  app.post("/register", (req,res) => {
 
+    const username = req.body.name;
+     
+    req.session.username = username;
+   
+    res.redirect("/test");
+  });
   app.get("/test", (req,res) => {
 
-    const user1name = req.session.user1name;
-    console.log(user1name);
-    res.render("auth_index", { user1name: user1name});
+    const name = req.session.name;
+    console.log(name);
+    res.render("auth_index", { name: name});
 
   });
   
