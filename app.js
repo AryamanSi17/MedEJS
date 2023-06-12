@@ -41,7 +41,8 @@ app.use(passport.session());
 const UserSchema = new mongoose.Schema ({
   name: String,
   username: String,
-  passwword: String
+  passwword: String,
+  googleId: String
 });
 
 UserSchema.plugin(passportlocalmongoose);
