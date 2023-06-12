@@ -28446,7 +28446,24 @@ Course Sidebar
     padding: 0;
   }
 }
+.btn-google {
+  display: inline-block;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  font-size: smaller;
+}
 
+.google-icon {
+  vertical-align: middle;
+  margin-right: 10px;
+  width: 50px; /* Adjust the width as needed */
+  height: 50px; /* Adjust the height as needed */
+}
 .splash-testimonial-all-wrapper {
   position: relative;
   z-index: 2;
