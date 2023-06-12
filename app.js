@@ -8,7 +8,7 @@ const passportlocalmongoose = require("passport-local-mongoose");
 const passport = require("passport");
 const session = require("express-session");
 const mongoose = require("mongoose");
-// var nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
 const mongodb = require("mongodb");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
@@ -47,6 +47,7 @@ const UserSchema = new mongoose.Schema ({
 UserSchema.plugin(passportlocalmongoose);
 UserSchema.plugin(findOrCreate);
 const User = mongoose.model("User" , UserSchema);
+passport.use(User.createStrategy());
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
@@ -63,7 +64,7 @@ function(accessToken, refreshToken, profile, cb) {
 }
 ));
 
-passport.use(User.createStrategy());
+
 
 passport.serializeUser(function(user, done) {
     done(null, user.id);
@@ -199,7 +200,12 @@ app.post("/register",(req,res) => {
     res.render("auth_index", { name: name});
 
   });
-  
+const transporter=nodemailer.createTransport({
+  service:'gmail',
+  auth:{
+    user:'onlinemedcourses@'
+  }
+})
   
 
 app.listen(3000,function(){
