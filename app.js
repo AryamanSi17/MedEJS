@@ -223,8 +223,16 @@ const transporter=nodemailer.createTransport({
     pass:'06ewt0xm0T@'
   }
 });
-
-
+const checkAuthentication=(req,res,next)=>{
+  if(req.isAuthenticated()){
+    res.locals.isLoggedIn=true;
+  }
+  else{
+    res.locals.isLoggedIn=false;
+  }
+  next();
+}
+app.use(checkAuthentication);
 app.listen(3000,function(){
     console.log("Server started on 3000");
 });

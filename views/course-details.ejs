@@ -1,4 +1,5 @@
-<%- include('header'); -%>
+<%- include(isLoggedIn ? 'auth_header' : 'header'); -%>
+
 <div class="rbt-breadcrumb-default rbt-breadcrumb-style-3">
     <div class="breadcrumb-inner">
         <img src="assets/images/bg/bg-image-10.jpg" alt="Education Images">
@@ -1280,16 +1281,8 @@
                                             class="feather-clock"></i> 3 days left!</span>
                                 </div>
                             </div>
-
-                            <div class="add-to-card-button mt--15">
-                                <a class="rbt-btn btn-gradient icon-hover w-100 d-block text-center" href="#">
-                                    <span class="btn-text">Add to Cart</span>
-                                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                </a>
-                            </div>
-
                             <div class="buy-now-btn mt--15">
-                                <a class="rbt-btn btn-border icon-hover w-100 d-block text-center" href="#">
+                                <a class="rbt-btn btn-gradient icon-hover w-100 d-block text-center btn-unauthorised" href="#">
                                     <span class="btn-text">Buy Now</span>
                                     <span class="btn-icon"><i class="feather-arrow-right"></i></span>
                                 </a>
