@@ -227,8 +227,6 @@ app.get("/course-details",function(req,res){
   if (req.user) {
     loggedIn=true;
     res.render('course-details', { loggedIn });
-} else {
-    res.redirect('/login');
 }
 });
 app.get("/auth_index",function(req,res){
