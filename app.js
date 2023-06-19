@@ -226,9 +226,10 @@ else{
 app.get("/course-details",function(req,res){
   if (req.user) {
     loggedIn=true;
-    res.render('course-details', { loggedIn });
+    res.render('course-details', { loggedIn:loggedIn });
 } else {
-    res.redirect('/course-details');
+  loggedIn=false;
+  res.render('course-details',{ loggedIn })
 }
 });
 app.get("/auth_index",function(req,res){
