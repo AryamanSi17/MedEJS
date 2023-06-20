@@ -244,3 +244,6 @@ app.get("/privacy-policy",function(req,res){
 app.get("/admission-guide",function(req,res){
   res.render("admission-guide");
 });
+app.get("/course-details-fellowshipininternalmedicine",(req,res)=>{
+  res.render("course-details-fellowshipininternalmedicine");
+})
