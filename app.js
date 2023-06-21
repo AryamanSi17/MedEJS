@@ -248,5 +248,5 @@ app.get("/course-details-fellowshipininternalmedicine",(req,res)=>{
   res.render("course-details-fellowshipininternalmedicine");
 })
 app.get("/html",function(req,res){
-  res.send("hi")
+  res.send("h")
 })
