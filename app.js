@@ -233,7 +233,7 @@ app.get("/course-details",function(req,res){
 }
 });
 app.get("/auth_index",function(req,res){
-  res.render("auth_index");
+  res.render("auth_index");N
 });
 app.get("/becometeacher",function(req,res){
   res.render("becometeacher");
@@ -246,4 +246,7 @@ app.get("/admission-guide",function(req,res){
 });
 app.get("/course-details-fellowshipininternalmedicine",(req,res)=>{
   res.render("course-details-fellowshipininternalmedicine");
+})
+app.get("/html",function(req,res){
+  res.send("hi")
 })
