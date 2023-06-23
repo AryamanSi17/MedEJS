@@ -247,6 +247,6 @@ app.get("/admission-guide",function(req,res){
 app.get("/course-details-fellowshipininternalmedicine",(req,res)=>{
   res.render("course-details-fellowshipininternalmedicine");
 })
-app.get("/html",function(req,res){
-  res.send("h")
-})
+app.get("/course-details-fellowshipincriticalcare",(req,res)=>{
+  res.render("course-details-fellowshipincriticalcare");
+});
