@@ -8,18 +8,19 @@ const passportlocalmongoose = require("passport-local-mongoose");
 const passport = require("passport");
 const session = require("express-session");
 const mongoose = require("mongoose");
-const nodemailer = require('nodemailer');
+// const nodemailer = require('nodemailer');r
 const mongodb = require("mongodb");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
 let loggedIn=true;
+
 const app=express();
 
 app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-mongoose.connect(`${process.env.DB_URL}`);
+
 
 
 app.use(session({
@@ -30,6 +31,8 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+mongoose.connect(`${process.env.DB_URL}`);
 
 // google stratrgy starts
 
@@ -48,7 +51,7 @@ const UserSchema = new mongoose.Schema ({
 UserSchema.plugin(passportlocalmongoose);
 UserSchema.plugin(findOrCreate);
 const User = mongoose.model("User" , UserSchema);
-passport.use(User.createStrategy());
+
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
@@ -65,6 +68,7 @@ function(accessToken, refreshToken, profile, cb) {
 }
 ));
 
+passport.use(User.createStrategy());
 
 
 passport.serializeUser(function(user, done) {
