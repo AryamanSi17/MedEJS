@@ -250,3 +250,6 @@ app.get("/course-details-fellowshipininternalmedicine",(req,res)=>{
 app.get("/course-details-fellowshipincriticalcare",(req,res)=>{
   res.render("course-details-fellowshipincriticalcare");
 });
+app.get("/course-details-obsgynae",(req,res)=>{
+  res.render("course-details-obsgynae");
+});
