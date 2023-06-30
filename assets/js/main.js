@@ -1046,4 +1046,32 @@ window.onload = function() {
         },100);
     }
   }
+  function validatePassword() {
+    var password = document.getElementById('password').value;
+    var confirmPassword = document.getElementById('confirmPassword').value;
+
+    // Check if password meets the requirements
+    if (
+      password.length >= 8 &&
+      /\d/.test(password) &&
+      /[a-z]/.test(password) &&
+      /[A-Z]/.test(password) &&
+      /\W/.test(password)
+    ) {
+      // Password is valid
+      if (password === confirmPassword) {
+        // Submit the form
+        return true;
+      } else {
+        alert('Passwords do not match');
+      }
+    } else {
+      alert(
+        'Password must be at least 8 characters long and contain at least 1 digit, 1 lowercase letter, 1 uppercase letter, and 1 non-alphanumeric character'
+      );
+    }
+
+    // Prevent form submission
+    return false;
+  }
   

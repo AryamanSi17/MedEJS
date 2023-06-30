@@ -12,6 +12,8 @@ const mongoose = require("mongoose");
 const mongodb = require("mongodb");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
+const axios = require('axios');
+const FormData = require('form-data');
 let loggedIn=true;
 
 const app=express();
@@ -19,28 +21,14 @@ const app=express();
 app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
-
-
-
-
 app.use(session({
   secret: "global med academy is way to success",
   resave: false,
   saveUninitialized: false
 }));
-
 app.use(passport.initialize());
 app.use(passport.session());
-
 mongoose.connect(`${process.env.DB_URL}`);
-
-// google stratrgy starts
-
-
-
-//  (rrp)
-
-
 const UserSchema = new mongoose.Schema ({
   name: String,
   username: String,
@@ -95,8 +83,6 @@ passport.deserializeUser(function(id, done) {
 app.get("/",function(req,res){
   res.render("index");
 });
-
-
 app.get("/data", (req,res) => {
   res.render("data");
 })
@@ -123,6 +109,32 @@ app.get("/login",function(req,res){
 app.get("/login",function(req,res){
   res.render("login");
 });
+// Function to create a user in Moodle
+async function createUserInMoodle(username, password, firstname, lastname, email, idnumber, lang, description) {
+  const formData = new FormData();
+  formData.append('moodlewsrestformat', 'json');
+  formData.append('wsfunction', 'core_user_create_users');
+  formData.append('wstoken', '3fecec7d7227a4369b758e917800db5d'); // Replace with your Moodle token
+  formData.append('users[0][username]', username);
+  formData.append('users[0][password]', password);
+  formData.append('users[0][firstname]', firstname);
+  formData.append('users[0][lastname]', lastname);
+  formData.append('users[0][email]', email);
+  formData.append('users[0][idnumber]', idnumber);
+  formData.append('users[0][lang]', lang);
+  formData.append('users[0][description]', description);
+
+  try {
+    const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
+      headers: formData.getHeaders()
+    });
+    console.log(response.data);
+    // Perform any necessary actions based on the response
+  } catch (error) {
+    console.error(error);
+    // Perform any necessary error handling
+  }
+}
 
 
 app.post("/register",(req,res) => {
@@ -135,6 +147,7 @@ app.post("/register",(req,res) => {
       } else
       {
         passport.authenticate("local")(req,res,function(){
+          createUserInMoodle(req.body.username, req.body.password, req.body.firstname, req.body.lastname, req.body.email, req.body.idnumber, req.body.lang, req.body.description);
           res.redirect("/test");
         })
       }
@@ -162,34 +175,7 @@ app.post("/register",(req,res) => {
   
        
   });
-  app.post("/register",function(req,res){
 
-    const user = new User ({
-      username:req.body.username,
-      password:req.body.password,
-      name : req.body.name
-    })
-  
-      req.login(user,function(err){
-        if (err) {
-          console.log(err);
-        } else {
-          passport.authenticate("local")(req,res,function(){
-            res.redirect("/test");
-          });
-        }
-      });
-  
-       
-  });
-  app.post("/login", (req,res) => {
-
-    const name = req.body.name;
-     
-    req.session.name = name;
-   
-    res.redirect("/test");
-  });
   app.post("/register", (req,res) => {
 
     const username = req.body.name;
@@ -204,16 +190,6 @@ app.post("/register",(req,res) => {
     res.render("auth_index", { name: name});
 
   });
-// const checkAuthentication=(req,res,next)=>{
-//   if(req.isAuthenticated()){
-//     res.locals.isLoggedIn=true;
-//   }
-//   else{
-//     res.locals.isLoggedIn=false;
-//   }
-//   next();
-// }
-// app.use(checkAuthentication);
 app.listen(3000,function(){
     console.log("Server started on 3000");
 });
@@ -257,3 +233,5 @@ app.get("/course-details-fellowshipincriticalcare",(req,res)=>{
 app.get("/course-details-obsgynae",(req,res)=>{
   res.render("course-details-obsgynae");
 });
+
+
