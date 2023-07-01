@@ -104,11 +104,17 @@ app.get("/login",function(req,res){
   res.render("login");
 });
 app.post("/register", async (req, res) => {
+  const username = req.body.username;
+  if (username.toUpperCase() === username) {
+    // Username is in uppercase
+    res.status(400).send("Please enter the username in lowercase only.");
+    return;
+  }
   User.register({ username: req.body.username, name: req.body.name }, req.body.password, function(err, user) {
     if (err) {
       console.log(err);
     } else {
-      createUserInMoodle(req.body.username, req.body.password, req.body.firstname, req.body.lastname, req.body.email)
+      createUserInMoodle(req.body.username, req.body.password, req.body.firstname, req.body.lastname, req.body.name)
         .then(() => {
           passport.authenticate("local")(req, res, function() {
             res.redirect("/test");
@@ -124,7 +130,7 @@ app.post("/register", async (req, res) => {
 });
 
 // Function to create a user in Moodle
-async function createUserInMoodle(username, password, firstname, lastname, email) {
+async function createUserInMoodle(username,password, firstname, lastname, name) {
   const formData = new FormData();
   formData.append('moodlewsrestformat', 'json');
   formData.append('wsfunction', 'core_user_create_users');
@@ -133,7 +139,7 @@ async function createUserInMoodle(username, password, firstname, lastname, email
   formData.append('users[0][password]', password);
   formData.append('users[0][firstname]', firstname);
   formData.append('users[0][lastname]', lastname);
-  formData.append('users[0][email]', email);
+  formData.append('users[0][email]', name);
   formData.append('users[0][lang]', 'en');
   formData.append('users[0][description]', 'If you die you die');
 
