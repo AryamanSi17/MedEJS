@@ -100,17 +100,31 @@ app.get("/auth/google/test",
     res.redirect('/test');
   });
 
-  
-
-app.get("/login",function(req,res){
-    res.render("login");
-});
-
 app.get("/login",function(req,res){
   res.render("login");
 });
+app.post("/register", async (req, res) => {
+  User.register({ username: req.body.username, name: req.body.name }, req.body.password, function(err, user) {
+    if (err) {
+      console.log(err);
+    } else {
+      createUserInMoodle(req.body.username, req.body.password, req.body.firstname, req.body.lastname, req.body.email)
+        .then(() => {
+          passport.authenticate("local")(req, res, function() {
+            res.redirect("/test");
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+          // Handle the error if necessary
+          res.status(500).send("An error occurred during user registration.");
+        });
+    }
+  });
+});
+
 // Function to create a user in Moodle
-async function createUserInMoodle(username, password, firstname, lastname, email, idnumber, lang, description) {
+async function createUserInMoodle(username, password, firstname, lastname, email) {
   const formData = new FormData();
   formData.append('moodlewsrestformat', 'json');
   formData.append('wsfunction', 'core_user_create_users');
@@ -120,9 +134,8 @@ async function createUserInMoodle(username, password, firstname, lastname, email
   formData.append('users[0][firstname]', firstname);
   formData.append('users[0][lastname]', lastname);
   formData.append('users[0][email]', email);
-  formData.append('users[0][idnumber]', idnumber);
-  formData.append('users[0][lang]', lang);
-  formData.append('users[0][description]', description);
+  formData.append('users[0][lang]', 'en');
+  formData.append('users[0][description]', 'If you die you die');
 
   try {
     const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
@@ -132,28 +145,10 @@ async function createUserInMoodle(username, password, firstname, lastname, email
     // Perform any necessary actions based on the response
   } catch (error) {
     console.error(error);
-    // Perform any necessary error handling
+    throw new Error('Failed to create user in Moodle.');
   }
-}
+} 
 
-
-app.post("/register",(req,res) => {
-
-    User.register({username:req.body.username,name:req.body.name},req.body.password,function(err,user){
-      if(err)
-      {
-        console.log(err);
-        
-      } else
-      {
-        passport.authenticate("local")(req,res,function(){
-          createUserInMoodle(req.body.username, req.body.password, req.body.firstname, req.body.lastname, req.body.email, req.body.idnumber, req.body.lang, req.body.description);
-          res.redirect("/test");
-        })
-      }
-    })
-  
-  });
 
   app.post("/login",function(req,res){
 
@@ -176,13 +171,6 @@ app.post("/register",(req,res) => {
        
   });
 
-  app.post("/register", (req,res) => {
-
-    const username = req.body.name;
-     
-    req.session.username = username;
-   
-  });
   app.get("/test", (req,res) => {
 
     const name = req.session.name;
@@ -233,5 +221,3 @@ app.get("/course-details-fellowshipincriticalcare",(req,res)=>{
 app.get("/course-details-obsgynae",(req,res)=>{
   res.render("course-details-obsgynae");
 });
-
-
