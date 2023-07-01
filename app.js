@@ -93,7 +93,11 @@ passport.deserializeUser(function(id, done) {
 });
 
 app.get("/",function(req,res){
+  if(req.isAuthenticated()){
+    res.render("auth_index");
+  } else {
   res.render("index");
+  }
 });
 
 
@@ -111,7 +115,7 @@ app.get("/auth/google/test",
   passport.authenticate('google', { failureRedirect: '/login' }),
   function(req, res) {
     // Successful authentication, redirect home.
-    res.redirect('/test');
+    res.render('auth_index');
   });
 
   
@@ -135,7 +139,8 @@ app.post("/register",(req,res) => {
       } else
       {
         passport.authenticate("local")(req,res,function(){
-          res.redirect("/test");
+          // res.redirect("/test");
+          res.render("auth_index");
         })
       }
     })
@@ -155,7 +160,7 @@ app.post("/register",(req,res) => {
           console.log(err);
         } else {
           passport.authenticate("local")(req,res,function(){
-            res.redirect("/test");
+            res.render("auth_index");
           });
         }
       });
@@ -182,28 +187,35 @@ app.post("/register",(req,res) => {
   
        
   });
-  app.post("/login", (req,res) => {
+  // app.post("/login", (req,res) => {
 
-    const name = req.body.name;
+  //   const name = req.body.name;
      
-    req.session.name = name;
+  //   req.session.name = name;
    
-    res.redirect("/test");
-  });
-  app.post("/register", (req,res) => {
+  //   res.redirect("/test");
+  // });
+  // app.post("/register", (req,res) => {
 
-    const username = req.body.name;
+  //   const username = req.body.name;
      
-    req.session.username = username;
+  //   req.session.username = username;
    
-  });
-  app.get("/test", (req,res) => {
+  // });
 
-    const name = req.session.name;
-    console.log(name);
-    res.render("auth_index", { name: name});
+  // app.get("/test", (req,res) => {
 
-  });
+  //   // const name = req.session.name;
+  //   // console.log(name);
+  //   // res.render("auth_index", { name: name});
+  //   if(req.isAuthenticated()){
+  //     res.render("auth_index");
+  //   } else {
+  //   res.render("index");
+  //   }
+  // });
+
+
 // const checkAuthentication=(req,res,next)=>{
 //   if(req.isAuthenticated()){
 //     res.locals.isLoggedIn=true;
