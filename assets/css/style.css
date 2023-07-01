@@ -9355,6 +9355,17 @@ Primary style
   opacity: 1;
 }
 
+.cd-words-wrapper b {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.cd-words-wrapper b.is-visible {
+  opacity: 1;
+}
 /* -------------------------------- 
 
   xrotate-1 

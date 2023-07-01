@@ -134,7 +134,7 @@ async function createUserInMoodle(username,password, firstname, lastname, name) 
   const formData = new FormData();
   formData.append('moodlewsrestformat', 'json');
   formData.append('wsfunction', 'core_user_create_users');
-  formData.append('wstoken',process.env.MOODLE_TOKEN); // Replace with your Moodle token
+  formData.append('wstoken',process.env.MOODLE_TOKEN  ); // Replace with your Moodle token
   formData.append('users[0][username]', username);
   formData.append('users[0][password]', password);
   formData.append('users[0][firstname]', firstname);
