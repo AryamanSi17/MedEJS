@@ -21,6 +21,7 @@ const app=express();
 app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
+<<<<<<< HEAD
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -31,6 +32,8 @@ const transporter = nodemailer.createTransport({
 });
 
 
+=======
+>>>>>>> 12c848a480a6d24a2f4ab30bc88bfbb66229cb95
 app.use(session({
   secret: "global med academy is way to success",
   resave: false,
@@ -40,7 +43,22 @@ app.use(passport.initialize());
 app.use(passport.session());
 mongoose.connect(`${process.env.DB_URL}`);
 
-// google stratrgy starts
+//  mail stratrgy starts
+
+const mailOptions = {
+  from: 'priyanshurajroy02659@gmail.com',
+  to:  ['priyanshur.ip.21@nitj.ac.in' , 'priyanshufind4u@gmail.com'],
+  subject: 'Hello from globalmed',
+  text: 'This is the lody.'
+};
+
+transporter.sendMail(mailOptions, function(error, info) {
+  if (error) {
+    console.log(error);
+  } else {
+    console.log('Email sent: ' + info.response);
+  }
+});
 
 
 
