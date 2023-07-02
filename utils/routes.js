@@ -46,6 +46,7 @@ function setRoutes(app) {
     app.get("/auth_email", function(req, res) {
       res.render("auth_email");
     });
+    
   }
   
   module.exports = setRoutes;

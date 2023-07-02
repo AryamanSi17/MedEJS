@@ -15,7 +15,8 @@ const axios = require('axios');
 const FormData = require('form-data');
 const sendEmail = require('./utils/email');
 const setRoutes = require('./utils/routes');
-
+const crypto = require('crypto');
+const emailAuth = require('./utils/emailAuth');
 
 let loggedIn=true;
 
@@ -193,4 +194,36 @@ async function createUserInMoodle(username,password, firstname, lastname, name) 
 app.listen(3000,function(){
     console.log("Server started on 3000");
 });
+// Store generated OTP
+let storedOTP = null;
+
+// Handler for sending OTP
+app.post('/sendOtp', function (req, res) {
+  const email = req.body.email;
+
+  // Generate OTP and send email
+  const otp = emailAuth.generateOTP();
+  emailAuth.sendOTP(email, otp);
+
+  // Store the generated OTP
+  storedOTP = otp;
+
+  // Send a response indicating success
+  res.send('<script>alert("OTP sent successfully!"); window.history.back();</script>');
+});
+
+// Handler for verifying OTP
+app.post('/verifyOtp', function (req, res) {
+  const enteredOTP = req.body.otp;
+
+  // Verify the entered OTP
+  if (storedOTP && enteredOTP === storedOTP) {
+    // OTP matches, authentication successful
+    res.render('login');
+  } else {
+    // OTP does not match or storedOTP is null, authentication failed
+    res.send('Invalid OTP. Please try again!');
+  }
+});
+
 setRoutes(app);
