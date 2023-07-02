@@ -2,7 +2,6 @@ require('dotenv').config();
 const express=require("express");
 const bodyParser=require("body-parser");
 const path=require("path");
-
 const ejs = require("ejs");
 const passportlocalmongoose = require("passport-local-mongoose");
 const passport = require("passport");
@@ -14,6 +13,10 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
 const axios = require('axios');
 const FormData = require('form-data');
+const sendEmail = require('./utils/email');
+const setRoutes = require('./utils/routes');
+
+
 let loggedIn=true;
 
 const app=express();
@@ -21,16 +24,6 @@ const app=express();
 app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
-
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'sinhasanjeevkumar08@gmail.com',
-    pass: 'vbmumiwgpnsbsjxd'
-  }
-});
-
 
 app.use(session({
   secret: "global med academy is way to success",
@@ -41,29 +34,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 mongoose.connect(`${process.env.DB_URL}`);
 
-//  mail stratrgy starts
-
-// const mailOptions = {
-//   from: 'priyanshurajroy02659@gmail.com',
-//   to:  ['priyanshur.ip.21@nitj.ac.in' , 'priyanshufind4u@gmail.com','aryamans.tt.21@nitj.ac.in','gsun1517@gmail.com'],
-//   subject: 'Hello from globalmed',
-//   text: 'Hi email works.'
-// };
-
-// transporter.sendMail(mailOptions, function(error, info) {
-//   if (error) {
-//     console.log(error);
-//   } else {
-//     console.log('Email sent: ' + info.response);
-//   }
-// });
-//  (rrp)
 const UserSchema = new mongoose.Schema ({
   name: String,
   username: String,
   passwword: String,
   googleId: String
 });
+
+// sendEmail();
 
 UserSchema.plugin(passportlocalmongoose);
 UserSchema.plugin(findOrCreate);
@@ -215,46 +193,4 @@ async function createUserInMoodle(username,password, firstname, lastname, name) 
 app.listen(3000,function(){
     console.log("Server started on 3000");
 });
-app.get("/course-masonry",function(req,res){
-  if (req.user) {
-    loggedIn=true;
-    res.render('course-masonry', { loggedIn });
-}
-else{
-  loggedIn=false;
-  res.render('course-masonry',{ loggedIn })
-}
-});
-app.get("/course-details",function(req,res){
-  if (req.user) {
-    loggedIn=true;
-    res.render('course-details', { loggedIn:loggedIn });
-} else {
-  loggedIn=false;
-  res.render('course-details',{ loggedIn })
-}
-});
-app.get("/auth_index",function(req,res){
-  res.render("auth_index");N
-});
-app.get("/becometeacher",function(req,res){
-  res.render("becometeacher");
-});
-app.get("/privacy-policy",function(req,res){
-  res.render("privacy-policy");
-});
-app.get("/admission-guide",function(req,res){
-  res.render("admission-guide");
-});
-app.get("/course-details-fellowshipininternalmedicine",(req,res)=>{
-  res.render("course-details-fellowshipininternalmedicine");
-})
-app.get("/course-details-fellowshipincriticalcare",(req,res)=>{
-  res.render("course-details-fellowshipincriticalcare");
-});
-app.get("/course-details-obsgynae",(req,res)=>{
-  res.render("course-details-obsgynae");
-});
-app.get("/auth_email",(req,res)=>{
-  res.render("auth_email");
-})
+setRoutes(app);
