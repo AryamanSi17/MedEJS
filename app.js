@@ -81,7 +81,11 @@ passport.deserializeUser(function(id, done) {
 });
 
 app.get("/",function(req,res){
+  if(req.isAuthenticated()){
+    res.render("auth_index");
+  } else {
   res.render("index");
+  }
 });
 app.get("/data", (req,res) => {
   res.render("data");
@@ -97,12 +101,13 @@ app.get("/auth/google/test",
   passport.authenticate('google', { failureRedirect: '/login' }),
   function(req, res) {
     // Successful authentication, redirect home.
-    res.redirect('/test');
+    res.render('auth_index');
   });
 
 app.get("/login",function(req,res){
   res.render("login");
 });
+
 app.post("/register", async (req, res) => {
   const username = req.body.username;
   if (username.toUpperCase() === username) {
@@ -117,8 +122,9 @@ app.post("/register", async (req, res) => {
       createUserInMoodle(req.body.username, req.body.password, req.body.firstname, req.body.lastname, req.body.name)
         .then(() => {
           passport.authenticate("local")(req, res, function() {
-            res.redirect("/test");
+          res.render("auth_index");
           });
+        
         })
         .catch((error) => {
           console.error(error);
@@ -155,8 +161,8 @@ async function createUserInMoodle(username,password, firstname, lastname, name) 
   }
 } 
 
-
   app.post("/login",function(req,res){
+
 
     const user = new User ({
       username:req.body.username,
@@ -169,7 +175,7 @@ async function createUserInMoodle(username,password, firstname, lastname, name) 
           console.log(err);
         } else {
           passport.authenticate("local")(req,res,function(){
-            res.redirect("/test");
+             res.render("auth_index");
           });
         }
       });
@@ -177,13 +183,6 @@ async function createUserInMoodle(username,password, firstname, lastname, name) 
        
   });
 
-  app.get("/test", (req,res) => {
-
-    const name = req.session.name;
-    console.log(name);
-    res.render("auth_index", { name: name});
-
-  });
 app.listen(3000,function(){
     console.log("Server started on 3000");
 });
