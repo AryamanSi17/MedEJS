@@ -8,7 +8,7 @@ const passportlocalmongoose = require("passport-local-mongoose");
 const passport = require("passport");
 const session = require("express-session");
 const mongoose = require("mongoose");
-// const nodemailer = require('nodemailer');r
+const nodemailer = require('nodemailer');
 const mongodb = require("mongodb");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
@@ -21,6 +21,16 @@ const app=express();
 app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'priyanshurajroy02659@gmail.com',
+    pass: 'zsyvunucwzqombnt'
+  }
+});
+
+
 app.use(session({
   secret: "global med academy is way to success",
   resave: false,
@@ -29,6 +39,14 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 mongoose.connect(`${process.env.DB_URL}`);
+
+// google stratrgy starts
+
+
+
+//  (rrp)
+
+
 const UserSchema = new mongoose.Schema ({
   name: String,
   username: String,
