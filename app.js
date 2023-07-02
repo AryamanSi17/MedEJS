@@ -26,8 +26,8 @@ app.use('/assets', express.static(path.join(__dirname, 'assets')));
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'priyanshurajroy02659@gmail.com',
-    pass: 'zsyvunucwzqombnt'
+    user: 'sinhasanjeevkumar08@gmail.com',
+    pass: 'vbmumiwgpnsbsjxd'
   }
 });
 
@@ -43,20 +43,20 @@ mongoose.connect(`${process.env.DB_URL}`);
 
 //  mail stratrgy starts
 
-const mailOptions = {
-  from: 'priyanshurajroy02659@gmail.com',
-  to:  ['priyanshur.ip.21@nitj.ac.in' , 'priyanshufind4u@gmail.com'],
-  subject: 'Hello from globalmed',
-  text: 'This is the lody.'
-};
+// const mailOptions = {
+//   from: 'priyanshurajroy02659@gmail.com',
+//   to:  ['priyanshur.ip.21@nitj.ac.in' , 'priyanshufind4u@gmail.com','aryamans.tt.21@nitj.ac.in','gsun1517@gmail.com'],
+//   subject: 'Hello from globalmed',
+//   text: 'Hi email works.'
+// };
 
-transporter.sendMail(mailOptions, function(error, info) {
-  if (error) {
-    console.log(error);
-  } else {
-    console.log('Email sent: ' + info.response);
-  }
-});
+// transporter.sendMail(mailOptions, function(error, info) {
+//   if (error) {
+//     console.log(error);
+//   } else {
+//     console.log('Email sent: ' + info.response);
+//   }
+// });
 //  (rrp)
 const UserSchema = new mongoose.Schema ({
   name: String,
@@ -255,3 +255,6 @@ app.get("/course-details-fellowshipincriticalcare",(req,res)=>{
 app.get("/course-details-obsgynae",(req,res)=>{
   res.render("course-details-obsgynae");
 });
+app.get("/auth_email",(req,res)=>{
+  res.render("auth_email");
+})
