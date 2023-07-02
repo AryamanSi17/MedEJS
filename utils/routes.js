@@ -1,4 +1,14 @@
 function setRoutes(app) {
+  app.get("/",function(req,res){
+    if(req.isAuthenticated()){
+      res.render("auth_index");
+    } else {
+    res.render("index");
+    }
+  });
+  app.get("/data", (req,res) => {
+    res.render("data");
+  })
     app.get("/course-masonry", function(req, res) {
       if (req.user) {
         res.render('course-masonry', { loggedIn: true });
