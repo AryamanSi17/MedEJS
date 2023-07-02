@@ -1046,4 +1046,43 @@ window.onload = function() {
         },100);
     }
   }
-  
+//   function validatePassword() {
+//     var password = document.getElementById('password').value;
+//     var confirmPassword = document.getElementById('confirmPassword').value;
+
+//     // Check if password meets the requirements
+//     if (
+//       password.length >= 8 &&
+//       /\d/.test(password) &&
+//       /[a-z]/.test(password) &&
+//       /[A-Z]/.test(password) &&
+//       /\W/.test(password)
+//     ) {
+//       // Password is valid
+//       if (password === confirmPassword) {
+//         // Submit the form
+//         return true;
+//       } else {
+//         alert('Passwords do not match');
+//       }
+//     } else {
+//       alert(
+//         'Password must be at least 8 characters long and contain at least 1 digit, 1 lowercase letter, 1 uppercase letter, and 1 non-alphanumeric character'
+//       );
+//     }
+
+//     // Prevent form submission
+//     return false;
+//   }
+window.addEventListener("DOMContentLoaded", function () {
+    var wordsWrapper = document.querySelector(".cd-words-wrapper");
+    var words = wordsWrapper.getElementsByTagName("b");
+    var wordCount = words.length;
+    var currentWordIndex = 0;
+
+    setInterval(function () {
+        words[currentWordIndex].classList.remove("is-visible");
+        currentWordIndex = (currentWordIndex + 1) % wordCount;
+        words[currentWordIndex].classList.add("is-visible");
+    }, 1000);
+});
