@@ -8,7 +8,7 @@ const passportlocalmongoose = require("passport-local-mongoose");
 const passport = require("passport");
 const session = require("express-session");
 const mongoose = require("mongoose");
-// const nodemailer = require('nodemailer');r
+const nodemailer = require('nodemailer');
 const mongodb = require("mongodb");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const findOrCreate = require('mongoose-findorcreate');
@@ -20,7 +20,13 @@ app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'priyanshurajroy02659@gmail.com',
+    pass: 'zsyvunucwzqombnt'
+  }
+});
 
 
 app.use(session({
@@ -34,7 +40,22 @@ app.use(passport.session());
 
 mongoose.connect(`${process.env.DB_URL}`);
 
-// google stratrgy starts
+//  mail stratrgy starts
+
+const mailOptions = {
+  from: 'priyanshurajroy02659@gmail.com',
+  to:  ['priyanshur.ip.21@nitj.ac.in' , 'priyanshufind4u@gmail.com'],
+  subject: 'Hello from globalmed',
+  text: 'This is the lody.'
+};
+
+transporter.sendMail(mailOptions, function(error, info) {
+  if (error) {
+    console.log(error);
+  } else {
+    console.log('Email sent: ' + info.response);
+  }
+});
 
 
 
