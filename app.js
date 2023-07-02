@@ -21,7 +21,7 @@ const app=express();
 app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended:true}));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
-<<<<<<< HEAD
+
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -32,8 +32,6 @@ const transporter = nodemailer.createTransport({
 });
 
 
-=======
->>>>>>> 12c848a480a6d24a2f4ab30bc88bfbb66229cb95
 app.use(session({
   secret: "global med academy is way to success",
   resave: false,
@@ -59,12 +57,7 @@ transporter.sendMail(mailOptions, function(error, info) {
     console.log('Email sent: ' + info.response);
   }
 });
-
-
-
 //  (rrp)
-
-
 const UserSchema = new mongoose.Schema ({
   name: String,
   username: String,
