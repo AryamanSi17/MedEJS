@@ -6,7 +6,7 @@ const ejs = require("ejs");
 const passportLocalMongoose = require("passport-local-mongoose");
 const passport = require("passport");
 const session = require("express-session");
-const mongoose = require("mongoose");
+const { mongoose, User } = require("./utils/db"); // Import from db.js
 const nodemailer = require('nodemailer');
 const mongodb = require("mongodb");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -33,18 +33,6 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-mongoose.connect(`${process.env.DB_URL}`);
-
-const UserSchema = new mongoose.Schema({
-  name: String,
-  username: String,
-  password: String,
-  googleId: String
-});
-
-UserSchema.plugin(passportLocalMongoose);
-UserSchema.plugin(findOrCreate);
-const User = mongoose.model("User", UserSchema);
 
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
