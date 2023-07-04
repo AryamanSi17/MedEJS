@@ -17,9 +17,8 @@ const sendEmail = require('./utils/email');
 const setRoutes = require('./utils/routes');
 const crypto = require('crypto');
 const emailAuth = require('./utils/emailAuth');
-
 let loggedIn = true;
-
+// const enrollUserInCourse = require('./utils/enrollUser.js')
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -187,5 +186,40 @@ async function createUserInMoodle(username, password, firstname, lastname, email
     throw new Error('Failed to create user in Moodle.');
   }
 }
+// enrollUserInCourse('adminm2', '1234',5)
+//   .then(() => {
+//     console.log('User enrolled in the course successfully.');
+//   })
+//   .catch(error => {
+//     console.error('Failed to enroll user:', error);
+//   });
+const enrollUserInCourse = async (email, courseId, roleId) => {
+  const formData = new FormData();
+  formData.append('moodlewsrestformat', 'json');
+  formData.append('wsfunction', 'enrol_manual_enrol_users');
+  formData.append('wstoken', process.env.MOODLE_TOKEN);
+  formData.append('enrolments[0][roleid]', roleId);
+  formData.append('enrolments[0][email]', email);
+  formData.append('enrolments[0][courseid]', courseId);
 
+  try {
+    const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
+      headers: formData.getHeaders()
+    });
+
+    if (response.status === 200) {
+      console.log('User enrolled in the course successfully.');
+      console.log(response.data);
+
+    } else {
+      console.log('Failed to enroll user in the course.');
+      console.log(response.data);
+    }
+  } catch (error) {
+    console.log(error);
+    throw new Error('Failed to enroll user in the course.');
+  }
+};
+
+enrollUserInCourse('sinhasanjeevkumar08@gmail.com', 'DM12', 5);
 setRoutes(app);
