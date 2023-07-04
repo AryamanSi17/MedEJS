@@ -102,6 +102,14 @@ app.listen(3000, function() {
   console.log("Server started on 3000");
 });
 
+app.get("/logout", (req,res) => {
+  req.logout(function(err){
+    if (!err) {
+      res.redirect("/");
+    }
+  });
+});
+
 // Store generated OTP
 let storedOTP = null;
 
