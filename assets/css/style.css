@@ -14237,7 +14237,6 @@ span.transparent-button:hover i {
   display: inline-block;
   padding: 10px 20px;
   border-radius: 100px;
-  text-transform: uppercase;
   display: inline-block;
   background: var(--color-primary);
   color: var(--color-primary);
