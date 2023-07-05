@@ -194,21 +194,39 @@ async function createUserInMoodle(username, password, firstname, lastname, email
     throw new Error('Failed to create user in Moodle.');
   }
 }
-// enrollUserInCourse('adminm2', '1234',5)
-//   .then(() => {
-//     console.log('User enrolled in the course successfully.');
-//   })
-//   .catch(error => {
-//     console.error('Failed to enroll user:', error);
-//   });
-const enrollUserInCourse = async (email, courseId, roleId) => {
+const getUserIdFromUsername = async () => {
+  const formData = new FormData();
+  formData.append('moodlewsrestformat', 'json');
+  formData.append('wsfunction', 'core_user_get_users_by_field');
+  formData.append('wstoken', process.env.MOODLE_TOKEN);
+  formData.append('field', 'username');
+  formData.append('values[0]', 'adminn90');
+
+  try {
+    const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
+      headers: formData.getHeaders()
+    });
+
+    if (response.status === 200 && response.data.length > 0) {
+      console.log('User ID:', response.data[0].id);
+      return response.data[0].id;  // Returns the user ID
+    } else {
+      throw new Error('User not found.');
+    }
+  } catch (error) {
+    console.log(error);
+    throw new Error('Failed to retrieve user ID.');
+  }
+};
+getUserIdFromUsername();
+const enrollUserInCourse = async (userId, courseid) => {
   const formData = new FormData();
   formData.append('moodlewsrestformat', 'json');
   formData.append('wsfunction', 'enrol_manual_enrol_users');
   formData.append('wstoken', process.env.MOODLE_TOKEN);
-  formData.append('enrolments[0][roleid]', roleId);
-  formData.append('enrolments[0][email]', email);
-  formData.append('enrolments[0][courseid]', courseId);
+  formData.append('enrolments[0][roleid]', 5);
+  formData.append('enrolments[0][userid]', userId);
+  formData.append('enrolments[0][courseid]', courseid); // Fixed variable reference
 
   try {
     const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
@@ -218,7 +236,6 @@ const enrollUserInCourse = async (email, courseId, roleId) => {
     if (response.status === 200) {
       console.log('User enrolled in the course successfully.');
       console.log(response.data);
-
     } else {
       console.log('Failed to enroll user in the course.');
       console.log(response.data);
@@ -229,5 +246,9 @@ const enrollUserInCourse = async (email, courseId, roleId) => {
   }
 };
 
-enrollUserInCourse('sinhasanjeevkumar08@gmail.com', 'DM12', 5);
+// Usage
+const userId = '15'; // Replace with the actual user ID
+const courseid = '9'; // Replace with the actual Course ID
+// enrollUserInCourse(userId, courseid);
+
 setRoutes(app);
