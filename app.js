@@ -114,9 +114,17 @@ app.get("/logout", (req,res) => {
 let storedOTP = null;
 
 // Handler for sending OTP
-app.post('/sendOtp', function(req, res) {
+app.post('/sendOtp',async function(req, res) {
   const email = req.body.email;
   req.session.email = email;
+  const isRegistered = await isEmailRegistered(email);
+
+  if (isRegistered==true) {
+    // If the email is already registered, send an alert and do not send the OTP
+    res.send('<script>alert("Email already in use!"); window.history.back();</script>');
+  } 
+  else
+  {
   // Generate OTP and send email
   const otp = emailAuth.generateOTP();
   emailAuth.sendOTP(email, otp);
@@ -126,6 +134,8 @@ app.post('/sendOtp', function(req, res) {
 
   // Send a response indicating success
   res.send('<script>alert("OTP sent successfully!"); window.history.back();</script>');
+  }
+  console.log(isRegistered)
 });
 
 // Handler for verifying OTP
@@ -168,6 +178,13 @@ app.post("/register", async (req, res) => {
     }
   });
 });
+async function isEmailRegistered(email) {
+  // Use mongoose to query for a user with the provided email
+  const user = await User.findOne({ name: email });
+
+  // If a user is found, the email is already registered
+  return user != null;
+}
 
 // Function to create a user in Moodle
 async function createUserInMoodle(username, password, firstname, lastname, email) {
@@ -250,6 +267,4 @@ const enrollUserInCourse = async (userId, courseid) => {
 const userId = '15'; // Replace with the actual user ID
 const courseid = '9'; // Replace with the actual Course ID
 // enrollUserInCourse(userId, courseid);
-
-
 setRoutes(app);
