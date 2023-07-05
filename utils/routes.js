@@ -5,6 +5,7 @@ function setRoutes(app) {
     } else {
     res.render("index");
     }
+    
   });
   app.get("/data", (req,res) => {
     res.render("data");
