@@ -154,7 +154,7 @@ app.post('/verifyOtp', function(req, res) {
 
 app.post("/register", async (req, res) => {
   const username = req.body.username;
-  const email = req.session.email;
+  const email = req.body.email;
   if (username.toUpperCase() === username) {
     // Username is in uppercase
     res.status(400).send("Please enter the username in lowercase only.");
