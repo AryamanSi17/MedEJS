@@ -82,7 +82,6 @@ app.get("/login", function(req, res) {
 
 app.post("/login", function(req, res) {
   const user = new User({
-    username: req.body.username,
     password: req.body.password,
     name: req.body.name
   });

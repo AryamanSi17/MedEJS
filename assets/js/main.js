@@ -1074,3 +1074,15 @@ window.onload = function() {
 //     // Prevent form submission
 //     return false;
 //   }
+window.addEventListener("DOMContentLoaded", function () {
+    var wordsWrapper = document.querySelector(".cd-words-wrapper");
+    var words = wordsWrapper.getElementsByTagName("b");
+    var wordCount = words.length;
+    var currentWordIndex = 0;
+
+    setInterval(function () {
+        words[currentWordIndex].classList.remove("is-visible");
+        currentWordIndex = (currentWordIndex + 1) % wordCount;
+        words[currentWordIndex].classList.add("is-visible");
+    }, 1000);
+});
