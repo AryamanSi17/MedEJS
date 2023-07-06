@@ -153,18 +153,14 @@ app.post('/verifyOtp', function(req, res) {
 });
 
 app.post("/register", async (req, res) => {
-  const username = req.body.username;
-  const email = req.body.email;
-  if (username.toUpperCase() === username) {
-    // Username is in uppercase
-    res.status(400).send("Please enter the username in lowercase only.");
-    return;
-  }
-  User.register({ username: req.body.username, name: email, email: email }, req.body.password, function(err, user) {
+  // const username = req.body.username;
+  const email = req.session.email;
+
+  User.register({ username: email, name: req.body.fullname}, req.body.password, function(err, user) {
     if (err) {
       console.log(err);
     } else {
-      createUserInMoodle(req.body.username, req.body.password, req.body.firstname, req.body.lastname, email)
+      createUserInMoodle(email, req.body.password, req.body.fullname,'.', email)
         .then(() => {
           passport.authenticate("local")(req, res, function() {
             res.render("auth_index");
@@ -217,7 +213,7 @@ const getUserIdFromUsername = async () => {
   formData.append('wsfunction', 'core_user_get_users_by_field');
   formData.append('wstoken', process.env.MOODLE_TOKEN);
   formData.append('field', 'username');
-  formData.append('values[0]', 'adminn90');
+  formData.append('values[0]', 'bananaicecream');
 
   try {
     const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {

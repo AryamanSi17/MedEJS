@@ -11,7 +11,7 @@
                         <li>
                             <div class="icon-right"><i class="feather-chevron-right"></i></div>
                         </li>
-                        <li class="rbt-breadcrumb-item active">Login & Register</li>
+                        <li class="rbt-breadcrumb-item active">Register</li>
                     </ul>
                 </div>
             </div>
@@ -22,43 +22,38 @@
 <div class="rbt-elements-area bg-color-white rbt-section-gap">
     <div class="container">
             <div class="col-lg-6">
-                <form action="/sentOtp" method="post">
+                <form action="/register" method="post">
                 <div class="rbt-contact-form contact-form-style-1 max-width-auto">
                     <h3 class="title">Register</h3>
                     <form class="max-width-auto">
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                           <input name="username" type="text"/>
                           <label>Username * "In lowercase only"</label>
                           <span class="focus-border"></span>
-                        </div>
+                        </div> -->
                       
                        
                         <div class="form-group">
-                            <input name="firstname" type="text">
-                            <label>First Name *</label>
+                            <input name="fullname" type="text">
+                            <label>Name *</label>
                             <span class="focus-border"></span>
                           </div>
                         
-                          <div class="form-group">
+                          <!-- <div class="form-group">
                             <input name="lastname" type="text">
                             <label>Last Name *</label>
                             <span class="focus-border"></span>
-                          </div>
+                          </div> -->
                         <div class="form-group">
                           <input name="password" type="password">
                           <label>Password *</label>
                           <span class="focus-border"></span>
                         </div>
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <input name="confirmPassword" id="confirmPassword" type="password">
                             <label>Confirm Password *</label>
                             <span class="focus-border"></span>
-                          </div>
-                          <div class="form-group">
-                            <input name="email" id="email" type="email">
-                            <label>Email *</label>
-                            <span class="focus-border"></span>
-                          </div>
+                          </div> -->
                         <!-- <div class="form-group">
                           <input name="idnumber" type="text">
                           <label>ID Number</label>
@@ -84,7 +79,7 @@
                         <div class="form-submit-group">
                           <button type="submit" class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
                             <span class="icon-reverse-wrapper">
-                              <span class="btn-text">Sent OTP</span>
+                              <span class="btn-text">Register</span>
                               <span class="btn-icon"><i class="feather-arrow-right"></i></span>
                               <span class="btn-icon"><i class="feather-arrow-right"></i></span>
                             </span>
@@ -130,23 +125,5 @@
         </div>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-  $(document).ready(function() {
-    $('#otp-button').click(function() {
-      var email = $('#email').val();
-      if (email !== '') {
-        // Send OTP to the user's email here (you need server-side code for this)
 
-        // Hide the email input field and show the OTP input field
-        $('#email').prop('disabled', true);
-        $('#otp-container').show();
-
-        // Change the button text to "Register"
-        $('#otp-button').removeClass('btn-gradient').addClass('btn-register');
-        $('#otp-button .btn-text').text('Register');
-      }
-    });
-  });
-</script>
 <%- include("footer"); -%>

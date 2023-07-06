@@ -28616,3 +28616,8 @@ Course Sidebar
   }
 }
 /*# sourceMappingURL=../maps/style.css.map */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
