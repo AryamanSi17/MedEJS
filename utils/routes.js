@@ -45,7 +45,9 @@ function setRoutes(app) {
     app.get("/course-details-fellowshipininternalmedicine", function(req, res) {
       res.render("course-details-fellowshipininternalmedicine");
     });
-  
+    app.get("/course-details-fellowshipindiabetesmellitus", function(req, res) {
+      res.render("course-details-fellowshipindiabetesmellitus");
+    });
     app.get("/course-details-fellowshipincriticalcare", function(req, res) {
       res.render("course-details-fellowshipincriticalcare");
     });
