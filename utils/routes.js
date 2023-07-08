@@ -51,7 +51,9 @@ function setRoutes(app) {
     app.get("/course-details-fellowshipincriticalcare", function(req, res) {
       res.render("course-details-fellowshipincriticalcare");
     });
-  
+    app.get("/course-details-advanceddiabetesmellitus", function(req, res) {
+      res.render("course-details-advanceddiabetesmellitus");
+    });
     app.get("/course-details-obsgynae", function(req, res) {
       res.render("course-details-obsgynae");
     });
