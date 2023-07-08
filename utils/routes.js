@@ -54,6 +54,9 @@ function setRoutes(app) {
     app.get("/course-details-advanceddiabetesmellitus", function(req, res) {
       res.render("course-details-advanceddiabetesmellitus");
     });
+    app.get("/course-details-professionaldiabetesmellitus", function(req, res) {
+      res.render("course-details-professionaldiabetesmellitus");
+    });
     app.get("/course-details-obsgynae", function(req, res) {
       res.render("course-details-obsgynae");
     });
