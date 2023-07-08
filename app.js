@@ -152,10 +152,10 @@ app.post('/verifyOtp', function(req, res) {
 });
 
 app.post("/register", async (req, res) => {
-  // const username = req.body.username;
-  const email = req.session.email;
   
-  User.register({ username: req.body.username, name: req.body.fullname}, req.body.password, function(err, user) {
+  const email = req.session.username;
+  
+  User.register({name:req.body.fullname,username:req.body.username},req.body.password, function(err, user) {
     if (err) {
       console.log(err);
     } else {
