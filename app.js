@@ -22,7 +22,7 @@ let loggedIn = true;
 const app = express();
 
 app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 app.use(session({
@@ -152,10 +152,10 @@ app.post('/verifyOtp', function(req, res) {
 });
 
 app.post("/register", async (req, res) => {
+  const email = req.body.email;
+  req.session.email = email;
   
-  const email = req.session.username;
-  
-  User.register({name:req.body.fullname,username:req.body.username},req.body.password, function(err, user) {
+  User.register({ username: email, name: req.body.fullname}, req.body.password, function(err, user) {
     if (err) {
       console.log(err);
     } else {
