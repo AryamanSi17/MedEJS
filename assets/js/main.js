@@ -911,7 +911,7 @@
                 var topPos = $(this).scrollTop();
                 // if user scrolls down - show scroll to top button
                 if (topPos > 250) {
-                    $(scrollTop).css('display', 'none');
+                    $(scrollTop).css('display', 'block');
                 } else {
                     $(scrollTop).css('display', 'block');
                 }
