@@ -37,7 +37,9 @@ function setRoutes(app) {
     app.get("/privacy-policy", function(req, res) {
       res.render("privacy-policy");
     });
-  
+    app.get("/terms-conditions", function(req, res) {
+      res.render("terms-conditions");
+    });
     app.get("/admission-guide", function(req, res) {
       res.render("admission-guide");
     });
@@ -66,7 +68,7 @@ function setRoutes(app) {
     });
     app.get("/loginn",function(req,res){
       res.render("loginn");
-    })
+    });
     
   }
   
