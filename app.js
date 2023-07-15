@@ -17,18 +17,23 @@ const sendEmail = require('./utils/email');
 const setRoutes = require('./utils/routes');
 const crypto = require('crypto');
 const emailAuth = require('./utils/emailAuth');
+const MongoStore = require('connect-mongo');
+const { log } = require('console');
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
 const app = express();
 
 app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 app.use(session({
   secret: "global med academy is way to success",
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: true
+
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -116,6 +121,7 @@ let storedOTP = null;
 app.post('/sendOtp',async function(req, res) {
   const email = req.body.email;
   req.session.email = email;
+  console.log(req.session.email)
   const isRegistered = await isEmailRegistered(email);
 
   if (isRegistered==true) {
@@ -152,10 +158,11 @@ app.post('/verifyOtp', function(req, res) {
 });
 
 app.post("/register", async (req, res) => {
-  const email = req.body.email;
+  const email = req.session.email;
   req.session.email = email;
-  
-  User.register({ username: email, name: req.body.fullname}, req.body.password, function(err, user) {
+  console.log(req.session.email)
+  User.register({ username: email, name: req.body.fullname,email: email}, req.body.password, function(err, user) {
+    console.log(req.body.email)
     if (err) {
       console.log(err);
     } else {
