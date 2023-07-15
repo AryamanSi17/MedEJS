@@ -114,7 +114,7 @@ let storedOTP = null;
 
 // Handler for sending OTP
 app.post('/sendOtp',async function(req, res) {
-  const email = req.body.username;
+  const email = req.body.email;
   req.session.email = email;
   const isRegistered = await isEmailRegistered(email);
 
