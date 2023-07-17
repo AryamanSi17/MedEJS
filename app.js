@@ -17,7 +17,7 @@ const sendEmail = require('./utils/email');
 const setRoutes = require('./utils/routes');
 const crypto = require('crypto');
 const emailAuth = require('./utils/emailAuth');
-const MongoStore = require('connect-mongo');
+const LocalStrategy = require("passport-local").Strategy; // Import LocalStrategy
 const { log } = require('console');
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
@@ -33,7 +33,6 @@ app.use(session({
   secret: "global med academy is way to success",
   resave: false,
   saveUninitialized: true
-
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -66,7 +65,15 @@ passport.deserializeUser(function(id, done) {
       done(err, null);
     });
 });
-
+// Configure LocalStrategy
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: "email", // Use "email" as the username field
+    },
+    User.authenticate()
+  )
+);
 app.get("/auth/google",
   passport.authenticate('google', {
     scope: ['profile', 'email']
@@ -85,22 +92,9 @@ app.get("/login", function(req, res) {
   res.render("login");
 });
 
-app.post("/login", function(req, res) {
-  const user = new User({
-    password: req.body.password,
-    name: req.body.name
+app.post("/login", passport.authenticate("local"), function(req, res) {
+    res.render("auth_index");
   });
-
-  req.login(user, function(err) {
-    if (err) {
-      console.log(err);
-    } else {
-      passport.authenticate("local")(req, res, function() {
-        res.render("auth_index");
-      });
-    }
-  });
-});
 
 app.listen(3000, function() {
   console.log("Server started on 3000");
@@ -123,7 +117,12 @@ app.post('/sendOtp',async function(req, res) {
   req.session.email = email;
   console.log(req.session.email)
   const isRegistered = await isEmailRegistered(email);
-
+  req.session.save(err => {
+    if(err) {
+      console.log(err);
+      res.status(500).send('An error occurred during session saving.');
+    } else {
+      console.log(req.session.email)
   if (isRegistered==true) {
     // If the email is already registered, send an alert and do not send the OTP
     res.send('<script>alert("Email already in use!"); window.history.back();</script>');
@@ -140,13 +139,17 @@ app.post('/sendOtp',async function(req, res) {
   // Send a response indicating success
   res.send('<script>alert("OTP sent successfully!"); window.history.back();</script>');
   }
+}
+})
   console.log(isRegistered)
 });
 
 // Handler for verifying OTP
 app.post('/verifyOtp', function(req, res) {
   const enteredOTP = req.body.otp;
-
+  const email=req.body.email
+  req.session.email=email
+  console.log(req.session.email)
   // Verify the entered OTP
   if (storedOTP && enteredOTP === storedOTP) {
     // OTP matches, authentication successful
@@ -160,15 +163,18 @@ app.post('/verifyOtp', function(req, res) {
 app.post("/register", async (req, res) => {
   const email = req.session.email;
   req.session.email = email;
-  console.log(req.session.email)
-  User.register({ username: email, name: req.body.fullname,email: email}, req.body.password, function(err, user) {
-    console.log(req.body.email)
+  console.log(req.session.email);
+  const { fullname, password } = req.body; // Destructure fullname and password
+
+  User.register({ username: email, name: fullname, email: email }, password, function (err, user) {
+    console.log(req.body.email);
     if (err) {
       console.log(err);
     } else {
-      createUserInMoodle(email, req.body.password, req.body.fullname,'.', email)
+      createUserInMoodle(email, password, fullname, '.', email)
         .then(() => {
-          passport.authenticate("local")(req, res, function() {
+          req.session.save();
+          passport.authenticate("local")(req, res, function () {
             res.render("auth_index");
           });
         })
@@ -180,6 +186,7 @@ app.post("/register", async (req, res) => {
     }
   });
 });
+
 async function isEmailRegistered(email) {
   // Use mongoose to query for a user with the provided email
   const user = await User.findOne({ name: email });
@@ -270,3 +277,4 @@ const userId = '15'; // Replace with the actual user ID
 const courseid = '9'; // Replace with the actual Course ID
 // enrollUserInCourse(userId, courseid);
 setRoutes(app);
+
