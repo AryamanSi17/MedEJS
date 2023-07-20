@@ -16,6 +16,7 @@ function setRoutes(app) {
       } else {
         res.render('course-masonry', { loggedIn: false });
       }
+      
     });
   
     app.get("/course-details", function(req, res) {
