@@ -19,6 +19,7 @@ const crypto = require('crypto');
 const emailAuth = require('./utils/emailAuth');
 const LocalStrategy = require("passport-local").Strategy; // Import LocalStrategy
 const { log } = require('console');
+const ccav = require('./utils/ccavenue');
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
 const app = express();
@@ -271,7 +272,62 @@ const enrollUserInCourse = async (userId, courseid) => {
     throw new Error('Failed to enroll user in the course.');
   }
 };
+// Function to generate a random string
+function generateRandomString(length) {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
 
+// Function to generate a unique order ID
+function generateOrderID() {
+  const timestamp = new Date().getTime().toString();
+  const randomSuffix = generateRandomString(4); // Adjust the length of the random suffix as per your requirements
+  return timestamp + randomSuffix;
+}
+
+app.get('/payment', (req, res) => {
+  const orderId = generateOrderID();
+  const amount = 'PAYMENT_AMOUNT';
+
+  // Generate the payment form
+  const paymentForm = ccav.getPaymentForm({
+    order_id: orderId,
+    amount: amount,
+    currency: 'INR',
+    redirect_url: ccav.config.redirect_url,
+    cancel_url: ccav.config.cancel_url,
+    billing_name: 'CUSTOMER_NAME',
+    billing_address: 'CUSTOMER_ADDRESS',
+  });
+
+  // Render the payment form to the user
+  res.send(paymentForm);
+});
+
+app.post('/redirect-url', (req, res) => {
+  // Process the response received from CC Avenue after successful payment
+  const responseData = ccav.getResponseData(req.body);
+
+  // Verify the response using the working key
+  if (ccav.verifyChecksum(responseData)) {
+    // Payment successful, handle the response data accordingly
+    // You may update your database, send notifications, etc.
+    res.send('Payment Successful');
+  } else {
+    // Invalid response, handle the error condition
+    res.send('Payment Failed');
+  }
+});
+
+app.post('/cancel-url', (req, res) => {
+  // Payment canceled or failed, handle the cancellation condition
+  res.send('Payment Canceled');
+});
 // Usage
 const userId = '15'; // Replace with the actual user ID
 const courseid = '9'; // Replace with the actual Course ID
