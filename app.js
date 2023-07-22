@@ -23,18 +23,18 @@ const ccav = require('./utils/ccavenue');
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
 const app = express();
-
+app.use(session({
+  secret: "global med academy is way to success",
+  resave: false,
+  saveUninitialized: true
+}));
 app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-app.use(session({
-  secret: "global med academy is way to success",
-  resave: false,
-  saveUninitialized: true
-}));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -112,53 +112,47 @@ app.get("/logout", (req,res) => {
 // Store generated OTP
 let storedOTP = null;
 
-// Handler for sending OTP
-app.post('/sendOtp',async function(req, res) {
+app.use(express.json()); // Add this middleware to parse JSON in requests
+
+app.post('/sendOtp', async function(req, res) {
   const email = req.body.email;
-  req.session.email = email;
-  console.log(req.session.email)
-  const isRegistered = await isEmailRegistered(email);
-  req.session.save(err => {
-    if(err) {
-      console.log(err);
-      res.status(500).send('An error occurred during session saving.');
-    } else {
-      console.log(req.session.email)
-  if (isRegistered==true) {
-    // If the email is already registered, send an alert and do not send the OTP
-    res.send('<script>alert("Email already in use!"); window.history.back();</script>');
-  } 
-  else
-  {
-  // Generate OTP and send email
-  const otp = emailAuth.generateOTP();
-  emailAuth.sendOTP(email, otp);
 
-  // Store the generated OTP
-  storedOTP = otp;
+  try {
+    const isRegistered = await isEmailRegistered(email);
 
-  // Send a response indicating success
-  res.send('<script>alert("OTP sent successfully!"); window.history.back();</script>');
+    if (isRegistered) {
+      // If the email is already registered, send a JSON response with an error message
+      return res.status(400).json({ success: false, message: "Email already in use." });
+    }
+
+    // Generate OTP and send email
+    const otp = emailAuth.generateOTP();
+    emailAuth.sendOTP(email, otp);
+
+    // Store the generated OTP in the session
+    req.session.otp = otp;
+    req.session.email = email;
+
+    // Send a JSON response indicating success
+    return res.json({ success: true });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ success: false, message: "An error occurred while sending OTP." });
   }
-}
-})
-  console.log(isRegistered)
 });
 
-// Handler for verifying OTP
 app.post('/verifyOtp', function(req, res) {
   const enteredOTP = req.body.otp;
-  const email=req.body.email
-  req.session.email=email
-  console.log(req.session.email)
-  // Verify the entered OTP
-  if (storedOTP && enteredOTP === storedOTP) {
-    // OTP matches, authentication successful
-    res.render('login');
-  } else {
-    // OTP does not match or storedOTP is null, authentication failed
-    res.send('Invalid OTP. Please try again!');
+  const storedOTP = req.session.otp;
+
+  if (!storedOTP || enteredOTP !== storedOTP) {
+    // Invalid OTP or no OTP found in the session
+    return res.json({ success: false });
   }
+
+  // OTP matches, authentication successful
+  // You can redirect the user to the registration page or any other appropriate page
+  return res.json({ success: true });
 });
 
 app.post("/register", async (req, res) => {
@@ -167,7 +161,7 @@ app.post("/register", async (req, res) => {
   console.log(req.session.email);
   const { fullname, password } = req.body; // Destructure fullname and password
 
-  User.register({ username: email, name: fullname, email: email }, password, function (err, user) {
+  User.register({ username: email, name: fullname}, password, function (err, user) {
     console.log(req.body.email);
     if (err) {
       console.log(err);
@@ -328,6 +322,73 @@ app.post('/cancel-url', (req, res) => {
   // Payment canceled or failed, handle the cancellation condition
   res.send('Payment Canceled');
 });
+// CC Avenue Credentials
+const accessCode = 'YOUR_ACCESS_CODE';
+const workingKey = 'YOUR_WORKING_KEY';
+const merchantId = 'YOUR_MERCHANT_ID';
+const redirectUrl = 'YOUR_REDIRECT_URL'; // URL where CC Avenue will redirect after payment
+
+// Payment initiation route
+app.get('/payment', (req, res) => {
+  // Gather payment details from the form or your application
+  const orderAmount = 1000; // Amount in paise (e.g., Rs. 10)
+
+  // Prepare the request parameters for CC Avenue API
+  const data = {
+    merchant_id: merchantId,
+    order_id: 'UNIQUE_ORDER_ID', // You should generate a unique order ID for each transaction
+    currency: 'INR',
+    amount: orderAmount,
+    redirect_url: redirectUrl,
+    cancel_url: redirectUrl,
+    language: 'EN',
+    billing_name: 'Customer Name',
+    billing_address: 'Customer Address',
+    billing_city: 'Customer City',
+    billing_state: 'Customer State',
+    billing_zip: 'Customer ZIP',
+    billing_country: 'India',
+    billing_tel: 'Customer Phone',
+    billing_email: 'customer@example.com',
+    delivery_name: 'Delivery Name',
+    delivery_address: 'Delivery Address',
+    delivery_city: 'Delivery City',
+    delivery_state: 'Delivery State',
+    delivery_zip: 'Delivery ZIP',
+    delivery_country: 'India',
+    delivery_tel: 'Delivery Phone',
+  };
+
+  // Generate secure hash for data integrity (if required by CC Avenue)
+  // You should refer to CC Avenue's documentation for generating the secure hash.
+
+  // Make a POST request to CC Avenue API
+  request.post(
+    'https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction',
+    { form: data },
+    (error, response, body) => {
+      if (error) {
+        // Handle error
+        console.error(error);
+        res.send('Payment initiation failed.');
+      } else {
+        // Redirect the user to the CC Avenue payment page
+        res.send(body); // In a real application, you should use res.redirect()
+      }
+    }
+  );
+});
+
+// Payment response route
+app.post('/payment/response', (req, res) => {
+  // Handle the payment response from CC Avenue
+  // Extract transaction details from req.body and process accordingly
+
+  // For example, you might check if the payment was successful, update your database, etc.
+
+  res.send('Payment response received.');
+});
+
 // Usage
 const userId = '15'; // Replace with the actual user ID
 const courseid = '9'; // Replace with the actual Course ID
