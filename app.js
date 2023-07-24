@@ -20,6 +20,7 @@ const emailAuth = require('./utils/emailAuth');
 const LocalStrategy = require("passport-local").Strategy; // Import LocalStrategy
 const { log } = require('console');
 const ccav = require('./utils/ccavenue');
+const isAuthenticated = require('./utils/authMiddleware');
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
 const app = express();
@@ -51,7 +52,9 @@ function(accessToken, refreshToken, profile, cb) {
 }
 ));
 
-passport.use(User.createStrategy());
+passport.use(new LocalStrategy({
+  usernameField: 'email',
+},User.authenticate()));
 
 passport.serializeUser(function(user, done) {
   done(null, user.id);
@@ -88,8 +91,7 @@ app.get("/auth/google/test",
     res.render('auth_index');
   }
 );
-
-app.get("/login", function(req, res) {
+app.get('/login', isAuthenticated, function(req, res) {
   res.render("login");
 });
 
@@ -144,7 +146,7 @@ app.post('/sendOtp', async function(req, res) {
 app.post('/verifyOtp', function(req, res) {
   const enteredOTP = req.body.otp;
   const storedOTP = req.session.otp;
-
+  const { email, otp } = req.body;
   if (!storedOTP || enteredOTP !== storedOTP) {
     // Invalid OTP or no OTP found in the session
     return res.json({ success: false });
@@ -156,12 +158,13 @@ app.post('/verifyOtp', function(req, res) {
 });
 
 app.post("/register", async (req, res) => {
-  const email = req.session.email;
-  req.session.email = email;
-  console.log(req.session.email);
-  const { fullname, password } = req.body; // Destructure fullname and password
 
-  User.register({ username: email, name: fullname}, password, function (err, user) {
+  const { fullname, password ,email} = req.body; // Destructure fullname and password
+// Make sure the email field is not empty
+if (!email) {
+  return res.status(400).json({ error: "Email is required." });
+}
+  User.register({ username: email, name: fullname,email:email}, password, function (err, user) {
     console.log(req.body.email);
     if (err) {
       console.log(err);
@@ -266,129 +269,6 @@ const enrollUserInCourse = async (userId, courseid) => {
     throw new Error('Failed to enroll user in the course.');
   }
 };
-// Function to generate a random string
-function generateRandomString(length) {
-  let result = '';
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
-
-// Function to generate a unique order ID
-function generateOrderID() {
-  const timestamp = new Date().getTime().toString();
-  const randomSuffix = generateRandomString(4); // Adjust the length of the random suffix as per your requirements
-  return timestamp + randomSuffix;
-}
-
-app.get('/payment', (req, res) => {
-  const orderId = generateOrderID();
-  const amount = 'PAYMENT_AMOUNT';
-
-  // Generate the payment form
-  const paymentForm = ccav.getPaymentForm({
-    order_id: orderId,
-    amount: amount,
-    currency: 'INR',
-    redirect_url: ccav.config.redirect_url,
-    cancel_url: ccav.config.cancel_url,
-    billing_name: 'CUSTOMER_NAME',
-    billing_address: 'CUSTOMER_ADDRESS',
-  });
-
-  // Render the payment form to the user
-  res.send(paymentForm);
-});
-
-app.post('/redirect-url', (req, res) => {
-  // Process the response received from CC Avenue after successful payment
-  const responseData = ccav.getResponseData(req.body);
-
-  // Verify the response using the working key
-  if (ccav.verifyChecksum(responseData)) {
-    // Payment successful, handle the response data accordingly
-    // You may update your database, send notifications, etc.
-    res.send('Payment Successful');
-  } else {
-    // Invalid response, handle the error condition
-    res.send('Payment Failed');
-  }
-});
-
-app.post('/cancel-url', (req, res) => {
-  // Payment canceled or failed, handle the cancellation condition
-  res.send('Payment Canceled');
-});
-// CC Avenue Credentials
-const accessCode = 'YOUR_ACCESS_CODE';
-const workingKey = 'YOUR_WORKING_KEY';
-const merchantId = 'YOUR_MERCHANT_ID';
-const redirectUrl = 'YOUR_REDIRECT_URL'; // URL where CC Avenue will redirect after payment
-
-// Payment initiation route
-app.get('/payment', (req, res) => {
-  // Gather payment details from the form or your application
-  const orderAmount = 1000; // Amount in paise (e.g., Rs. 10)
-
-  // Prepare the request parameters for CC Avenue API
-  const data = {
-    merchant_id: merchantId,
-    order_id: 'UNIQUE_ORDER_ID', // You should generate a unique order ID for each transaction
-    currency: 'INR',
-    amount: orderAmount,
-    redirect_url: redirectUrl,
-    cancel_url: redirectUrl,
-    language: 'EN',
-    billing_name: 'Customer Name',
-    billing_address: 'Customer Address',
-    billing_city: 'Customer City',
-    billing_state: 'Customer State',
-    billing_zip: 'Customer ZIP',
-    billing_country: 'India',
-    billing_tel: 'Customer Phone',
-    billing_email: 'customer@example.com',
-    delivery_name: 'Delivery Name',
-    delivery_address: 'Delivery Address',
-    delivery_city: 'Delivery City',
-    delivery_state: 'Delivery State',
-    delivery_zip: 'Delivery ZIP',
-    delivery_country: 'India',
-    delivery_tel: 'Delivery Phone',
-  };
-
-  // Generate secure hash for data integrity (if required by CC Avenue)
-  // You should refer to CC Avenue's documentation for generating the secure hash.
-
-  // Make a POST request to CC Avenue API
-  request.post(
-    'https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction',
-    { form: data },
-    (error, response, body) => {
-      if (error) {
-        // Handle error
-        console.error(error);
-        res.send('Payment initiation failed.');
-      } else {
-        // Redirect the user to the CC Avenue payment page
-        res.send(body); // In a real application, you should use res.redirect()
-      }
-    }
-  );
-});
-
-// Payment response route
-app.post('/payment/response', (req, res) => {
-  // Handle the payment response from CC Avenue
-  // Extract transaction details from req.body and process accordingly
-
-  // For example, you might check if the payment was successful, update your database, etc.
-
-  res.send('Payment response received.');
-});
-
 // Usage
 const userId = '15'; // Replace with the actual user ID
 const courseid = '9'; // Replace with the actual Course ID

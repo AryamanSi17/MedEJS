@@ -12,7 +12,8 @@ const UserSchema = new Schema({
   googleId: String,
 });
 
-UserSchema.plugin(passportLocalMongoose, { usernameField: 'email' });
+UserSchema.plugin(passportLocalMongoose, {
+  usernameField : "email"});
 UserSchema.plugin(findOrCreate);
 
 const User = mongoose.model('User', UserSchema);
