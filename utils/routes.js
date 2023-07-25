@@ -73,6 +73,7 @@ function setRoutes(app) {
     app.get("/auth_email", function(req, res) {
       res.render("auth_email");
     });
+    
     app.get("/loginn",function(req,res){
       res.render("loginn");
     });
