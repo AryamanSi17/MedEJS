@@ -24,11 +24,6 @@ const isAuthenticated = require('./utils/authMiddleware');
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
 const app = express();
-
-app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
-
 app.use(session({
   secret: "global med academy is way to success",
   resave: false,
@@ -57,13 +52,9 @@ function(accessToken, refreshToken, profile, cb) {
 }
 ));
 
-passport.use(User.createStrategy({
-  usernameField: "email" // Set the username field to "email"
-}, User.authenticate()));
-
-// passport.use(new LocalStrategy({
-//   usernameField: "email" // Set the username field to "email"
-// }, User.authenticate()));
+passport.use(new LocalStrategy({
+  usernameField: 'email',
+},User.authenticate()));
 
 passport.serializeUser(function(user, done) {
   done(null, user.id);
@@ -100,15 +91,12 @@ app.get("/auth/google/test",
     res.render('auth_index');
   }
 );
-
-app.get("/login", function(req, res) {
-  res.render("register");
+app.get('/login', isAuthenticated, function(req, res) {
+  res.render("login");
 });
 
-app.post("/loginn", function(req, res) {
-  const user = new User({
-    password: req.body.password,
-    name: req.body.name
+app.post("/login", passport.authenticate("local"), function(req, res) {
+    res.render("auth_index");
   });
 
 app.listen(3000, function() {
@@ -169,21 +157,15 @@ app.post('/verifyOtp', function(req, res) {
   return res.json({ success: true });
 });
 
-
-
 app.post("/register", async (req, res) => {
-  
-  const email = req.session.username;
 
-  console.log(email);
-
-  const newUser = new User({
-    fullname: req.body.fullname,
-    email: email
-  });
-
-  
-  User.register({name:req.body.fullname,email:email , username: email,},req.body.password, function(err, user) {
+  const { fullname, password ,email} = req.body; // Destructure fullname and password
+// Make sure the email field is not empty
+if (!email) {
+  return res.status(400).json({ error: "Email is required." });
+}
+  User.register({ username: email, name: fullname,email:email}, password, function (err, user) {
+    console.log(req.body.email);
     if (err) {
       console.log(err);
     } else {
@@ -192,6 +174,7 @@ app.post("/register", async (req, res) => {
           req.session.save();
           passport.authenticate("local")(req, res, function () {
             res.render("auth_index");
+            getUserIdFromUsername(email)
           });
         })
         .catch((error) => {
@@ -202,8 +185,6 @@ app.post("/register", async (req, res) => {
     }
   });
 });
-
-// User.plugin(passportLocalMongoose, {usernameField : 'email'});
 
 async function isEmailRegistered(email) {
   // Use mongoose to query for a user with the provided email
@@ -238,13 +219,13 @@ async function createUserInMoodle(username, password, firstname, lastname, email
     throw new Error('Failed to create user in Moodle.');
   }
 }
-const getUserIdFromUsername = async () => {
+const getUserIdFromUsername = async (email) => {
   const formData = new FormData();
   formData.append('moodlewsrestformat', 'json');
   formData.append('wsfunction', 'core_user_get_users_by_field');
   formData.append('wstoken', process.env.MOODLE_TOKEN);
   formData.append('field', 'username');
-  formData.append('values[0]', 'bananaicecream');
+  formData.append('values[0]', email);
 
   try {
     const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
@@ -262,7 +243,7 @@ const getUserIdFromUsername = async () => {
     throw new Error('Failed to retrieve user ID.');
   }
 };
-getUserIdFromUsername();
+
 const enrollUserInCourse = async (userId, courseid) => {
   const formData = new FormData();
   formData.append('moodlewsrestformat', 'json');
@@ -294,4 +275,3 @@ const userId = '15'; // Replace with the actual user ID
 const courseid = '9'; // Replace with the actual Course ID
 // enrollUserInCourse(userId, courseid);
 setRoutes(app);
-
