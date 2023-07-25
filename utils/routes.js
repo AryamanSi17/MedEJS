@@ -74,7 +74,6 @@ function setRoutes(app) {
       res.render("auth_email");
     });
     app.get("/loginn",function(req,res){
-      const email=req.body.email
       res.render("loginn");
     });
     
