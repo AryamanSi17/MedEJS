@@ -174,6 +174,7 @@ if (!email) {
           req.session.save();
           passport.authenticate("local")(req, res, function () {
             res.render("auth_index");
+            getUserIdFromUsername(email)
           });
         })
         .catch((error) => {
@@ -218,13 +219,13 @@ async function createUserInMoodle(username, password, firstname, lastname, email
     throw new Error('Failed to create user in Moodle.');
   }
 }
-const getUserIdFromUsername = async () => {
+const getUserIdFromUsername = async (email) => {
   const formData = new FormData();
   formData.append('moodlewsrestformat', 'json');
   formData.append('wsfunction', 'core_user_get_users_by_field');
   formData.append('wstoken', process.env.MOODLE_TOKEN);
   formData.append('field', 'username');
-  formData.append('values[0]', 'bananaicecream');
+  formData.append('values[0]', email);
 
   try {
     const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
@@ -242,7 +243,7 @@ const getUserIdFromUsername = async () => {
     throw new Error('Failed to retrieve user ID.');
   }
 };
-getUserIdFromUsername();
+
 const enrollUserInCourse = async (userId, courseid) => {
   const formData = new FormData();
   formData.append('moodlewsrestformat', 'json');
