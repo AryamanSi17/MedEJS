@@ -46,7 +46,13 @@ function(accessToken, refreshToken, profile, cb) {
 }
 ));
 
-passport.use(User.createStrategy());
+passport.use(User.createStrategy({
+  usernameField: "email" // Set the username field to "email"
+}, User.authenticate()));
+
+// passport.use(new LocalStrategy({
+//   usernameField: "email" // Set the username field to "email"
+// }, User.authenticate()));
 
 passport.serializeUser(function(user, done) {
   done(null, user.id);
@@ -77,10 +83,10 @@ app.get("/auth/google/test",
 );
 
 app.get("/login", function(req, res) {
-  res.render("login");
+  res.render("register");
 });
 
-app.post("/login", function(req, res) {
+app.post("/loginn", function(req, res) {
   const user = new User({
     password: req.body.password,
     name: req.body.name
@@ -151,11 +157,21 @@ app.post('/verifyOtp', function(req, res) {
   }
 });
 
+
+
 app.post("/register", async (req, res) => {
   
   const email = req.session.username;
+
+  console.log(email);
+
+  const newUser = new User({
+    fullname: req.body.fullname,
+    email: email
+  });
+
   
-  User.register({name:req.body.fullname,username:req.body.username},req.body.password, function(err, user) {
+  User.register({name:req.body.fullname,email:email , username: email,},req.body.password, function(err, user) {
     if (err) {
       console.log(err);
     } else {
@@ -173,6 +189,9 @@ app.post("/register", async (req, res) => {
     }
   });
 });
+
+// User.plugin(passportLocalMongoose, {usernameField : 'email'});
+
 async function isEmailRegistered(email) {
   // Use mongoose to query for a user with the provided email
   const user = await User.findOne({ name: email });
