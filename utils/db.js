@@ -1,10 +1,11 @@
 const mongoose = require("mongoose");
 const passportLocalMongoose = require("passport-local-mongoose");
 const findOrCreate = require('mongoose-findorcreate');
+const { Schema } = mongoose;
 
-mongoose.connect(`${process.env.DB_URL}`);
+mongoose.connect(process.env.DB_URL);
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new Schema({
   name: String,
   email: { type: String, unique: true },
   username: { type: String, unique: true },
@@ -20,7 +21,6 @@ const UserSchema = new mongoose.Schema({
 
 UserSchema.plugin(passportLocalMongoose, { usernameField: 'email', });
 UserSchema.plugin(findOrCreate);
-const User = mongoose.model("User", UserSchema);
 
 
 

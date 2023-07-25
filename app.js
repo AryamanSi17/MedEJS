@@ -6,7 +6,7 @@ const ejs = require("ejs");
 const passportLocalMongoose = require("passport-local-mongoose");
 const passport = require("passport");
 const session = require("express-session");
-const { mongoose, User } = require("./utils/db"); // Import from db.js
+const { mongoose, User, Course } = require("./utils/db"); // Import from db.js
 const nodemailer = require('nodemailer');
 const mongodb = require("mongodb");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -17,6 +17,10 @@ const sendEmail = require('./utils/email');
 const setRoutes = require('./utils/routes');
 const crypto = require('crypto');
 const emailAuth = require('./utils/emailAuth');
+const LocalStrategy = require("passport-local").Strategy; // Import LocalStrategy
+const { log } = require('console');
+const ccav = require('./utils/ccavenue');
+const isAuthenticated = require('./utils/authMiddleware');
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
 const app = express();
@@ -28,8 +32,15 @@ app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use(session({
   secret: "global med academy is way to success",
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: true
 }));
+app.set('view engine', 'ejs');
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -67,7 +78,15 @@ passport.deserializeUser(function(id, done) {
       done(err, null);
     });
 });
-
+// Configure LocalStrategy
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: "email", // Use "email" as the username field
+    },
+    User.authenticate()
+  )
+);
 app.get("/auth/google",
   passport.authenticate('google', {
     scope: ['profile', 'email']
@@ -92,19 +111,8 @@ app.post("/loginn", function(req, res) {
     name: req.body.name
   });
 
-  req.login(user, function(err) {
-    if (err) {
-      console.log(err);
-    } else {
-      passport.authenticate("local")(req, res, function() {
-        res.render("auth_index");
-      });
-    }
-  });
-});
-
 app.listen(3000, function() {
-  console.log("Server started on 3000");
+  console.log("Server started successfully!");
 });
 
 app.get("/logout", (req,res) => {
@@ -118,43 +126,47 @@ app.get("/logout", (req,res) => {
 // Store generated OTP
 let storedOTP = null;
 
-// Handler for sending OTP
-app.post('/sendOtp',async function(req, res) {
+app.use(express.json()); // Add this middleware to parse JSON in requests
+
+app.post('/sendOtp', async function(req, res) {
   const email = req.body.email;
-  req.session.email = email;
-  const isRegistered = await isEmailRegistered(email);
 
-  if (isRegistered==true) {
-    // If the email is already registered, send an alert and do not send the OTP
-    res.send('<script>alert("Email already in use!"); window.history.back();</script>');
-  } 
-  else
-  {
-  // Generate OTP and send email
-  const otp = emailAuth.generateOTP();
-  emailAuth.sendOTP(email, otp);
+  try {
+    const isRegistered = await isEmailRegistered(email);
 
-  // Store the generated OTP
-  storedOTP = otp;
+    if (isRegistered) {
+      // If the email is already registered, send a JSON response with an error message
+      return res.status(400).json({ success: false, message: "Email already in use." });
+    }
 
-  // Send a response indicating success
-  res.send('<script>alert("OTP sent successfully!"); window.history.back();</script>');
+    // Generate OTP and send email
+    const otp = emailAuth.generateOTP();
+    emailAuth.sendOTP(email, otp);
+
+    // Store the generated OTP in the session
+    req.session.otp = otp;
+    req.session.email = email;
+
+    // Send a JSON response indicating success
+    return res.json({ success: true });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ success: false, message: "An error occurred while sending OTP." });
   }
-  console.log(isRegistered)
 });
 
-// Handler for verifying OTP
 app.post('/verifyOtp', function(req, res) {
   const enteredOTP = req.body.otp;
-
-  // Verify the entered OTP
-  if (storedOTP && enteredOTP === storedOTP) {
-    // OTP matches, authentication successful
-    res.render('login');
-  } else {
-    // OTP does not match or storedOTP is null, authentication failed
-    res.send('Invalid OTP. Please try again!');
+  const storedOTP = req.session.otp;
+  const { email, otp } = req.body;
+  if (!storedOTP || enteredOTP !== storedOTP) {
+    // Invalid OTP or no OTP found in the session
+    return res.json({ success: false });
   }
+
+  // OTP matches, authentication successful
+  // You can redirect the user to the registration page or any other appropriate page
+  return res.json({ success: true });
 });
 
 
@@ -175,10 +187,12 @@ app.post("/register", async (req, res) => {
     if (err) {
       console.log(err);
     } else {
-      createUserInMoodle(email, req.body.password, req.body.fullname,'.', email)
+      createUserInMoodle(email, password, fullname, '.', email)
         .then(() => {
-          passport.authenticate("local")(req, res, function() {
+          req.session.save();
+          passport.authenticate("local")(req, res, function () {
             res.render("auth_index");
+            getUserIdFromUsername(email)
           });
         })
         .catch((error) => {
@@ -225,13 +239,13 @@ async function createUserInMoodle(username, password, firstname, lastname, email
     throw new Error('Failed to create user in Moodle.');
   }
 }
-const getUserIdFromUsername = async () => {
+const getUserIdFromUsername = async (email) => {
   const formData = new FormData();
   formData.append('moodlewsrestformat', 'json');
   formData.append('wsfunction', 'core_user_get_users_by_field');
   formData.append('wstoken', process.env.MOODLE_TOKEN);
   formData.append('field', 'username');
-  formData.append('values[0]', 'bananaicecream');
+  formData.append('values[0]', email);
 
   try {
     const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
@@ -249,7 +263,7 @@ const getUserIdFromUsername = async () => {
     throw new Error('Failed to retrieve user ID.');
   }
 };
-getUserIdFromUsername();
+
 const enrollUserInCourse = async (userId, courseid) => {
   const formData = new FormData();
   formData.append('moodlewsrestformat', 'json');
@@ -276,9 +290,9 @@ const enrollUserInCourse = async (userId, courseid) => {
     throw new Error('Failed to enroll user in the course.');
   }
 };
-
 // Usage
 const userId = '15'; // Replace with the actual user ID
 const courseid = '9'; // Replace with the actual Course ID
 // enrollUserInCourse(userId, courseid);
 setRoutes(app);
+

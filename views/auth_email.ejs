@@ -6,34 +6,59 @@
 <br>
 <br>
 <div class="rbt-newsletter-area bg-gradient-6 ptb--50">
+    <!-- Add this to your existing HTML -->
+<div class="rbt-elements-area bg-color-white rbt-section-gap">
     <div class="container">
-        <div class="row g-5 align-items-center">
-            <div class="col-lg-5 col-md-12 col-12">
-                <div class="inner">
-                    <div class="section-title text-center text-lg-start">
-                        <h4 class="title"><strong>Authenticate</strong> <br /> <span class="w-400">your Email</span></h4>
-                    </div>
-                </div>
+      <div class="row justify-content-center">
+        <div class="col-lg-6">
+          <div class="rbt-contact-form contact-form-style-1 max-width-auto">
+            <h3 class="title">Enter Your Email</h3>
+            <form id="otpForm">
+              <div class="form-group">
+                <input name="email" type="email"  required>
+                <label>Email *</label>
+                <span class="focus-border"></span>
+              </div>
+              <div class="form-group">
+                <input name="otp" type="text" required>
+                <label>Verification Code *</label>
+                <span class="focus-border"></span>
+              </div>
+              <div class="form-submit-group">
+                <button type="button" onclick="sendOTP()" class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
+                  <span class="icon-reverse-wrapper">
+                    <span class="btn-text">Send Verification Code</span>
+                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                  </span>
+                </button>
+                <button type="button" onclick="verifyOTP()" style="display: none" class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
+                  <span class="icon-reverse-wrapper">
+                    <span class="btn-text">Verify Email</span>
+                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                  </span>
+                </button>
+              </div>
+            </form>
+            <div id="successMessage" style="display: none">
+              <h4>OTP Sent Successfully!</h4>
+              <p>An OTP has been sent to <span id="email"></span>. Please check your email and enter the code below to verify.</p>
             </div>
-            <div class="col-lg-7 col-md-12 col-12 text-start text-sm-end">
-                <form action="/sendOtp" id="sendOtpForm" class="newsletter-form-1 me-0" method="post">
-                    <input type="email" placeholder="Enter Your E-Email" id="email" name="email">
-                    <button type="submit" class="rbt-btn btn-md btn-gradient hover-icon-reverse">
-                        <span class="icon-reverse-wrapper">
-                    <span class="btn-text">SENT OTP</span>
-                        <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                        <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                        </span>
-                    </button>
-                </form>
+            <div id="errorMessage" style="display: none">
+              <h4>Invalid OTP. Please try again!</h4>
             </div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
+  
 </div>
 <br>
 <br>
 <br>
-<div class="rbt-newsletter-area bg-gradient-6 ptb--50">
+<!-- <div class="rbt-newsletter-area bg-gradient-6 ptb--50">
     <div class="container">
         <div class="row g-5 align-items-center">
             <div class="col-lg-7 col-md-12 col-12 text-start text-sm-end">
@@ -50,17 +75,66 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 <script>
-    document.getElementById('sendOtpForm').addEventListener('submit', function(event) {
-      event.preventDefault(); // Prevent the default form submission
-  
-      var formData = new FormData(this); // Get the form data
-  
-      // Display a simple alert
-      alert('OTP sent successfully!');
-      
-      // Submit the form
-      this.submit();
+  function sendOTP() {
+    const email = document.querySelector('input[name="email"]').value;
+
+    // Send AJAX request to send OTP
+    fetch('/sendOtp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Show success message and hide email input
+        document.getElementById('successMessage').style.display = 'block';
+        document.getElementById('email').textContent = email;
+        document.querySelector('input[name="email"]').disabled = true;
+        document.querySelector('button[onclick="sendOTP()"]').style.display = 'none';
+        document.querySelector('button[onclick="verifyOTP()"]').style.display = 'block';
+      } else {
+        // Show error message
+        document.getElementById('errorMessage').style.display = 'block';
+      }
+    })
+    .catch(error => {
+      console.log('An error occurred:', error);
+      // Show error message
+      document.getElementById('errorMessage').style.display = 'block';
     });
-  </script>
+  }
+
+  function verifyOTP() {
+    const email = document.querySelector('input[name="email"]').value;
+    const otp = document.querySelector('input[name="otp"]').value;
+
+    // Send AJAX request to verify OTP
+    fetch('/verifyOtp', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, otp })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Redirect to the login page
+        window.location.href = '/login'; // Replace '/login' with the appropriate route
+      } else {
+        // Show error message
+        document.getElementById('errorMessage').style.display = 'block';
+      }
+    })
+    .catch(error => {
+      console.log('An error occurred:', error);
+      // Show error message
+      document.getElementById('errorMessage').style.display = 'block';
+    });
+  }
+</script>

@@ -16,6 +16,7 @@ function setRoutes(app) {
       } else {
         res.render('course-masonry', { loggedIn: false });
       }
+      
     });
   
     app.get("/course-details", function(req, res) {
@@ -50,14 +51,20 @@ function setRoutes(app) {
     app.get("/course-details-fellowshipindiabetesmellitus", function(req, res) {
       res.render("course-details-fellowshipindiabetesmellitus");
     });
-    app.get("/course-details-fellowshipincriticalcare", function(req, res) {
-      res.render("course-details-fellowshipincriticalcare");
+    app.get("/course-details-fcc", function(req, res) {
+      res.render("course-details-fcc");
+    });
+    app.get("/course-details-apcc", function(req, res) {
+      res.render("course-details-apcc");
     });
     app.get("/course-details-advanceddiabetesmellitus", function(req, res) {
       res.render("course-details-advanceddiabetesmellitus");
     });
     app.get("/course-details-professionaldiabetesmellitus", function(req, res) {
       res.render("course-details-professionaldiabetesmellitus");
+    });
+    app.get("/course-details-professionalcriticalcare", function(req, res) {
+      res.render("course-details-professionalcriticalcare");
     });
     app.get("/course-details-obsgynae", function(req, res) {
       res.render("course-details-obsgynae");
@@ -68,6 +75,7 @@ function setRoutes(app) {
     });
     
     app.get("/loginn",function(req,res){
+      const email=req.body.email
       res.render("loginn");
     });
     
