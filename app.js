@@ -188,7 +188,7 @@ if (!email) {
 
 async function isEmailRegistered(email) {
   // Use mongoose to query for a user with the provided email
-  const user = await User.findOne({ name: email });
+  const user = await User.findOne({ email: email });
 
   // If a user is found, the email is already registered
   return user != null;
@@ -275,3 +275,4 @@ const userId = '15'; // Replace with the actual user ID
 const courseid = '9'; // Replace with the actual Course ID
 // enrollUserInCourse(userId, courseid);
 setRoutes(app);
+// sendEmail();

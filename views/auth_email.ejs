@@ -77,64 +77,75 @@
     </div>
 </div> -->
 <script>
-  function sendOTP() {
-    const email = document.querySelector('input[name="email"]').value;
+  const emailInput = document.querySelector('input[name="email"]');
+  const otpInput = document.querySelector('input[name="otp"]');
+  const successMessage = document.getElementById('successMessage');
+  const errorMessage = document.getElementById('errorMessage');
+  const sendOTPButton = document.getElementById('sendOTPButton');
+  const verifyOTPButton = document.getElementById('verifyOTPButton');
 
-    // Send AJAX request to send OTP
-    fetch('/sendOtp', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ email })
-    })
-    .then(response => response.json())
-    .then(data => {
+  sendOTPButton.addEventListener('click', sendOTP);
+  verifyOTPButton.addEventListener('click', verifyOTP);
+
+  
+  async function sendOTP() {
+    const email = emailInput.value;
+
+    try {
+      const response = await fetch('/sendOtp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await response.json();
+
       if (data.success) {
-        // Show success message and hide email input
-        document.getElementById('successMessage').style.display = 'block';
+        successMessage.style.display = 'block';
         document.getElementById('email').textContent = email;
-        document.querySelector('input[name="email"]').disabled = true;
-        document.querySelector('button[onclick="sendOTP()"]').style.display = 'none';
-        document.querySelector('button[onclick="verifyOTP()"]').style.display = 'block';
+        emailInput.disabled = true;
+        sendOTPButton.style.display = 'none';
+        verifyOTPButton.style.display = 'block';
       } else {
-        // Show error message
-        document.getElementById('errorMessage').style.display = 'block';
+        showErrorMessage('Failed to send OTP. Please try again.');
       }
-    })
-    .catch(error => {
+    } catch (error) {
       console.log('An error occurred:', error);
-      // Show error message
-      document.getElementById('errorMessage').style.display = 'block';
-    });
+      // showErrorMessage('An error occurred. Please try again later.');
+    }
   }
 
-  function verifyOTP() {
-    const email = document.querySelector('input[name="email"]').value;
-    const otp = document.querySelector('input[name="otp"]').value;
+  async function verifyOTP() {
+    const email = emailInput.value;
+    const otp = otpInput.value;
 
-    // Send AJAX request to verify OTP
-    fetch('/verifyOtp', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ email, otp })
-    })
-    .then(response => response.json())
-    .then(data => {
+    try {
+      const response = await fetch('/verifyOtp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, otp })
+      });
+
+      const data = await response.json();
+
       if (data.success) {
-        // Redirect to the login page
         window.location.href = '/login'; // Replace '/login' with the appropriate route
       } else {
-        // Show error message
-        document.getElementById('errorMessage').style.display = 'block';
+        showErrorMessage('Invalid OTP. Please try again.');
       }
-    })
-    .catch(error => {
+    } catch (error) {
       console.log('An error occurred:', error);
-      // Show error message
-      document.getElementById('errorMessage').style.display = 'block';
-    });
+      showErrorMessage('An error occurred. Please try again later.');
+    }
+  }
+
+  function showErrorMessage(message) {
+    errorMessage.textContent = message;
+    errorMessage.style.display = 'block';
   }
 </script>
+
