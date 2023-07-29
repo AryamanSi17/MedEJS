@@ -85,6 +85,10 @@ function setRoutes(app) {
       const email=req.body.email
       res.render("loginn");
     });
+    app.get("/register",function(req,res){
+      // const email=req.body.email
+      res.render("login");
+    });
     
   }
   
