@@ -69,9 +69,17 @@ function setRoutes(app) {
     app.get("/course-details-obsgynae", function(req, res) {
       res.render("course-details-obsgynae");
     });
-  
+    app.get("/aboutus",function(req,res){
+      res.render("aboutus");
+    })
+    app.get("/404",function(req,res){
+      res.render("404");
+    })
     app.get("/auth_email", function(req, res) {
       res.render("auth_email");
+    });
+    app.get("/faqs", function(req, res) {
+      res.render("faqs");
     });
     app.get("/loginn",function(req,res){
       const email=req.body.email
