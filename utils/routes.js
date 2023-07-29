@@ -45,26 +45,26 @@ function setRoutes(app) {
       res.render("admission-guide");
     });
   
-    app.get("/course-details-fellowshipininternalmedicine", function(req, res) {
-      res.render("course-details-fellowshipininternalmedicine");
+    app.get("/course-details-fellowship-in-internal-medicine", function(req, res) {
+      res.render("course-details-fellowship-in-internal-medicine");
     });
     app.get("/course-details-fellowship-in-diabetes-mellitus", function(req, res) {
-      res.render("course-details-fellowshipindiabetesmellitus");
+      res.render("course-details-fellowship-in-diabetes-mellitus");
     });
     app.get("/course-details-fellowship-in-critical-care", function(req, res) {
-      res.render("course-details-fcc");
+      res.render("course-details-fellowship-in-critical-care");
     });
     app.get("/course-details-advanced-professional-certificate-in-critical-care", function(req, res) {
-      res.render("course-details-apcc");
+      res.render("course-details-advanced-professional-certificate-in-critical-care");
+    });
+    app.get("/course-details-professional-certificate-in-diabetes-management", function(req, res) {
+      res.render("course-details-professional-certificate-in-diabetes-management");
     });
     app.get("/course-details-advanced-professional-certificate-in-diabetes-management", function(req, res) {
-      res.render("course-details-advanceddiabetesmellitus");
+      res.render("course-details-advanced-professional-certificate-in-diabetes-management");
     });
-    app.get("/course-details-advanced-professional-certificate-in-diabetes-management", function(req, res) {
-      res.render("course-details-professionaldiabetesmellitus");
-    });
-    app.get("/course-details-advanced-professional-certificate-in-critical-care", function(req, res) {
-      res.render("course-details-professionalcriticalcare");
+    app.get("/course-details-professional-certificate-in-critical-care", function(req, res) {
+      res.render("course-details-professional-certificate-in-critical-care");
     });
     app.get("/course-details-obsgynae", function(req, res) {
       res.render("course-details-obsgynae");
@@ -85,8 +85,11 @@ function setRoutes(app) {
       const email=req.body.email
       res.render("loginn");
     });
-    
+    app.get("*", function(req, res) {
+      res.render("404");
+    });
   }
+  
   
   module.exports = setRoutes;
   
