@@ -1,0 +1,67 @@
+
+// const UserSchema = new Schema({
+//   name: String,
+//   username: String,
+//   password: String,
+//   googleId: String,
+// });
+
+// UserSchema.plugin(passportLocalMongoose, {
+//   usernameField : "email"});
+// UserSchema.plugin(findOrCreate);
+
+// const User = mongoose.model('User', UserSchema);
+
+userSchema.pre("save", async function (next) {
+  const user = this;
+  if (!user.isModified("password")) return next();
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(user.password, salt);
+    user.password = hash;
+    next();
+  } catch (err) {
+    return next(err);
+  }
+});
+
+passport.use(
+  new LocalStrategy(function (username, password, done) {
+    User.findOne({ username: username }, function (err, user) {
+      if (err) return done(err);
+      if (!user) return done(null, false, { message: "Incorrect username." });
+
+      bcrypt.compare(password, user.password, function (err, isMatch) {
+        if (err) return done(err);
+        if (!isMatch)
+          return done(null, false, { message: "Incorrect password." });
+
+        return done(null, user);
+      });
+    });
+  })
+);
+
+app.post("/login", passport.authenticate("local"), function (req, res) {
+  // If the authentication is successful, this function will be called.
+  // You can add any additional logic here.
+  res.json({ message: "Login successful!" });
+});
+
+app.post("/register", function (req, res) {
+  const newUser = new User({
+    username: req.body.username,
+    fullname: req.body.fullname,
+    password: req.body.password,
+  });
+
+  newUser.save(function (err, user) {
+    if (err) {
+      console.error("Error while registering:", err);
+      res.status(500).json({ error: "Error while registering" });
+    } else {
+      res.json({ message: "Registration successful!" });
+    }
+  });
+});
