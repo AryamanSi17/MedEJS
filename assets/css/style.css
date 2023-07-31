@@ -28521,6 +28521,22 @@ Course Sidebar
   transform: translateX(-50%);
   width: 70%;
 }
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #444;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: none;
+  z-index: 1000;
+}
+
+.toast.show {
+  display: block;
+}
 
 .rbt-buy-now-content .title {
   font-size: 60px;
