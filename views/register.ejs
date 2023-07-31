@@ -1,3 +1,4 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,31 +10,146 @@
   <h1>User Registration</h1>
   <% if (!isVerified) { %>
     <% if (!otpSent) { %>
-      <form action="/send-otp" method="post">
+      <form id="sendOtpForm">
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required>
         <br>
-        <button type="submit">Send OTP</button>
+        <button type="button" onclick="sendOTP()">Send OTP</button>
       </form>
     <% } else { %>
-      <form action="/verify-otp" method="post">
+      <form id="verifyOtpForm">
         <label for="otp">Enter OTP:</label>
         <input type="text" id="otp" name="otp" required>
         <input type="hidden" id="email" name="email" value="<%= email %>">
         <br>
-        <button type="submit">Verify OTP</button>
+        <button type="button" onclick="verifyOTP()">Verify OTP</button>
       </form>
     <% } %>
   <% } else { %>
-    <form action="/register" method="post">
+    <form id="registerForm">
       <label for="fullname">Full Name:</label>
       <input type="text" id="fullname" name="fullname" required>
       <br>
       <label for="password">Password:</label>
       <input type="password" id="password" name="password" required>
       <br>
-      <button type="submit">Register</button>
+      <button type="button" onclick="registerUser()">Register</button>
     </form>
   <% } %>
+
+  <div id="successMessage" style="display: none">
+    <h3>Registration Successful!</h3>
+    <p>Your account has been successfully registered.</p>
+  </div>
+
+  <div id="errorMessage" style="display: none">
+    <h3>Error</h3>
+    <p>An error occurred. Please try again later.</p>
+  </div>
+
+  <script>
+    async function sendOTP() {
+      const emailInput = document.getElementById('email');
+      const email = emailInput.value;
+
+      try {
+        const response = await fetch('/sendOtp', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Display the OTP verification form
+          document.getElementById('otp').value = ''; // Clear the OTP input field
+          document.getElementById('otpForm').style.display = 'block';
+          document.getElementById('sendOtpForm').style.display = 'none';
+        } else {
+          // Show error message
+          showErrorMessage('Failed to send OTP. Please try again.');
+        }
+      } catch (error) {
+        console.log('An error occurred:', error);
+        showErrorMessage('An error occurred. Please try again later.');
+      }
+    }
+
+    async function verifyOTP() {
+      const emailInput = document.getElementById('email');
+      const otpInput = document.getElementById('otp');
+      const email = emailInput.value;
+      const otp = otpInput.value;
+
+      try {
+        const response = await fetch('/verifyOtp', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, otp })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Display the registration form
+          document.getElementById('fullname').value = ''; // Clear the fullname input field
+          document.getElementById('password').value = ''; // Clear the password input field
+          document.getElementById('otpForm').style.display = 'none';
+          document.getElementById('registerForm').style.display = 'block';
+        } else {
+          // Show error message
+          showErrorMessage('Invalid OTP. Please try again.');
+        }
+      } catch (error) {
+        console.log('An error occurred:', error);
+        showErrorMessage('An error occurred. Please try again later.');
+      }
+    }
+
+    async function registerUser() {
+      const emailInput = document.getElementById('email');
+      const fullnameInput = document.getElementById('fullname');
+      const passwordInput = document.getElementById('password');
+
+      const email = emailInput.value;
+      const fullname = fullnameInput.value;
+      const password = passwordInput.value;
+
+      try {
+        const response = await fetch('/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, fullname, password })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Show success message
+          document.getElementById('registerForm').style.display = 'none';
+          document.getElementById('successMessage').style.display = 'block';
+        } else {
+          // Show error message
+          showErrorMessage('Failed to register user. Please try again.');
+        }
+      } catch (error) {
+        console.log('An error occurred:', error);
+        showErrorMessage('An error occurred. Please try again later.');
+      }
+    }
+
+    function showErrorMessage(message) {
+      const errorMessage = document.getElementById('errorMessage');
+      errorMessage.textContent = message;
+      errorMessage.style.display = 'block';
+    }
+  </script>
 </body>
 </html>

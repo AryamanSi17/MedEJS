@@ -19,8 +19,11 @@ const crypto = require('crypto');
 const emailAuth = require('./utils/emailAuth');
 const LocalStrategy = require("passport-local").Strategy; // Import LocalStrategy
 const { log } = require('console');
+const jwt = require('jsonwebtoken');
 const ccav = require('./utils/ccavenue');
 const isAuthenticated = require('./utils/authMiddleware');
+const bcrypt = require('bcrypt');
+const JWT_SECRET = "med ejs is way to success";
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
 const app = express();
@@ -52,32 +55,32 @@ function(accessToken, refreshToken, profile, cb) {
 }
 ));
 
-passport.use(new LocalStrategy({
-  usernameField: 'email',
-},User.authenticate()));
+// passport.use(new LocalStrategy({
+//   usernameField: 'email',
+// },User.authenticate()));
 
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
-});
+// passport.serializeUser(function(user, done) {
+//   done(null, user.id);
+// });
 
-passport.deserializeUser(function(id, done) {
-  User.findById(id)
-    .then(user => {
-      done(null, user);
-    })
-    .catch(err => {
-      done(err, null);
-    });
-});
-// Configure LocalStrategy
-passport.use(
-  new LocalStrategy(
-    {
-      usernameField: "email", // Use "email" as the username field
-    },
-    User.authenticate()
-  )
-);
+// passport.deserializeUser(function(id, done) {
+//   User.findById(id)
+//     .then(user => {
+//       done(null, user);
+//     })
+//     .catch(err => {
+//       done(err, null);
+//     });
+// });
+
+// passport.use(
+//   new LocalStrategy(
+//     {
+//       usernameField: "email",
+//     },
+//     User.authenticate()
+//   )
+// );
 app.get("/auth/google",
   passport.authenticate('google', {
     scope: ['profile', 'email']
@@ -91,18 +94,6 @@ app.get("/auth/google/test",
     res.render('auth_index');
   }
 );
-app.get('/login', isAuthenticated, function(req, res) {
-  res.render("login");
-});
-
-app.post("/login", passport.authenticate("local"), function(req, res) {
-    res.render("auth_index");
-  });
-
-app.listen(3000, function() {
-  console.log("Server started successfully!");
-});
-
 app.get("/logout", (req,res) => {
   req.logout(function(err){
     if (!err) {
@@ -116,65 +107,81 @@ let storedOTP = null;
 
 app.use(express.json()); // Add this middleware to parse JSON in requests
 
-app.post('/sendOtp', async function(req, res) {
-  const email = req.body.email;
+app.post('/sendOtp', async (req, res) => {
+  const { username } = req.body;
 
   try {
-    const isRegistered = await isEmailRegistered(email);
+    // Check if the user exists in the database
+    const user = await User.findOne({username});
 
-    if (isRegistered) {
-      // If the email is already registered, send a JSON response with an error message
-      return res.status(400).json({ success: false, message: "Email already in use." });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    // Generate OTP and send email
-    const otp = emailAuth.generateOTP();
-    emailAuth.sendOTP(email, otp);
+    // Generate a new OTP and update it in the user's record
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.otp = otp;
+    await user.save();
 
-    // Store the generated OTP in the session
-    req.session.otp = otp;
-    req.session.email = email;
+    // Send the OTP to the user via email (you can replace this with a real email service)
+    sendOTP(email, otp);
 
-    // Send a JSON response indicating success
-    return res.json({ success: true });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ success: false, message: "An error occurred while sending OTP." });
+    return res.json({ success: true, message: 'OTP sent successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Something went wrong' });
   }
 });
 
-app.post('/verifyOtp', function(req, res) {
-  const enteredOTP = req.body.otp;
-  const storedOTP = req.session.otp;
+app.post('/verifyOtp', async (req, res) => {
   const { email, otp } = req.body;
-  if (!storedOTP || enteredOTP !== storedOTP) {
-    // Invalid OTP or no OTP found in the session
-    return res.json({ success: false });
-  }
 
-  // OTP matches, authentication successful
-  // You can redirect the user to the registration page or any other appropriate page
-  return res.json({ success: true });
+  try {
+    // Check if the user exists in the database
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Verify the OTP
+    if (user.otp === otp) {
+      user.isVerified = true;
+      await user.save();
+      return res.json({ success: true, message: 'OTP verified successfully' });
+    } else {
+      return res.status(400).json({ success: false, message: 'Invalid OTP' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Something went wrong' });
+  }
 });
 
-app.post("/register", async (req, res) => {
+app.post("/register",async (req,res) => {
+  try {
+    const { username, fullname, password } = req.body;
 
-  const { fullname, password ,email} = req.body; // Destructure fullname and password
-// Make sure the email field is not empty
-if (!email) {
-  return res.status(400).json({ error: "Email is required." });
-}
-  User.register({ username: email, name: fullname,email:email}, password, function (err, user) {
-    console.log(req.body.email);
-    if (err) {
-      console.log(err);
-    } else {
-      createUserInMoodle(email, password, fullname, '.', email)
+    
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(409).json({ error: "User already exists" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // a new user
+    const newUser = new User({ username,fullname, password: hashedPassword });
+    await newUser.save();
+
+    // res.status(201).json({ message: "User registered successfully" });
+    res.render("auth_index");
+    createUserInMoodle(username, password, fullname, '.', username)
         .then(() => {
           req.session.save();
           passport.authenticate("local")(req, res, function () {
             res.render("auth_index");
-            getUserIdFromUsername(email)
+            getUserIdFromUsername(username)
           });
         })
         .catch((error) => {
@@ -182,13 +189,67 @@ if (!email) {
           // Handle the error if necessary
           res.status(500).send("An error occurred during user registration.");
         });
-    }
-  });
+  } catch (error) {
+    console.error("Error while registering:", error);
+    res.status(500).json({ error: "Error while registering" });
+  }
 });
+app.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
 
-async function isEmailRegistered(email) {
+    
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET);
+
+    // res.json({ token });
+    res.render("auth_index");
+  } catch (error) {
+    console.error("Error while logging in:", error);
+    res.status(500).json({ error: "Error while logging in" });
+  }
+});
+const tokens = jwt.sign({ userId: User._id }, JWT_SECRET);
+console.log(tokens);
+app.get("/becometeacher", verifyToken, (req, res) => {
+  // res.json({ message: "You have access to this protected route!" });
+  res.render("becometeacher");
+});
+// Middleware to verify JWT token from the request header
+function verifyToken(req, res, next) {
+ 
+  // const token = req.header("Authorization");
+  const token = tokens;
+  // const headers = {
+  //   Authorization: `Bearer ${token}`,
+  // };
+
+  if (!token) {
+    return res.status(401).json({ error: "Unauthorized - Token missing" });
+  }
+
+  jwt.verify(token, JWT_SECRET, (err, decodedToken) => {
+    if (err) {
+      return res.status(401).json({ error: "Unauthorized - Invalid token" });
+    }
+
+    req.userId = decodedToken.userId;
+    next();
+  });
+}
+async function isEmailRegistered(username) {
   // Use mongoose to query for a user with the provided email
-  const user = await User.findOne({ email: email });
+  const user = await User.findOne({ username: username });
 
   // If a user is found, the email is already registered
   return user != null;
@@ -276,3 +337,8 @@ const courseid = '9'; // Replace with the actual Course ID
 // enrollUserInCourse(userId, courseid);
 setRoutes(app);
 // sendEmail();
+
+
+app.listen(3000, function() {
+  console.log("Server started successfully!");
+});

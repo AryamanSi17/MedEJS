@@ -1,4 +1,5 @@
 function setRoutes(app) {
+  
   app.get("/",function(req,res){
     if(req.isAuthenticated()){
       res.render("auth_index");
@@ -90,10 +91,49 @@ function setRoutes(app) {
       // const email=req.body.email
       res.render("login");
     });
+    
+    app.get("/becometeacher", (req, res) => {
+      res.redirect(301, "/become-teacher");
+    });
+  
+    app.get("/course-details-advanceddiabetesmellitus", (req, res) => {
+      res.redirect(301, "/course-details-advanced-professional-certificate-in-diabetes-management");
+    });
+  
+    app.get("/course-details-apcc", (req, res) => {
+      res.redirect(301, "/course-details-advanced-professional-certificate-in-critical-care");
+    });
+  
+    app.get("/course-details-fcc", (req, res) => {
+      res.redirect(301, "/course-details-fellowship-in-critical-care");
+    });
+  
+    app.get("/course-details-fellowshipindiabetesmellitus", (req, res) => {
+      res.redirect(301, "/course-details-fellowship-in-diabetes-mellitus");
+    });
+  
+    app.get("/course-details-fellowshipininternalmedicine", (req, res) => {
+      res.redirect(301, "/course-details-fellowship-in-internal-medicine");
+    });
+  
+    app.get("/course-details-professionalcriticalcare", (req, res) => {
+      res.redirect(301, "/course-details-professional-certificate-in-critical-care");
+    });
+  
+    app.get("/course-details-professionaldiabetesmellitus", (req, res) => {
+      res.redirect(301, "/course-details-professional-certificate-in-diabetes-management");
+    });
+  
+    app.get("/aboutus", (req, res) => {
+      res.redirect(301, "/about-us");
+    });
+  
+    app.get("/course-details-obsgynae", (req, res) => {
+      res.redirect(301, "/course-details-fellowship-in-obsgynae");
+    });
     app.get("*", function(req, res) {
       res.render("404");
     });
-
   }
   
   
