@@ -54,6 +54,7 @@ function(accessToken, refreshToken, profile, cb) {
   });
 }
 ));
+// lets check fetch
 
 // passport.use(new LocalStrategy({
 //   usernameField: 'email',
