@@ -27,6 +27,13 @@
           <h3 class="title">Register</h3>
           <form action="/register" method="post">
             <div class="form-group">
+              <input name="username" type="text" required>
+              <label>Authenticated Email *</label>
+              <span class="focus-border"></span>
+            </div>
+            <!-- Add a note below the input field -->
+            <p>NOTE: The email you provide here will be used for accessing courses.</p>
+            <div class="form-group">
               <input name="fullname" type="text" required>
               <label>Name *</label>
               <span class="focus-border"></span>
