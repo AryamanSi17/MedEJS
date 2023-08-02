@@ -7,6 +7,22 @@
         j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
         })(window,document,'script','dataLayer','GTM-T4TRGDK');</script>
+    <meta charset="UTF-8">
+    <% if (pageTitle) { %>
+        <title><%= pageTitle %></title>
+    <% } %>
+
+    <% if (metaRobots) { %>
+        <meta name="robots" content="<%= metaRobots %>"/>
+    <% } %>
+
+    <% if (metaKeywords) { %>
+        <meta name="keywords" content="<%= metaKeywords %>">
+    <% } %>
+
+    <% if (ogDescription) { %>
+        <meta property="og:description" content="<%= ogDescription %>">
+    <% } %>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>GlobalMed Academy</title>
