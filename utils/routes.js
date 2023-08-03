@@ -24,7 +24,6 @@ function setRoutes(app) {
     const metaKeywords = 'mall courses view, view all courses, course listings, online course catalog, course directory, course offerings, course categories, course search, explore courses, browse courses onlineedical instructor, medical teacher, apply for medical instructor';
     const ogDescription = '';
     const loggedIn = !!req.user; // Convert req.user to a boolean value
-  
     res.render('course-masonry', { pageTitle, metaRobots, metaKeywords, ogDescription, loggedIn });
   });
   
