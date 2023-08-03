@@ -1,3 +1,4 @@
+const { Course } = require("./db"); 
 function setRoutes(app) {
   
   app.get("/",function(req,res){
@@ -18,16 +19,36 @@ function setRoutes(app) {
   app.get("/data", (req,res) => {
     res.render("data");
   })
-  app.get("/course-masonry", function(req, res) {
+  app.get("/course-masonry", async function(req, res) {
     const pageTitle = 'Professional,Advanced, Fellowship courses';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'mall courses view, view all courses, course listings, online course catalog, course directory, course offerings, course categories, course search, explore courses, browse courses onlineedical instructor, medical teacher, apply for medical instructor';
     const ogDescription = '';
-    const loggedIn = !!req.user; // Convert req.user to a boolean value
-    res.render('course-masonry', { pageTitle, metaRobots, metaKeywords, ogDescription, loggedIn });
+    
+    try {
+      // Fetch all courses from the "courses" collection in the "test" database
+      const courses = await Course.find({});
+  
+      // Prepare an array to hold course details with price information
+      const courseData = [];
+  
+      // Loop through each course and extract relevant information
+      courses.forEach((course) => {
+        const courseDetails = {
+          title: course.title,
+          description: course.description,
+          price: course.price,
+        };
+        courseData.push(courseDetails);
+      });
+      
+      // Pass the course data to the template
+      res.render('course-masonry', { pageTitle, metaRobots, metaKeywords, ogDescription, loggedIn: !!req.user, courseData });
+    } catch (err) {
+      console.error('Error fetching courses:', err);
+      res.status(500).send('Error fetching courses');
+    }
   });
-  
-  
     app.get("/course-details", function(req, res) {
       if (req.user) {
         res.render('course-details', { loggedIn: true });
