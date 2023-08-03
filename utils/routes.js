@@ -72,14 +72,14 @@ function setRoutes(app) {
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
       const metaKeywords = 'fellowship in internal medicine, internal medicine subspecialty, fellowship in general medicine, fellowships of internal medicine, online internal medicine fellowship, fellowship in internal medicine program, general medicine fellowship';
       const ogDescription = 'Internal medicine fellowship help you to become a board-certified subspecialist. Join our fellowship programs and learn more with CPD standards certified course.';
-      res.render('course-details-fellowship-in-diabetes-mellitus', { pageTitle, metaRobots, metaKeywords, ogDescription });
+      res.render('course-details-fellowship-in-internal-medicine', { pageTitle, metaRobots, metaKeywords, ogDescription });
     });
-    app.get("/course-details-fellowship-in-diabetes-mellitus", function(req, res) {
+    app.get("/course-details-fellowship-in-diabetes-management", function(req, res) {
       const pageTitle = 'Fellowship in Diabetes Mellitus Online, Fellowship Courses Diabetology';
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
       const metaKeywords = 'fellowship in diabetology, fellowship in diabetes, fellowship in diabetes mellitus, diabetes fellowship online, diabetes fellowship courses, fellowship in diabetology online, diabetology fellowship online, online fellowship in diabetology, diabetes fellowship for family physician, diabetes fellowship for primary care physicians, diabetes fellowship program, online diabetology fellowship, fellowship in diabetes management program';
       const ogDescription = 'Fellowship in Diabetes Mellitus involves training on comprehensive management of Diabetes Mellitus. Boost your career goal by gaining expertise in diabetology.';
-      res.render('course-details-fellowship-in-diabetes-mellitus', { pageTitle, metaRobots, metaKeywords, ogDescription });
+      res.render('course-details-fellowship-in-diabetes-management', { pageTitle, metaRobots, metaKeywords, ogDescription });
     });
     app.get("/course-details-fellowship-in-critical-care", function(req, res) {
       const pageTitle = 'Fellowship in Critical Care, Intensive Care, Internal Medicine Programs';
@@ -100,7 +100,7 @@ function setRoutes(app) {
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
       const metaKeywords = 'diabetes management, diabetes certificate course, certificate course in diabetology, certificate in diabetes, diabetes certificate course online, certificate course in diabetes management, advanced certificate course in diabetes, certificate in diabetes management, certificate in diabetes mellitus, certificate in diabetology, advanced certificate in diabetes mellitus, advanced diabetes management, certificate course in diabetes mellitus, diabetes certificate program online';
       const ogDescription = 'Professional Diabetes Certificate Course - Join online diabetes certificate course & equips healthcare professionals with the necessary skills and knowledge';
-      res.render('course-details-advanced-professional-certificate-in-diabetes-management', { pageTitle, metaRobots, metaKeywords, ogDescription });
+      res.render('course-details-professional-certificate-in-diabetes-management', { pageTitle, metaRobots, metaKeywords, ogDescription });
     });
     app.get("/course-details-advanced-professional-certificate-in-diabetes-management", function(req, res) {
       const pageTitle = 'Advanced Certificate in Diabetes Mellitus, Diabetology Online';
@@ -114,7 +114,7 @@ function setRoutes(app) {
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
       const metaKeywords = 'professional certificate in emergency medicine, certificate course in critical care medicine, professional certificate in critical care medicine, professional certificate in critical care, professional critical care certificate program';
       const ogDescription = 'Professional Certificate Course in Critical Care Medicine is proposed to impart structured critical care training to MBBS doctors to improve patient management skills.';
-      res.render('course-details-professional-certificate-in-diabetes-management', { pageTitle, metaRobots, metaKeywords, ogDescription });
+      res.render('course-details-professional-certificate-in-critical-care', { pageTitle, metaRobots, metaKeywords, ogDescription });
     });
     app.get("/course-details-obsgynae", function(req, res) {
       res.render("course-details-obsgynae");
@@ -178,7 +178,7 @@ function setRoutes(app) {
     });
   
     app.get("/course-details-fellowshipindiabetesmellitus", (req, res) => {
-      res.redirect(301, "/course-details-fellowship-in-diabetes-mellitus");
+      res.redirect(301, "/course-details-fellowship-in-diabetes-management");
     });
   
     app.get("/course-details-fellowshipininternalmedicine", (req, res) => {
