@@ -5,14 +5,6 @@ const { Schema } = mongoose;
 
 mongoose.connect(process.env.DB_URL);
 
-const courseSchema = new mongoose.Schema({
-  title: String,
-  price: String,
-  // Add other fields as needed
-});
-
-const Course = mongoose.model('Course', courseSchema);
-
 const UserSchema = new Schema({
   fullname: String,
   username: String,
@@ -21,11 +13,10 @@ const UserSchema = new Schema({
 });
 
 // UserSchema.plugin(passportLocalMongoose, {
-//   usernameField: "email"
-// });
-
+//   usernameField : "email"});
 // UserSchema.plugin(findOrCreate);
 
 const User = mongoose.model('User', UserSchema);
 
-module.exports = { Course, User };
+
+module.exports = { mongoose, User};
