@@ -18,6 +18,11 @@ const UserSchema = new Schema({
   username: String,
   password: String,
   googleId: String,
+    // Add form data fields for handling form submissions
+    name: String,
+    phone: String,
+    email: String,
+    course: String,
 });
 
 // UserSchema.plugin(passportLocalMongoose, {
@@ -25,7 +30,17 @@ const UserSchema = new Schema({
 // });
 
 // UserSchema.plugin(findOrCreate);
+// Define a Mongoose Schema for handling form submissions
+const requestSchema = new mongoose.Schema({
+  name: String,
+  phone: String,
+  email: String,
+  course: String,
+});
 
 const User = mongoose.model('User', UserSchema);
 
-module.exports = { Course, User };
+// Create a Mongoose Model for handling form submissions based on the defined schema
+const Request = mongoose.model('Request', requestSchema);
+
+module.exports = { Course, User, Request };

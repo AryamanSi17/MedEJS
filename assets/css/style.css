@@ -28521,22 +28521,6 @@ Course Sidebar
   transform: translateX(-50%);
   width: 70%;
 }
-.toast {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background-color: #444;
-  color: white;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  display: none;
-  z-index: 1000;
-}
-
-.toast.show {
-  display: block;
-}
 
 .rbt-buy-now-content .title {
   font-size: 60px;
@@ -28645,3 +28629,113 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+/* CSS to style the "Request for More Information" button and form */
+.request-button {
+  position: fixed;
+  z-index: 9999; /* Display the button on top of all elements */
+  top: 50%; /* Adjust this value to vertically position the button */
+  right: 3px; /* Adjust this value to control the horizontal position */
+  transform: translateY(-50%);
+  background-color: #007bff;
+  padding: 10px 20px;
+  color: #fff;
+  border-radius: 5px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.request-info {
+  display: none;
+  position: fixed;
+  z-index: 9999; /* Display the form on top of all elements */
+  top: 50%; /* Adjust this value to vertically position the form */
+  right: 20px; /* Adjust this value to control the horizontal position */
+  transform: translateY(-50%);
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.request-info .close-button {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background-color: #ccc;
+  color: #2d2c2c;
+  border: none;
+  width: 83px;
+  height: 43px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.request-info h2 {
+  margin-top: 0;
+}
+
+.request-info label,
+.request-info input,
+.request-info button {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.request-info input[type="text"],
+.request-info input[type="tel"],
+.request-info input[type="email"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.request-info button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Style the button on hover */
+.request-info button:hover {
+  background-color: #0056b3;
+}
+
+/* CSS to style the success message container and animation */
+.success-message {
+  background-color: #4caf50;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* CSS to add a fade-in animation for the success message */
+.success-message-show {
+  animation: fadeIn 1s ease forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* CSS to hide the success message container by default */
+.hidden {
+  display: none;
+}
+

@@ -6,7 +6,7 @@ const ejs = require("ejs");
 const passportLocalMongoose = require("passport-local-mongoose");
 const passport = require("passport");
 const session = require("express-session");
-const { mongoose, User, Course } = require("./utils/db"); // Import from db.js
+const { mongoose, User, Course , Request} = require("./utils/db"); // Import from db.js
 const nodemailer = require('nodemailer');
 const mongodb = require("mongodb");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -287,6 +287,36 @@ const enrollUserInCourse = async (userId, courseid) => {
     throw new Error('Failed to enroll user in the course.');
   }
 };
+
+
+// API endpoint to handle form submission
+app.post('/submitRequestForMore', (req, res) => {
+  const formData = req.body;
+
+  // Create a new Request object with the form data
+  const request = new Request({
+    name: formData.name,
+    phone: formData.phone,
+    email: formData.email,
+    course: formData.course,
+  });
+
+  // Save the form data to MongoDB
+  request.save()
+    .then(() => {
+      console.log('Form data saved to MongoDB:', request);
+       // Send a success message to the client
+       res.send('Form data submitted successfully. Redirecting to the homepage...<meta http-equiv="refresh" content="2;url=/">');
+    
+    })
+    
+    .catch((err) => {
+      console.error('Error saving form data to MongoDB:', err);
+      res.status(500).send('An error occurred while submitting the form, PLease go back !');
+    });
+});
+
+
 // Usage
 const userId = '15'; // Replace with the actual user ID
 const courseid = '9'; // Replace with the actual Course ID
