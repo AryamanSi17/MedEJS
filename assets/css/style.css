@@ -28642,6 +28642,7 @@ input::-webkit-inner-spin-button {
   border-radius: 5px;
   text-align: center;
   cursor: pointer;
+  writing-mode: vertical-rl;
 }
 
 .request-info {
