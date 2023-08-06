@@ -28637,7 +28637,7 @@ input::-webkit-inner-spin-button {
   right: 3px; /* Adjust this value to control the horizontal position */
   transform: translateY(-50%);
   background-color: #007bff;
-  padding: 10px 20px;
+  padding: 6px 10px;
   color: #fff;
   border-radius: 5px;
   text-align: center;
