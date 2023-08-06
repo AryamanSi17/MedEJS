@@ -20,35 +20,29 @@ function setRoutes(app) {
     res.render("data");
   })
   app.get("/course-masonry", async function(req, res) {
-    const pageTitle = 'Professional,Advanced, Fellowship courses';
+    const pageTitle = 'Professional, Advanced, Fellowship courses';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
-    const metaKeywords = 'mall courses view, view all courses, course listings, online course catalog, course directory, course offerings, course categories, course search, explore courses, browse courses onlineedical instructor, medical teacher, apply for medical instructor';
+    const metaKeywords = 'small courses view, view all courses, course listings, online course catalog, course directory, course offerings, course categories, course search, explore courses, browse courses online medical instructor, medical teacher, apply for medical instructor';
     const ogDescription = '';
     
     try {
-      // Fetch all courses from the "courses" collection in the "test" database
-      const courses = await Course.find({});
-  
-      // Prepare an array to hold course details with price information
-      const courseData = [];
-  
-      // Loop through each course and extract relevant information
-      courses.forEach((course) => {
-        const courseDetails = {
-          title: course.title,
-          description: course.description,
-          price: course.price,
-        };
-        courseData.push(courseDetails);
-      });
-      
-      // Pass the course data to the template
-      res.render('course-masonry', { pageTitle, metaRobots, metaKeywords, ogDescription, loggedIn: !!req.user, courseData });
+        // Fetch 20 courses from the "courses" collection in the database
+        const courses = await Course.find({}).limit(20);
+        // Convert courses to a format suitable for the front-end
+        const courseData = courses.map(course => ({
+            title: course.title,
+            description: course.description,
+            price: course.price,
+        }));
+
+        // Pass the course data to the template
+        res.render('course-masonry', { pageTitle, metaRobots, metaKeywords, ogDescription, loggedIn: !!req.user, courseData });
     } catch (err) {
-      console.error('Error fetching courses:', err);
-      res.status(500).send('Error fetching courses');
+        console.error('Error fetching courses:', err);
+        res.status(500).send('Error fetching courses');
     }
-  });
+});
+  
     app.get("/course-details", function(req, res) {
       if (req.user) {
         res.render('course-details', { loggedIn: true });
