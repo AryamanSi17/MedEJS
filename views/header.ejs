@@ -21,26 +21,17 @@
             }
         </script>
     <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
     <% if (pageTitle) { %>
         <title><%= pageTitle %></title>
     <% } %>
-
-    <% if (metaRobots) { %>
-        <meta name="robots" content="<%= metaRobots %>"/>
+        <meta name="robots" content="index, follow" />
+    <% if (ogDescription) { %>
+        <meta name="description" content="<%= ogDescription %>">
     <% } %>
-
     <% if (metaKeywords) { %>
         <meta name="keywords" content="<%= metaKeywords %>">
     <% } %>
-
-    <% if (ogDescription) { %>
-        <meta property="og:description" content="<%= ogDescription %>">
-    <% } %>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>GlobalMed Academy</title>
-    <meta name="robots" content="index, follow" />
-    <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-DC75849QGK"></script>
     <script>
