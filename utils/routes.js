@@ -183,7 +183,7 @@ function setRoutes(app) {
       const metaKeywords = '';
       const ogDescription = '';
       const canonicalLink = 'https://globalmedacademy.com/register';
-      res.render('register', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink });
+      res.render('login', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink });
     });
     
     app.get("/becometeacher", (req, res) => {
