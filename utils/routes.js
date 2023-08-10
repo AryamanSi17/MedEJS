@@ -168,7 +168,8 @@ function setRoutes(app) {
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
       const metaKeywords = 'Fellowship & Certificate Faqs';
       const ogDescription = 'Ask your question regarding our fellowship and certificate programs from our experts.';
-      res.render('faqs', { pageTitle, metaRobots, metaKeywords, ogDescription });
+      const canonicalLink = 'https://globalmedacademy.com/faqs';
+      res.render('faqs', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink });
     });
     app.get("/loginn",function(req,res){
       const email=req.body.email
@@ -181,7 +182,8 @@ function setRoutes(app) {
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
       const metaKeywords = '';
       const ogDescription = '';
-      res.render('login', { pageTitle, metaRobots, metaKeywords, ogDescription });
+      const canonicalLink = 'https://globalmedacademy.com/register';
+      res.render('register', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink });
     });
     
     app.get("/becometeacher", (req, res) => {
