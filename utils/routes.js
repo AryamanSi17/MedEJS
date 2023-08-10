@@ -160,7 +160,8 @@ function setRoutes(app) {
       const metaRobots = '';
       const metaKeywords = '';
       const ogDescription = '';
-      res.render('auth_email', { pageTitle, metaRobots, metaKeywords, ogDescription });
+      const canonicalLink = 'https://globalmedacademy.com/auth_email';
+      res.render('auth_email', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink });
     });
     app.get("/faqs", function(req, res) {
       const pageTitle = 'Frequently Ask Question About Fellowship & Certificate Program';
