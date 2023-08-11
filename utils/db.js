@@ -40,7 +40,15 @@ const requestSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', UserSchema);
 
-// Create a Mongoose Model for handling form submissions based on the defined schema
+
+const FileSchema = new Schema({
+  // originalname: String,
+  name: String,
+  path: String,
+  size: Number,
+})
+
+const FileModel = mongoose.model('File',FileSchema);
 const Request = mongoose.model('Request', requestSchema);
 
-module.exports = { Course, User, Request };
+module.exports = { mongoose, User,FileMode,Requestl};
