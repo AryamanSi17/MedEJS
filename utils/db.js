@@ -18,5 +18,14 @@ const UserSchema = new Schema({
 
 const User = mongoose.model('User', UserSchema);
 
+const FileSchema = new Schema({
+  // originalname: String,
+  name: String,
+  path: String,
+  size: Number,
+})
 
-module.exports = { mongoose, User};
+const FileModel = mongoose.model('File',FileSchema);
+
+
+module.exports = { mongoose, User,FileModel};

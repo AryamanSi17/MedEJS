@@ -24,6 +24,7 @@ const ccav = require('./utils/ccavenue');
 const isAuthenticated = require('./utils/authMiddleware');
 const bcrypt = require('bcrypt');
 const JWT_SECRET = "med ejs is way to success";
+const multer = require('multer');
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
 const app = express();
@@ -338,6 +339,77 @@ const courseid = '9'; // Replace with the actual Course ID
 // enrollUserInCourse(userId, courseid);
 setRoutes(app);
 // sendEmail();
+
+
+// File handaling method by multer
+
+const FileModel = require("./utils/db");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './uploads/tmp/')
+  },
+//   filename: function (req, file, cb) {
+//     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9.pdf)
+//     cb(null, file.filename + '-' + uniqueSuffix)
+//   }
+// })
+
+filename: function (req, file, cb) {
+  
+  const originalName = file.originalname;
+  const timestamp = Date.now();
+  const fileExtension = originalName.split('.').pop(); // Get the file extension
+  cb(null, `${timestamp}-${file.fieldname}.${fileExtension}`);
+},
+});
+
+const upload = multer({ storage: storage })
+
+app.get("/data", (req,res) => {
+  res.render("data");
+})
+
+
+//multer db config starts
+ 
+function uploadAndSaveToDatabase(req, res, next) {
+  upload.array('photu',24)(req, res, function (err) {
+    if (err) {
+      // Handle any upload errors
+      return res.status(500).json({ error: 'File upload failed' });
+    }
+
+    // Create a new document with file information from req.file
+    const { originalname, filename, path, size } = req.file;
+    const fileData = {
+      originalname,
+      filename,
+      path,
+      size,
+      // Add other relevant fields as needed
+    };
+
+    FileModel.create(fileData, function (err, photu) {
+      if (err) {
+        // Handle any database save errors
+        return res.status(500).json({ error: 'Database save failed' });
+      }
+
+      // File information saved successfully
+      res.json({ message: 'File uploaded and saved to the database!' });
+    });
+  });
+}
+
+//  multer config ends here 
+
+app.post("/data",uploadAndSaveToDatabase ,(req,res) => {
+  
+  // res.send("uploaded")
+  res.json({ message: 'File uploaded and saved to the database!' });
+   console.log(req.file);
+})
 
 
 app.listen(3000, function() {
