@@ -1,5 +1,6 @@
 <%- include('header'); -%>
   <!-- Start Slider Area  -->
+  
     <div class="rbt-splash-slider d-flex align-items-center">
         <div class="wrapper">
             <div class="container-fluid">
@@ -757,5 +758,35 @@
             </div>
         </div>
     </div>
+ <!-- Request for More Information button -->
+ <div class="request-button" onclick="toggleForm()">Request for More Information</div>
+
+ <!-- Request for More Information form -->
+ <div id="request-form" class="request-info">
+   <button class="close-button" onclick="toggleForm()">Close</button>
+   <h2>Request for More Information</h2>
+   <form action="/submitRequestForMore" method="post">
+     <label for="name">Name:</label>
+     <input type="text" id="name" name="name" required>
+
+     <label for="phone">Phone number:</label>
+     <input type="tel" id="phone" name="phone" required>
+
+     <label for="email">Email:</label>
+     <input type="email" id="email" name="email" required>
+
+     <label for="course">Course Interested:</label>
+     <input type="text" id="course" name="course" required>
+
+     <button type="submit">Submit</button>
+   </form>
+ </div>
+
+ <script>
+   function toggleForm() {
+     var form = document.getElementById("request-form");
+     form.style.display = form.style.display === "block" ? "none" : "block";
+   }
+ </script>
     <!-- End Testimonial Area  -->
     <%- include('footer'); -%>

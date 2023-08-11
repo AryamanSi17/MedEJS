@@ -26,16 +26,15 @@
         <div class="rbt-contact-form contact-form-style-1 max-width-auto">
           <h3 class="title">Register</h3>
           <form action="/register" method="post">
-            <div class="form-group">
-              <input name="username" type="text" required>
+            <div class="">
+              <input name="username" type="text" required readonly id="authenticatedEmail">
               <label>Authenticated Email *</label>
               <span class="focus-border"></span>
             </div>
-            <!-- Add a note below the input field -->
-            <p>NOTE: The email you provide here will be used for accessing courses.</p>
+            <br>
             <div class="form-group">
               <input name="fullname" type="text" required>
-              <label>Name *</label>
+              <label>Full Name *</label>
               <span class="focus-border"></span>
             </div>
             <div class="form-group">
@@ -90,4 +89,15 @@
     </div>
   </div>
 </div>
+<script>
+  // Fetch the email from localStorage and set it as the value of the "Authenticated Email" input field
+  const authenticatedEmail = localStorage.getItem('email');
+  if (authenticatedEmail) {
+      document.getElementById('authenticatedEmail').value = authenticatedEmail;
+  }
+  document.querySelector('form[action="/register"]').addEventListener('submit', function(event) {
+    localStorage.removeItem('email');
+});
+
+</script>
 <%- include("footer"); -%>

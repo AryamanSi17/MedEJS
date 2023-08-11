@@ -1,151 +1,135 @@
-<%-include ('header'); -%>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<div class="rbt-newsletter-area bg-gradient-6 ptb--50">
-    <!-- Add this to your existing HTML -->
-<div class="rbt-elements-area bg-color-white rbt-section-gap">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-lg-6">
-          <div class="rbt-contact-form contact-form-style-1 max-width-auto">
-            <h3 class="title">Enter Your Email</h3>
-            <form id="otpForm">
-              <div class="form-group">
-                <input name="email" type="email"  required>
-                <label>Email *</label>
-                <span class="focus-border"></span>
-              </div>
-              <div class="form-group">
-                <input name="otp" type="text" required>
-                <label>Verification Code *</label>
-                <span class="focus-border"></span>
-              </div>
-              <div class="form-submit-group">
-                <button type="button" onclick="sendOTP()" class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
-                  <span class="icon-reverse-wrapper">
-                    <span class="btn-text">Send Verification Code</span>
-                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                  </span>
-                </button>
-                <button type="button" onclick="verifyOTP()" style="display: none" class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
-                  <span class="icon-reverse-wrapper">
-                    <span class="btn-text">Verify Email</span>
-                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                  </span>
-                </button>
-              </div>
-            </form>
-            <div id="successMessage" style="display: none">
-              <h4>OTP Sent Successfully!</h4>
-              <p>An OTP has been sent to <span id="email"></span>. Please check your email and enter the code below to verify.</p>
-            </div>
-            <div id="errorMessage" style="display: none">
-              <h4>Invalid OTP. Please try again!</h4>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-</div>
-<br>
-<br>
-<br>
-<!-- <div class="rbt-newsletter-area bg-gradient-6 ptb--50">
-    <div class="container">
-        <div class="row g-5 align-items-center">
-            <div class="col-lg-7 col-md-12 col-12 text-start text-sm-end">
-                <form action="/verifyOtp" class="newsletter-form-1 me-0" method="post">
-                    <input type="number" placeholder="Enter OTP" name="otp">
-                    <button type="submit" class="rbt-btn btn-md btn-gradient hover-icon-reverse">
-                        <span class="icon-reverse-wrapper">
-                    <span class="btn-text">Submit</span>
-                        <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                        <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                        </span>
-                    </button>
-                </form>
+    <%-include ('header'); -%>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="rbt-newsletter-area bg-gradient-6 ptb--50">
+        <div class="rbt-elements-area bg-color-white rbt-section-gap">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-6">
+                        <div class="rbt-contact-form contact-form-style-1 max-width-auto">
+                            <h3 class="title">Enter Your Email</h3>
+                            <form id="otpForm">
+                                <div class="form-group">
+                                    <input name="email" type="email" required>
+                                    <label>Email *</label>
+                                    <span class="focus-border"></span>
+                                    <input type="hidden" name="hidden_email" id="hidden_email">
+                                </div>
+                                <div class="form-group">
+                                    <input name="otp" type="text" required>
+                                    <label>Verification Code *</label>
+                                    <span class="focus-border"></span>
+                                </div>
+                                <div class="form-submit-group">
+                                    <button type="button" onclick="sendOTP()" class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
+                                        <span class="icon-reverse-wrapper">
+                                            <span class="btn-text">Send Verification Code</span>
+                                            <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                                            <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                                        </span>
+                                    </button>
+                                    <button type="button" onclick="verifyOTP()" style="display: none" id="verifyButton" class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
+                                        <span class="icon-reverse-wrapper">
+                                            <span class="btn-text">Verify Email</span>
+                                            <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                                            <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                                        </span>
+                                    </button>
+                                </div>
+                            </form>
+                            <div id="loadingSpinner" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(255,255,255,0.8); z-index:9999;">
+                                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
+                                <img src="../assets/animations/loadingGif.gif" alt="Loading...">
+                                </div>
+                            </div>                        
+                            <div id="successMessage" style="display: none">
+                                <h4>OTP Sent Successfully!</h4>
+                                <p>An OTP has been sent to <span id="email"></span>. Please check your email and enter the code below to verify.</p>
+                            </div>
+                            <div id="errorMessage" style="display: none">
+                                <h4>Invalid OTP. Please try again!</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div> -->
-<script>
-  const emailInput = document.querySelector('input[name="email"]');
-  const otpInput = document.querySelector('input[name="otp"]');
-  const successMessage = document.getElementById('successMessage');
-  const errorMessage = document.getElementById('errorMessage');
-  const sendOTPButton = document.getElementById('sendOTPButton');
-  const verifyOTPButton = document.getElementById('verifyOTPButton');
-
-  sendOTPButton.addEventListener('click', sendOTP);
-  verifyOTPButton.addEventListener('click', verifyOTP);
-
-  
-  async function sendOTP() {
-    const email = emailInput.value;
-
-    try {
-      const response = await fetch('/sendOtp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email })
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        successMessage.style.display = 'block';
-        document.getElementById('email').textContent = email;
-        emailInput.disabled = true;
-        sendOTPButton.style.display = 'none';
-        verifyOTPButton.style.display = 'block';
-      } else {
-        showErrorMessage('Failed to send OTP. Please try again.');
-      }
-    } catch (error) {
-      console.log('An error occurred:', error);
-      // showErrorMessage('An error occurred. Please try again later.');
-    }
-  }
-
-  async function verifyOTP() {
-    const email = emailInput.value;
-    const otp = otpInput.value;
-
-    try {
-      const response = await fetch('/verifyOtp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, otp })
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        window.location.href = '/login'; // Replace '/login' with the appropriate route
-      } else {
-        showErrorMessage('Invalid OTP. Please try again.');
-      }
-    } catch (error) {
-      console.log('An error occurred:', error);
-      showErrorMessage('An error occurred. Please try again later.');
-    }
-  }
-
-  function showErrorMessage(message) {
-    errorMessage.textContent = message;
-    errorMessage.style.display = 'block';
-  }
-</script>
-
+    <br>
+    <br>
+    <br>
+    <div id="toast" class="toast">
+    <div id="toast-message"></div>
+    </div>
+    <script>
+        const emailInput = document.querySelector('input[name="email"]');
+        const hiddenEmailInput = document.querySelector('input[name="hidden_email"]');
+    
+        emailInput.addEventListener('input', function() {
+            hiddenEmailInput.value = emailInput.value;
+        });
+    
+        function sendOTP() {
+            const email = document.querySelector('input[name="email"]').value;
+            
+            // Show the loading spinner
+            document.querySelector('#loadingSpinner').style.display = 'block';
+    
+            fetch('/send-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide the loading spinner
+                document.querySelector('#loadingSpinner').style.display = 'none';
+                
+                
+                if (data.message === 'OTP sent successfully') {
+                    document.querySelector('button[onclick="sendOTP()"]').style.display = 'none';
+                    document.querySelector('#successMessage').style.display = 'block';
+                    document.querySelector('#successMessage #email').textContent = email;
+                    document.querySelector('#verifyButton').style.display = 'block';
+                } else {
+                    document.querySelector('#errorMessage').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                // Hide the loading spinner in case of an error
+                document.querySelector('#loadingSpinner').style.display = 'none';
+                console.error('There was an error sending the OTP:', error);
+            });
+        }
+    
+        function verifyOTP() {
+            const email = document.querySelector('input[name="email"]').value;
+            const otp = document.querySelector('input[name="otp"]').value;
+    
+            fetch('/verify-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, otp }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === 'OTP verified successfully') {
+                    // Redirect or update the user interface as needed
+                    localStorage.setItem('email', email);
+                    window.location.href = '/register';
+                } else {
+                    document.querySelector('#errorMessage').style.display = 'block';
+                }
+            })
+            .catch(error => console.error('There was an error verifying the OTP:', error));
+        }
+    </script>
+    

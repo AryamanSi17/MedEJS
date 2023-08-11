@@ -6,7 +6,7 @@ const ejs = require("ejs");
 const passportLocalMongoose = require("passport-local-mongoose");
 const passport = require("passport");
 const session = require("express-session");
-const { mongoose, User, Course } = require("./utils/db"); // Import from db.js
+const { mongoose, User, Course , Request} = require("./utils/db"); // Import from db.js
 const nodemailer = require('nodemailer');
 const mongodb = require("mongodb");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -36,13 +36,9 @@ app.use(session({
 app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
-
-
 app.use(passport.initialize());
 app.use(passport.session());
-
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
@@ -55,34 +51,6 @@ function(accessToken, refreshToken, profile, cb) {
   });
 }
 ));
-// lets check fetch
-
-// passport.use(new LocalStrategy({
-//   usernameField: 'email',
-// },User.authenticate()));
-
-// passport.serializeUser(function(user, done) {
-//   done(null, user.id);
-// });
-
-// passport.deserializeUser(function(id, done) {
-//   User.findById(id)
-//     .then(user => {
-//       done(null, user);
-//     })
-//     .catch(err => {
-//       done(err, null);
-//     });
-// });
-
-// passport.use(
-//   new LocalStrategy(
-//     {
-//       usernameField: "email",
-//     },
-//     User.authenticate()
-//   )
-// );
 app.get("/auth/google",
   passport.authenticate('google', {
     scope: ['profile', 'email']
@@ -109,73 +77,17 @@ let storedOTP = null;
 
 app.use(express.json()); // Add this middleware to parse JSON in requests
 
-app.post('/sendOtp', async (req, res) => {
-  const { username } = req.body;
-
-  try {
-    // Check if the user exists in the database
-    const user = await User.findOne({username});
-
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
-    }
-
-    // Generate a new OTP and update it in the user's record
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    user.otp = otp;
-    await user.save();
-
-    // Send the OTP to the user via email (you can replace this with a real email service)
-    sendOTP(email, otp);
-
-    return res.json({ success: true, message: 'OTP sent successfully' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Something went wrong' });
-  }
-});
-
-app.post('/verifyOtp', async (req, res) => {
-  const { email, otp } = req.body;
-
-  try {
-    // Check if the user exists in the database
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
-    }
-
-    // Verify the OTP
-    if (user.otp === otp) {
-      user.isVerified = true;
-      await user.save();
-      return res.json({ success: true, message: 'OTP verified successfully' });
-    } else {
-      return res.status(400).json({ success: false, message: 'Invalid OTP' });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Something went wrong' });
-  }
-});
-
 app.post("/register",async (req,res) => {
   try {
-    const { username, fullname, password } = req.body;
-
-    
+    const { username, fullname, password } = req.body;    
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(409).json({ error: "User already exists" });
     }
-
     const hashedPassword = await bcrypt.hash(password, 10);
-
     // a new user
     const newUser = new User({ username,fullname, password: hashedPassword });
     await newUser.save();
-
     // res.status(201).json({ message: "User registered successfully" });
     res.render("auth_index");
     createUserInMoodle(username, password, fullname, '.', username)
@@ -244,7 +156,6 @@ function verifyToken(req, res, next) {
     if (err) {
       return res.status(401).json({ error: "Unauthorized - Invalid token" });
     }
-
     req.userId = decodedToken.userId;
     next();
   });
@@ -306,6 +217,50 @@ const getUserIdFromUsername = async (email) => {
     throw new Error('Failed to retrieve user ID.');
   }
 };
+const otps = {};
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'info@globalmedacademy.com',
+        pass: process.env.EMAIL_PASS
+    }
+});
+
+app.post('/send-otp', (req, res) => {
+    const email = req.body.email;
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    otps[email] = otp;
+
+    const mailOptions = {
+        from:'info@globalmedacademy.com',
+        to: email,
+        subject: 'Your Verification Code',
+        text: `Your verification code is ${otp}`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.log(error);
+            res.status(500).json({ message: 'Failed to send OTP' });
+        } else {
+            console.log('Email sent: ' + info.response);
+            res.status(200).json({ message: 'OTP sent successfully' });
+        }
+    });
+});
+
+app.post('/verify-otp', (req, res) => {
+    const email = req.body.email;
+    const userOtp = req.body.otp;
+
+    if (otps[email] === parseInt(userOtp, 10)) {
+        delete otps[email];
+        res.status(200).json({ message: 'OTP verified successfully' });
+    } else {
+        res.status(400).json({ message: 'Invalid OTP. Please try again!' });
+    }
+});
 
 const enrollUserInCourse = async (userId, courseid) => {
   const formData = new FormData();
@@ -333,6 +288,36 @@ const enrollUserInCourse = async (userId, courseid) => {
     throw new Error('Failed to enroll user in the course.');
   }
 };
+
+
+// API endpoint to handle form submission
+app.post('/submitRequestForMore', (req, res) => {
+  const formData = req.body;
+
+  // Create a new Request object with the form data
+  const request = new Request({
+    name: formData.name,
+    phone: formData.phone,
+    email: formData.email,
+    course: formData.course,
+  });
+
+  // Save the form data to MongoDB
+  request.save()
+    .then(() => {
+      console.log('Form data saved to MongoDB:', request);
+       // Send a success message to the client
+       res.send('Form data submitted successfully. Redirecting to the homepage...<meta http-equiv="refresh" content="2;url=/">');
+    
+    })
+    
+    .catch((err) => {
+      console.error('Error saving form data to MongoDB:', err);
+      res.status(500).send('An error occurred while submitting the form, PLease go back !');
+    });
+});
+
+
 // Usage
 const userId = '15'; // Replace with the actual user ID
 const courseid = '9'; // Replace with the actual Course ID
@@ -410,6 +395,7 @@ app.post("/data",uploadAndSaveToDatabase ,(req,res) => {
   res.json({ message: 'File uploaded and saved to the database!' });
    console.log(req.file);
 })
+
 
 
 app.listen(3000, function() {
