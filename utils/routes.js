@@ -23,22 +23,11 @@ function setRoutes(app) {
     const metaKeywords = 'small courses view, view all courses, course listings, online course catalog, course directory, course offerings, course categories, course search, explore courses, browse courses online medical instructor, medical teacher, apply for medical instructor';
     const ogDescription = '';
     const canonicalLink = 'https://globalmedacademy.com/course-masonry';
-    try {
-        // Fetch 20 courses from the "courses" collection in the database
-        const courses = await Course.find({}).limit(20);
-        // Convert courses to a format suitable for the front-end
-        const courseData = courses.map(course => ({
-            title: course.title,
-            description: course.description,
-            price: course.price,
-        }));
-
-        // Pass the course data to the template
-        res.render('course-masonry', { pageTitle, metaRobots, metaKeywords, ogDescription, loggedIn: !!req.user, courseData, canonicalLink });
-    } catch (err) {
-        console.error('Error fetching courses:', err);
-        res.status(500).send('Error fetching courses');
-    }
+    if (req.isAuthenticated()) {
+      res.render('auth_index', { pageTitle, metaRobots, metaKeywords, ogDescription,canonicalLink });
+  } else {
+      res.render('index', { pageTitle, metaRobots, metaKeywords, ogDescription,canonicalLink });
+  }
 });
   
     app.get("/course-details", function(req, res) {
@@ -172,8 +161,12 @@ function setRoutes(app) {
       res.render('faqs', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink });
     });
     app.get("/loginn",function(req,res){
-      const email=req.body.email
-      res.render("loginn");
+      const pageTitle = 'Login';
+      const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+      const metaKeywords = '';
+      const ogDescription = '';
+      const canonicalLink = 'https://globalmedacademy.com/loginn';
+      res.render('loginn', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink });
     });
 
     app.get("/register",function(req,res){

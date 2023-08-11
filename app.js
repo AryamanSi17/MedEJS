@@ -126,7 +126,7 @@ app.post("/login", async (req, res) => {
     const token = jwt.sign({ userId: user._id }, JWT_SECRET);
 
     // res.json({ token });
-    res.render("auth_index");
+    res.render("auth_index",{username:username});
   } catch (error) {
     console.error("Error while logging in:", error);
     res.status(500).json({ error: "Error while logging in" });
