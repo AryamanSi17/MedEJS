@@ -6,7 +6,7 @@ const ejs = require("ejs");
 const passportLocalMongoose = require("passport-local-mongoose");
 const passport = require("passport");
 const session = require("express-session");
-const { mongoose, User, Course , Request} = require("./utils/db"); // Import from db.js
+const { mongoose, User, Course, Request } = require("./utils/db"); // Import from db.js
 const nodemailer = require('nodemailer');
 const mongodb = require("mongodb");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -20,7 +20,7 @@ const emailAuth = require('./utils/emailAuth');
 const LocalStrategy = require("passport-local").Strategy; // Import LocalStrategy
 const { log } = require('console');
 const jwt = require('jsonwebtoken');
-const ccav = require('./utils/ccavenue');
+const ccavenue = require('./utils/ccavenue');
 const isAuthenticated = require('./utils/authMiddleware');
 const bcrypt = require('bcrypt');
 const JWT_SECRET = "med ejs is way to success";
@@ -52,41 +52,44 @@ passport.use(new GoogleStrategy({
   callbackURL: "https://globalmedacademy.com/auth/google/test",
   userProfileURL: "https://www.googleapis.com/oauth2/v2/userinfo"
 },
-// function(accessToken, refreshToken, profile, cb) {
-//   User.findOrCreate({ googleId: profile.id }, function (err, user) {
-//     return cb(err, user);
-//   });
-// }
-// ));
+  // function(accessToken, refreshToken, profile, cb) {
+  //   User.findOrCreate({ googleId: profile.id }, function (err, user) {
+  //     return cb(err, user);
+  //   });
+  // }
+  // ));
 
-// finorcreate logic starts
+  // finorcreate logic starts
 
-async (accessToken, refreshToken, profile, done) => {
-  try {
+  async (accessToken, refreshToken, profile, done) => {
+    try {
       const user = await findOrCreateUser(profile);
       return done(null, user);
-  } catch (error) {
+    } catch (error) {
       return done(error, null);
-  }
-}));
+    }
+  }));
 
 async function findOrCreateUser(profile) {
   const existingUser = await User.findOne({ googleId: profile.id });
 
   if (existingUser) {
-      return existingUser;
+    return existingUser;
   } else {
-      const newUser = new User({
-          googleId: profile.id,
-          displayName: profile.displayName,
-          // Set other fields as needed
-      });
+    const newUser = new User({
+      googleId: profile.id,
+      displayName: profile.displayName,
+      // Set other fields as needed
+    });
 
-      return newUser.save();
-}
+    return newUser.save();
+  }
 };
 
 
+app.get('/pay', ccavenue.initiatePayment);
+app.post('/payment-response', ccavenue.handlePaymentResponse);
+app.get('/payment-cancelled', ccavenue.handlePaymentCancellation);
 
 
 
@@ -100,7 +103,7 @@ app.get("/auth/google",
 
 app.get("/auth/google/test",
   passport.authenticate('google', { failureRedirect: '/login' }),
-  function(req, res) {
+  function (req, res) {
     // Successful authentication, redirect home.
     res.render('auth_index');
   }
@@ -111,13 +114,13 @@ app.get('/logout', (req, res) => {
 
   // Destroy the session
   req.session.destroy((err) => {
-      if (err) {
-          console.error("Error destroying session:", err);
-          return res.status(500).send("Error logging out");
-      }
+    if (err) {
+      console.error("Error destroying session:", err);
+      return res.status(500).send("Error logging out");
+    }
 
-      // Redirect to homepage or login page
-      res.redirect('/');
+    // Redirect to homepage or login page
+    res.redirect('/');
   });
 });
 
@@ -128,7 +131,7 @@ let storedOTP = null;
 app.use(express.json()); // Add this middleware to parse JSON in requests
 app.post("/register", async (req, res) => {
   try {
-    const { username, fullname, password } = req.body;    
+    const { username, fullname, password } = req.body;
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(409).json({ error: "User already exists" });
@@ -142,17 +145,17 @@ app.post("/register", async (req, res) => {
     res.cookie('authToken', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // Cookie will expire after 24 hours
 
     createUserInMoodle(username, password, fullname, '.', username)
-        .then(() => {
-          req.session.save();
-          passport.authenticate("local")(req, res, function () {
-            res.render("auth_index", { username: username });
-            getUserIdFromUsername(username);
-          });
-        })
-        .catch((error) => {
-          console.error(error);
-          res.status(500).send("An error occurred during user registration.");
+      .then(() => {
+        req.session.save();
+        passport.authenticate("local")(req, res, function () {
+          res.render("auth_index", { username: username });
+          getUserIdFromUsername(username);
         });
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).send("An error occurred during user registration.");
+      });
   } catch (error) {
     console.error("Error while registering:", error);
     res.status(500).json({ error: "Error while registering" });
@@ -196,7 +199,7 @@ app.get("/becometeacher", verifyToken, (req, res) => {
 });
 // Middleware to verify JWT token from the request header
 function verifyToken(req, res, next) {
- 
+
   // const token = req.header("Authorization");
   const token = tokens;
   // const headers = {
@@ -275,46 +278,46 @@ const getUserIdFromUsername = async (email) => {
 const otps = {};
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'info@globalmedacademy.com',
-        pass: process.env.EMAIL_PASS
-    }
+  service: 'gmail',
+  auth: {
+    user: 'info@globalmedacademy.com',
+    pass: process.env.EMAIL_PASS
+  }
 });
 
 app.post('/send-otp', (req, res) => {
-    const email = req.body.email;
-    const otp = Math.floor(100000 + Math.random() * 900000);
-    otps[email] = otp;
+  const email = req.body.email;
+  const otp = Math.floor(100000 + Math.random() * 900000);
+  otps[email] = otp;
 
-    const mailOptions = {
-        from:'info@globalmedacademy.com',
-        to: email,
-        subject: 'Your Verification Code',
-        text: `Your verification code is ${otp}`
-    };
+  const mailOptions = {
+    from: 'info@globalmedacademy.com',
+    to: email,
+    subject: 'Your Verification Code',
+    text: `Your verification code is ${otp}`
+  };
 
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.log(error);
-            res.status(500).json({ message: 'Failed to send OTP' });
-        } else {
-            console.log('Email sent: ' + info.response);
-            res.status(200).json({ message: 'OTP sent successfully' });
-        }
-    });
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log(error);
+      res.status(500).json({ message: 'Failed to send OTP' });
+    } else {
+      console.log('Email sent: ' + info.response);
+      res.status(200).json({ message: 'OTP sent successfully' });
+    }
+  });
 });
 
 app.post('/verify-otp', (req, res) => {
-    const email = req.body.email;
-    const userOtp = req.body.otp;
+  const email = req.body.email;
+  const userOtp = req.body.otp;
 
-    if (otps[email] === parseInt(userOtp, 10)) {
-        delete otps[email];
-        res.status(200).json({ message: 'OTP verified successfully' });
-    } else {
-        res.status(400).json({ message: 'Invalid OTP. Please try again!' });
-    }
+  if (otps[email] === parseInt(userOtp, 10)) {
+    delete otps[email];
+    res.status(200).json({ message: 'OTP verified successfully' });
+  } else {
+    res.status(400).json({ message: 'Invalid OTP. Please try again!' });
+  }
 });
 
 const enrollUserInCourse = async (userId, courseid) => {
@@ -361,11 +364,11 @@ app.post('/submitRequestForMore', (req, res) => {
   request.save()
     .then(() => {
       console.log('Form data saved to MongoDB:', request);
-       // Send a success message to the client
-       res.send('Form data submitted successfully. Redirecting to the homepage...<meta http-equiv="refresh" content="2;url=/">');
-    
+      // Send a success message to the client
+      res.send('Form data submitted successfully. Redirecting to the homepage...<meta http-equiv="refresh" content="2;url=/">');
+
     })
-    
+
     .catch((err) => {
       console.error('Error saving form data to MongoDB:', err);
       res.status(500).send('An error occurred while submitting the form, PLease go back !');
@@ -389,32 +392,32 @@ const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, './uploads/tmp/')
   },
-//   filename: function (req, file, cb) {
-//     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9.pdf)
-//     cb(null, file.filename + '-' + uniqueSuffix)
-//   }
-// })
+  //   filename: function (req, file, cb) {
+  //     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9.pdf)
+  //     cb(null, file.filename + '-' + uniqueSuffix)
+  //   }
+  // })
 
-filename: function (req, file, cb) {
-  
-  const originalName = file.originalname;
-  const timestamp = Date.now();
-  const fileExtension = originalName.split('.').pop(); // Get the file extension
-  cb(null, `${timestamp}-${file.fieldname}.${fileExtension}`);
-},
+  filename: function (req, file, cb) {
+
+    const originalName = file.originalname;
+    const timestamp = Date.now();
+    const fileExtension = originalName.split('.').pop(); // Get the file extension
+    cb(null, `${timestamp}-${file.fieldname}.${fileExtension}`);
+  },
 });
 
 const upload = multer({ storage: storage })
 
-app.get("/data", (req,res) => {
+app.get("/data", (req, res) => {
   res.render("data");
 })
 
 
 //multer db config starts
- 
+
 function uploadAndSaveToDatabase(req, res, next) {
-  upload.array('photu',24)(req, res, function (err) {
+  upload.array('photu', 24)(req, res, function (err) {
     if (err) {
       // Handle any upload errors
       return res.status(500).json({ error: 'File upload failed' });
@@ -444,12 +447,14 @@ function uploadAndSaveToDatabase(req, res, next) {
 
 //  multer config ends here 
 
-app.post("/data",uploadAndSaveToDatabase ,(req,res) => {
+
+
+app.post("/data", uploadAndSaveToDatabase, (req, res) => {
   // res.send("uploaded")
   res.json({ message: 'File uploaded and saved to the database!' });
-   console.log(req.file);
+  console.log(req.file);
 });
 
-app.listen(3000, function() {
+app.listen(3000, function () {
   console.log("Server started successfully!");
 });
