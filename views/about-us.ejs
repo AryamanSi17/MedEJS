@@ -1,4 +1,10 @@
-<%- include('header'); -%>
+<% if (isUserLoggedIn) { %>
+    <!-- Include auth_header -->
+    <%- include('auth_header') %>
+  <% } else { %>
+    <!-- Include regular header -->
+    <%- include('header') %>
+  <% } %>  
     <!-- Mobile Menu Section -->
     <div class="popup-mobile-menu">
         <div class="inner-wrapper">

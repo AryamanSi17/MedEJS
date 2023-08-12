@@ -25,6 +25,9 @@ const isAuthenticated = require('./utils/authMiddleware');
 const bcrypt = require('bcrypt');
 const JWT_SECRET = "med ejs is way to success";
 const multer = require('multer');
+const checkUserLoggedIn = require('./utils/authMiddleware');
+const cookieParser = require('cookie-parser');
+
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
 const app = express();
@@ -33,12 +36,16 @@ app.use(session({
   resave: false,
   saveUninitialized: true
 }));
+// Use the middleware globally for all routes
+
 app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(cookieParser());
+app.use(checkUserLoggedIn);
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
@@ -64,13 +71,22 @@ app.get("/auth/google/test",
     res.render('auth_index');
   }
 );
-app.get("/logout", (req,res) => {
-  req.logout(function(err){
-    if (!err) {
-      res.redirect("/");
-    }
+app.get('/logout', (req, res) => {
+  // Clear the authToken cookie
+  res.clearCookie('authToken');
+
+  // Destroy the session
+  req.session.destroy((err) => {
+      if (err) {
+          console.error("Error destroying session:", err);
+          return res.status(500).send("Error logging out");
+      }
+
+      // Redirect to homepage or login page
+      res.redirect('/');
   });
 });
+
 
 // Store generated OTP
 let storedOTP = null;
@@ -112,29 +128,33 @@ app.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    
     const user = await User.findOne({ username });
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
     const token = jwt.sign({ userId: user._id }, JWT_SECRET);
+    console.log("Generated Token:", token); // Log the generated token
+    // Set JWT token as a cookie
+    res.cookie('authToken', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // Cookie will expire after 24 hours
 
-    // res.json({ token });
-    res.render("auth_index",{username:username});
+    // Set username in the session
+    req.session.username = username;
+
+    res.render("auth_index", { username: username });
   } catch (error) {
     console.error("Error while logging in:", error);
     res.status(500).json({ error: "Error while logging in" });
   }
 });
+
+
 const tokens = jwt.sign({ userId: User._id }, JWT_SECRET);
-console.log(tokens);
 app.get("/becometeacher", verifyToken, (req, res) => {
   // res.json({ message: "You have access to this protected route!" });
   res.render("becometeacher");

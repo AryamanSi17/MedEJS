@@ -1,4 +1,10 @@
-<%- include(loggedIn ? 'auth_header' : 'header'); -%>
+<% if (isUserLoggedIn) { %>
+    <!-- Include auth_header -->
+    <%- include('auth_header') %>
+  <% } else { %>
+    <!-- Include regular header -->
+    <%- include('header') %>
+  <% } %> 
 <div class="rbt-page-banner-wrapper">
     <!-- Start Banner BG Image  -->
     <div class="rbt-banner-image"></div>

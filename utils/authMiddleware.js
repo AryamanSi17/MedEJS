@@ -1,13 +1,31 @@
-// Middleware to check if the user's email is authenticated
-function isAuthenticated(req, res, next) {
-    if (req.session.email) {
-      // Email is authenticated, allow access to the next middleware or route handler
-      next();
-    } else {
-      // Email is not authenticated, redirect to the page where the user needs to enter their email
-      res.redirect('/auth_email'); // Replace '/enterEmail' with the appropriate route for the page where the user enters their email and verifies it using OTP
+// authMiddleware.js
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = "med ejs is way to success"; // Make sure to keep this secret and possibly store it in environment variables
+
+function checkUserLoggedIn(req, res, next) {
+  let isUserLoggedIn = false;
+
+  // Extract token from cookies
+  const token = req.cookies && req.cookies['authToken'];
+  console.log("Token:", token); // Log the token
+
+  if (token) {
+    try {
+      // Verify the token
+      jwt.verify(token, JWT_SECRET);
+      isUserLoggedIn = true;
+    } catch (err) {
+      // Token is invalid or expired
+      isUserLoggedIn = false;
     }
   }
-  
-  module.exports = isAuthenticated;
-  
+
+  // Attach the isUserLoggedIn status to the request object
+  req.isUserLoggedIn = isUserLoggedIn;
+  console.log(isUserLoggedIn);
+
+  // Continue to the next middleware or route handler
+  next();
+}
+
+module.exports = checkUserLoggedIn;
