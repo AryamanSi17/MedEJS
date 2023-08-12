@@ -52,12 +52,46 @@ passport.use(new GoogleStrategy({
   callbackURL: "https://globalmedacademy.com/auth/google/test",
   userProfileURL: "https://www.googleapis.com/oauth2/v2/userinfo"
 },
-function(accessToken, refreshToken, profile, cb) {
-  User.findOrCreate({ googleId: profile.id }, function (err, user) {
-    return cb(err, user);
-  });
+// function(accessToken, refreshToken, profile, cb) {
+//   User.findOrCreate({ googleId: profile.id }, function (err, user) {
+//     return cb(err, user);
+//   });
+// }
+// ));
+
+// finorcreate logic starts
+
+async (accessToken, refreshToken, profile, done) => {
+  try {
+      const user = await findOrCreateUser(profile);
+      return done(null, user);
+  } catch (error) {
+      return done(error, null);
+  }
+}));
+
+async function findOrCreateUser(profile) {
+  const existingUser = await User.findOne({ googleId: profile.id });
+
+  if (existingUser) {
+      return existingUser;
+  } else {
+      const newUser = new User({
+          googleId: profile.id,
+          displayName: profile.displayName,
+          // Set other fields as needed
+      });
+
+      return newUser.save();
 }
-));
+};
+
+
+
+
+
+// ends
+
 app.get("/auth/google",
   passport.authenticate('google', {
     scope: ['profile', 'email']
