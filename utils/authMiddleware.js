@@ -7,7 +7,7 @@ function checkUserLoggedIn(req, res, next) {
 
   // Extract token from cookies
   const token = req.cookies && req.cookies['authToken'];
-  console.log("Token:", token); // Log the token
+  // console.log("Token:", token); 
 
   if (token) {
     try {
@@ -22,8 +22,7 @@ function checkUserLoggedIn(req, res, next) {
 
   // Attach the isUserLoggedIn status to the request object
   req.isUserLoggedIn = isUserLoggedIn;
-  console.log(isUserLoggedIn);
-
+  // console.log(isUserLoggedIn);
   // Continue to the next middleware or route handler
   next();
 }

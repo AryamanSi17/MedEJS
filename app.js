@@ -92,8 +92,7 @@ app.get('/logout', (req, res) => {
 let storedOTP = null;
 
 app.use(express.json()); // Add this middleware to parse JSON in requests
-
-app.post("/register",async (req,res) => {
+app.post("/register", async (req, res) => {
   try {
     const { username, fullname, password } = req.body;    
     const existingUser = await User.findOne({ username });
@@ -101,22 +100,23 @@ app.post("/register",async (req,res) => {
       return res.status(409).json({ error: "User already exists" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    // a new user
-    const newUser = new User({ username,fullname, password: hashedPassword });
+    const newUser = new User({ username, fullname, password: hashedPassword });
     await newUser.save();
-    // res.status(201).json({ message: "User registered successfully" });
-    res.render("auth_index");
+
+    // Generate and set the JWT token
+    const token = jwt.sign({ userId: newUser._id }, JWT_SECRET);
+    res.cookie('authToken', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // Cookie will expire after 24 hours
+
     createUserInMoodle(username, password, fullname, '.', username)
         .then(() => {
           req.session.save();
           passport.authenticate("local")(req, res, function () {
-            res.render("auth_index");
-            getUserIdFromUsername(username)
+            res.render("auth_index", { username: username });
+            getUserIdFromUsername(username);
           });
         })
         .catch((error) => {
           console.error(error);
-          // Handle the error if necessary
           res.status(500).send("An error occurred during user registration.");
         });
   } catch (error) {
@@ -124,6 +124,7 @@ app.post("/register",async (req,res) => {
     res.status(500).json({ error: "Error while registering" });
   }
 });
+
 app.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -139,7 +140,7 @@ app.post("/login", async (req, res) => {
     }
 
     const token = jwt.sign({ userId: user._id }, JWT_SECRET);
-    console.log("Generated Token:", token); // Log the generated token
+    // console.log("Generated Token:", token);
     // Set JWT token as a cookie
     res.cookie('authToken', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // Cookie will expire after 24 hours
 
@@ -410,13 +411,10 @@ function uploadAndSaveToDatabase(req, res, next) {
 //  multer config ends here 
 
 app.post("/data",uploadAndSaveToDatabase ,(req,res) => {
-  
   // res.send("uploaded")
   res.json({ message: 'File uploaded and saved to the database!' });
    console.log(req.file);
-})
-
-
+});
 
 app.listen(3000, function() {
   console.log("Server started successfully!");
