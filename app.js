@@ -20,13 +20,13 @@ const emailAuth = require('./utils/emailAuth');
 const LocalStrategy = require("passport-local").Strategy; // Import LocalStrategy
 const { log } = require('console');
 const jwt = require('jsonwebtoken');
-const ccavenue = require('./utils/ccavenue');
 const isAuthenticated = require('./utils/authMiddleware');
 const bcrypt = require('bcrypt');
 const JWT_SECRET = "med ejs is way to success";
 const multer = require('multer');
 const checkUserLoggedIn = require('./utils/authMiddleware');
 const cookieParser = require('cookie-parser');
+const { postReq, postRes } = require('./utils/ccavRequestHandler');
 
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
@@ -85,13 +85,6 @@ async function findOrCreateUser(profile) {
     return newUser.save();
   }
 };
-
-
-app.get('/pay', ccavenue.initiatePayment);
-app.post('/payment-response', ccavenue.handlePaymentResponse);
-app.get('/payment-cancelled', ccavenue.handlePaymentCancellation);
-
-
 
 // ends
 
@@ -375,7 +368,15 @@ app.post('/submitRequestForMore', (req, res) => {
     });
 });
 
+// Route to start the payment
+app.post('/pay', (req, res) => {
+  postReq(req, res);
+});
 
+// Route to handle the response from CCAvenue (you might need to set this URL in your CCAvenue dashboard as the response URL)
+app.post('/handleResponse', (req, res) => {
+  postRes(req, res);
+});
 // Usage
 const userId = '15'; // Replace with the actual user ID
 const courseid = '9'; // Replace with the actual Course ID
@@ -446,6 +447,8 @@ function uploadAndSaveToDatabase(req, res, next) {
 }
 
 //  multer config ends here 
+
+
 
 
 
