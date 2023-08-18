@@ -368,13 +368,16 @@ app.post('/submitRequestForMore', (req, res) => {
     });
 });
 
-// Route to start the payment
-app.post('/pay', (req, res) => {
+app.get('/pay', (req, res) => {
+  res.sendFile(path.join(__dirname, 'assets', 'dataFrom.html'));
+});
+// Handle the form submission
+app.post('/ccavRequestHandler', (req, res) => {
   postReq(req, res);
 });
 
-// Route to handle the response from CCAvenue (you might need to set this URL in your CCAvenue dashboard as the response URL)
-app.post('/handleResponse', (req, res) => {
+// Handle the response from CCAvenue
+app.post('/ccavResponseHandler', (req, res) => {
   postRes(req, res);
 });
 // Usage
