@@ -4,10 +4,10 @@ async function getTokenGuid(userLogin){
     return response.data.Details;
 }
 async function saveEnquiry(data){
-    const tokenGuid=process.env.TOKEN_GUID
+    const tokenGuid="3AF2A8C6-1CF8-4D8A-8A8B-9B1224651FB0"
     const enquiryData={
-        Username: process.env.KIT19_USERNAME,
-        Password: process.env.KIT19_PASSWORD,
+        Username: "ANVIK1002215",
+        Password: "Global@123",
         PersonName: data.name,
         MobileNo: data.phone,
         CountryCode:"+91",
