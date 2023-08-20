@@ -27,6 +27,7 @@ const multer = require('multer');
 const checkUserLoggedIn = require('./utils/authMiddleware');
 const cookieParser = require('cookie-parser');
 const { postReq, postRes } = require('./utils/ccavRequestHandler');
+const {saveEnquiry}= require('./utils/kit19Integration');
 
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
@@ -341,32 +342,32 @@ const enrollUserInCourse = async (userId, courseid) => {
 };
 
 
-// API endpoint to handle form submission
-app.post('/submitRequestForMore', (req, res) => {
-  const formData = req.body;
+// // API endpoint to handle form submission
+// app.post('/submitRequestForMore', (req, res) => {
+//   const formData = req.body;
 
-  // Create a new Request object with the form data
-  const request = new Request({
-    name: formData.name,
-    phone: formData.phone,
-    email: formData.email,
-    course: formData.course,
-  });
+//   // Create a new Request object with the form data
+//   const request = new Request({
+//     name: formData.name,
+//     phone: formData.phone,
+//     email: formData.email,
+//     course: formData.course,
+//   });
 
-  // Save the form data to MongoDB
-  request.save()
-    .then(() => {
-      console.log('Form data saved to MongoDB:', request);
-      // Send a success message to the client
-      res.send('Form data submitted successfully. Redirecting to the homepage...<meta http-equiv="refresh" content="2;url=/">');
+//   // Save the form data to MongoDB
+//   request.save()
+//     .then(() => {
+//       console.log('Form data saved to MongoDB:', request);
+//       // Send a success message to the client
+//       res.send('Form data submitted successfully. Redirecting to the homepage...<meta http-equiv="refresh" content="2;url=/">');
 
-    })
+//     })
 
-    .catch((err) => {
-      console.error('Error saving form data to MongoDB:', err);
-      res.status(500).send('An error occurred while submitting the form, PLease go back !');
-    });
-});
+//     .catch((err) => {
+//       console.error('Error saving form data to MongoDB:', err);
+//       res.status(500).send('An error occurred while submitting the form, PLease go back !');
+//     });
+// });
 
 app.get('/pay', (req, res) => {
   res.sendFile(path.join(__dirname, 'assets', 'dataFrom.html'));
@@ -451,6 +452,23 @@ function uploadAndSaveToDatabase(req, res, next) {
 
 //  multer config ends here 
 
+//Kit19Integration
+app.post('/submitRequestForMore', async (req, res) => {
+  try {
+      const response = await saveEnquiry(req.body);
+
+      console.log("Kit19 Response:", response);  // Log the entire response
+
+      if (response.data.Status === 0) {
+        res.send('Form data submitted successfully. Redirecting to the homepage...<meta http-equiv="refresh" content="2;url=/">');
+      } else {
+          res.status(400).send('Failed to save enquiry.');
+      }
+  } catch (error) {
+      console.error('Error:', error);
+      res.status(500).send('Internal server error.');
+  }
+});
 
 
 
