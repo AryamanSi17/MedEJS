@@ -369,16 +369,13 @@ const enrollUserInCourse = async (userId, courseid) => {
 //     });
 // });
 
-app.get('/pay', (req, res) => {
-  res.sendFile(path.join(__dirname, 'assets', 'dataFrom.html'));
-});
-// Handle the form submission
-app.post('/ccavRequestHandler', (req, res) => {
+// Route to start the payment
+app.post('/pay', (req, res) => {
   postReq(req, res);
 });
 
-// Handle the response from CCAvenue
-app.post('/ccavResponseHandler', (req, res) => {
+// Route to handle the response from CCAvenue (you might need to set this URL in your CCAvenue dashboard as the response URL)
+app.post('/handleResponse', (req, res) => {
   postRes(req, res);
 });
 // Usage
