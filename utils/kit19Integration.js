@@ -1,5 +1,4 @@
 const axios=require('axios');
-require('dotenv').config();
 async function getTokenGuid(userLogin){
     const response= await axios.get(`http://sipapi.kit19.com/Enquiry/TokenGuidOPR?UserName=${userLogin}&Mode=Get`);
     return response.data.Details;
