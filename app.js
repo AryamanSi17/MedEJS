@@ -53,15 +53,6 @@ passport.use(new GoogleStrategy({
   callbackURL: "https://globalmedacademy.com/auth/google/test",
   userProfileURL: "https://www.googleapis.com/oauth2/v2/userinfo"
 },
-  // function(accessToken, refreshToken, profile, cb) {
-  //   User.findOrCreate({ googleId: profile.id }, function (err, user) {
-  //     return cb(err, user);
-  //   });
-  // }
-  // ));
-
-  // finorcreate logic starts
-
   async (accessToken, refreshToken, profile, done) => {
     try {
       const user = await findOrCreateUser(profile);
