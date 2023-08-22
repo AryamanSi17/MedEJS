@@ -51,4 +51,4 @@ const FileSchema = new Schema({
 const FileModel = mongoose.model('File',FileSchema);
 const Request = mongoose.model('Request', requestSchema);
 
-module.exports = { mongoose, User,FileModel,Request};
+module.exports = { mongoose, User,FileModel,Request, Course};

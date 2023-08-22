@@ -28,7 +28,7 @@ const checkUserLoggedIn = require('./utils/authMiddleware');
 const cookieParser = require('cookie-parser');
 const { postReq, postRes } = require('./utils/ccavRequestHandler');
 const {saveEnquiry}= require('./utils/kit19Integration');
-
+const { Types } = require('mongoose');
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
 const app = express();
@@ -370,6 +370,37 @@ app.post('/pay', (req, res) => {
 app.post('/handleResponse', (req, res) => {
   postRes(req, res);
 });
+
+
+// app.post('/pay/:objectId',async (req, res) => {
+//   const objectId = req.params.objectId;
+
+//   // Validate the ObjectId format using Mongoose's Types.ObjectId
+//   if (!mongoose.Types.ObjectId.isValid(objectId)) {
+//       return res.status(400).send('Invalid ObjectId format');
+//   }
+
+//   // Fetch course from the database using the ObjectId
+//   try {
+//     const course = await Course.findById(objectId);
+//     if (!course) {
+//         return res.status(404).send("Course not found");
+//     }
+
+
+//       // Store the ObjectId in the user's session
+//       req.session.objectId = objectId;
+
+//       // Redirect to the /user page
+//       res.redirect(`/user/${objectId}`);
+    
+  
+// } catch(err){
+//   return res.status(500).send("error fetching course");
+// }
+// });
+
+
 // Usage
 const userId = '15'; // Replace with the actual user ID
 const courseid = '9'; // Replace with the actual Course ID

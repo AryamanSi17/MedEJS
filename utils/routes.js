@@ -1,4 +1,5 @@
 const { Course } = require("./db"); 
+const mongoose = require('mongoose');
 function setRoutes(app) {
   
   app.get("/", function(req, res) {
@@ -212,17 +213,8 @@ function setRoutes(app) {
       res.render('faqs', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
         username: username  });
     });
-    app.get("/user",function(req,res){
-      const pageTitle = 'User Profile';
-      const metaRobots = '';
-      const metaKeywords = '';
-      const ogDescription = '';
-      const canonicalLink = 'https://globalmedacademy.com/user';
-      const username = req.session.username || null;
-      const fullname = req.session.fullname || null;
-      res.render('user_Profile', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
-        username: username ,fullname : fullname });
-    });
+
+  
     app.get("/loginn",function(req,res){
       const pageTitle = 'Login';
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
@@ -241,7 +233,48 @@ function setRoutes(app) {
       const canonicalLink = 'https://globalmedacademy.com/register';
       res.render('login', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink });
     });
-    
+//   app.get('/user/:objectId', async (req, res) => {
+//   const objectId = req.params.objectId;
+//   console.log(objectId)
+//   // Validate the ObjectId format using Mongoose's Types.ObjectId
+//   if (!mongoose.Types.ObjectId.isValid(objectId)) {
+//       return res.status(400).send('Invalid ObjectId format');
+//   }
+
+//   try {
+//       const course = await Course.findById(objectId);
+      
+//       if (!course) {
+//           return res.status(404).send("Course not found");
+//       }
+
+//       const pageTitle = 'User Profile';
+//       const metaRobots = '';
+//       const metaKeywords = '';
+//       const ogDescription = '';
+//       const canonicalLink = 'https://globalmedacademy.com/user';
+//       const username = req.session.username || null;
+//       const fullname = req.session.fullname || null;
+
+//       // Render the user page with the course name and other details
+//       res.render('user_Profile', {
+//           pageTitle,
+//           metaRobots,
+//           metaKeywords,
+//           ogDescription,
+//           canonicalLink,
+//           isUserLoggedIn: req.isUserLoggedIn,
+//           username,
+//           fullname,
+//           courseName: course.title
+//           // csrfToken: req.csrfToken()  // Uncomment this if you're using CSRF protection
+//       });
+
+//   } catch (err) {
+//       return res.status(500).send("Error fetching course data");
+//   }
+// });
+
     app.get("/becometeacher", (req, res) => {
       res.redirect(301, "/become-teacher");
     });

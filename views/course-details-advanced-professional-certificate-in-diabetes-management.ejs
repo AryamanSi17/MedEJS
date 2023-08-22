@@ -1,5 +1,10 @@
-<%- include('header'); -%>
-
+<% if (isUserLoggedIn) { %>
+    <!-- Include auth_header -->
+    <%- include('auth_header') %>
+  <% } else { %>
+    <!-- Include regular header -->
+    <%- include('header') %>
+  <% } %> 
 <div class="rbt-breadcrumb-default rbt-breadcrumb-style-3">
     <div class="breadcrumb-inner">
         <img src="assets/images/bg/bg-image-10.jpg" alt="Education Images">
@@ -572,7 +577,7 @@
                                 </div>
                             </div>
                             <div class="buy-now-btn mt--15">
-                                <form action="/pay" method="post">
+                                <form action="/pay/64b977cffa47d3d1072b49b7" method="post">
                                     <input type="hidden" name="merchant_id" value="2619634">
                                     <!-- You can add other necessary hidden fields here -->
                                     <button type="submit">Pay Now</button>
