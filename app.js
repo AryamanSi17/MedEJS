@@ -169,7 +169,7 @@ app.post("/login", async (req, res) => {
 
     // Set username in the session
     req.session.username = username;
-
+    // req.session.fullname= fullname;
     res.render("auth_index", { username: username });
   } catch (error) {
     console.error("Error while logging in:", error);

@@ -212,6 +212,17 @@ function setRoutes(app) {
       res.render('faqs', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
         username: username  });
     });
+    app.get("/user",function(req,res){
+      const pageTitle = 'User Profile';
+      const metaRobots = '';
+      const metaKeywords = '';
+      const ogDescription = '';
+      const canonicalLink = 'https://globalmedacademy.com/user';
+      const username = req.session.username || null;
+      const fullname = req.session.fullname || null;
+      res.render('user_Profile', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
+        username: username ,fullname : fullname });
+    });
     app.get("/loginn",function(req,res){
       const pageTitle = 'Login';
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
