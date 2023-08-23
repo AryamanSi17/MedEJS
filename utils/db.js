@@ -3,7 +3,7 @@ const passportLocalMongoose = require("passport-local-mongoose");
 const findOrCreate = require('mongoose-findorcreate');
 const { Schema } = mongoose;
 
-mongoose.connect("mongodb+srv://priyanshu:priyanshu@globalmedacademy.v6hvz4f.mongodb.net/?retryWrites=true&w=majority");
+mongoose.connect(process.env.MONGODB_URI);
 
 const courseSchema = new mongoose.Schema({
   title: String,
