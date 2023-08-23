@@ -1,4 +1,4 @@
-require('dotenv').config({path:__dirname+'/./../../.env'})
+require('dotenv').config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
@@ -47,9 +47,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(cookieParser());
 app.use(checkUserLoggedIn);
-
+console.log(process.env)
 passport.use(new GoogleStrategy({
-  clientID: "768289392704-eivkc190qgbss1afm45ul4g0pvk9ddjf.apps.googleusercontent.com",
+  clientID: process.env.CLIENT_ID,
   clientSecret: "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",
   callbackURL: "https://globalmedacademy.com/auth/google/test",
   userProfileURL: "https://www.googleapis.com/oauth2/v2/userinfo"
