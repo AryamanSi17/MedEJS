@@ -149,10 +149,15 @@
                                 <div class="col-lg-8">
                                     <p class="mt--10 mb--20">Your purchased courses will be displayed over here .....</p>
                                     <ul class="rbt-information-list mt--15">
-                                        <% if (courseName) { %>
-                                            <li><%= courseName %></li>
+                                        <% if (coursesEnrolled && coursesEnrolled.length > 0) { %>
+                                            <h3>Courses Enrolled:</h3>
+                                            <ul>
+                                                <% coursesEnrolled.forEach(function(course) { %>
+                                                    <li><%= course %></li>
+                                                <% }); %>
+                                            </ul>
                                         <% } else { %>
-                                            <li>No courses purchased yet.</li>
+                                            <p>You haven't enrolled in any courses yet.</p>
                                         <% } %>
                                     </ul>
                                 </div>

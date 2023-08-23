@@ -23,6 +23,7 @@ const UserSchema = new Schema({
     phone: String,
     email: String,
     course: String,
+    coursesPurchased: [String],
 });
 
 // UserSchema.plugin(passportLocalMongoose, {

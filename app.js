@@ -333,34 +333,6 @@ const enrollUserInCourse = async (userId, courseid) => {
   }
 };
 
-
-// // API endpoint to handle form submission
-// app.post('/submitRequestForMore', (req, res) => {
-//   const formData = req.body;
-
-//   // Create a new Request object with the form data
-//   const request = new Request({
-//     name: formData.name,
-//     phone: formData.phone,
-//     email: formData.email,
-//     course: formData.course,
-//   });
-
-//   // Save the form data to MongoDB
-//   request.save()
-//     .then(() => {
-//       console.log('Form data saved to MongoDB:', request);
-//       // Send a success message to the client
-//       res.send('Form data submitted successfully. Redirecting to the homepage...<meta http-equiv="refresh" content="2;url=/">');
-
-//     })
-
-//     .catch((err) => {
-//       console.error('Error saving form data to MongoDB:', err);
-//       res.status(500).send('An error occurred while submitting the form, PLease go back !');
-//     });
-// });
-
 // Route to start the payment
 app.post('/pay', (req, res) => {
   postReq(req, res);
@@ -371,36 +343,96 @@ app.post('/handleResponse', (req, res) => {
   postRes(req, res);
 });
 
+app.post('/pay/:courseObjectId', async (req, res) => {
+  const courseObjectId = req.params.courseObjectId;
 
-// app.post('/pay/:objectId',async (req, res) => {
-//   const objectId = req.params.objectId;
+  // Extract the JWT token from the cookie
+  const token = req.cookies.authToken;
 
-//   // Validate the ObjectId format using Mongoose's Types.ObjectId
-//   if (!mongoose.Types.ObjectId.isValid(objectId)) {
-//       return res.status(400).send('Invalid ObjectId format');
-//   }
+  if (!token) {
+    return res.status(401).send('Unauthorized: No token provided');
+  }
 
-//   // Fetch course from the database using the ObjectId
-//   try {
-//     const course = await Course.findById(objectId);
-//     if (!course) {
-//         return res.status(404).send("Course not found");
-//     }
+  let userId;
+  try {
+    // Verify and decode the token to get the user's ID
+    const decoded = jwt.verify(token, JWT_SECRET);
+    userId = decoded.userId;
+  } catch (error) {
+    return res.status(401).send('Unauthorized: Invalid token');
+  }
 
+  try {
+    // Find the course using the ObjectId to ensure it exists and fetch its name
+    const course = await Course.findById(courseObjectId);
+    if (!course) {
+      return res.status(404).send('Course not found');
+    }
 
-//       // Store the ObjectId in the user's session
-//       req.session.objectId = objectId;
+    const courseName = course.title; // Assuming the course name is stored in the "title" field
 
-//       // Redirect to the /user page
-//       res.redirect(`/user/${objectId}`);
-    
-  
-// } catch(err){
-//   return res.status(500).send("error fetching course");
-// }
-// });
+    // Update the user's coursesPurchased field with the course name
+    await User.findByIdAndUpdate(userId, {
+      $addToSet: { coursesPurchased: courseName } // $addToSet ensures no duplicates
+    });
 
+    // Redirect to the user profile page
+    res.redirect('/user');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server Error');
+  }
+});
 
+app.get('/user', async function(req, res) {
+  const pageTitle = 'User Profile';
+  const metaRobots = '';
+  const metaKeywords = '';
+  const ogDescription = '';
+  const canonicalLink = 'https://globalmedacademy.com/user';
+
+  let coursesEnrolled = [];
+
+  // Extract the JWT token from the cookie
+  const token = req.cookies.authToken;
+
+  if (!token) {
+      return res.status(401).send('Unauthorized: No token provided');
+  }
+
+  let userId;
+  try {
+      // Verify and decode the token to get the user's ID
+      const decoded = jwt.verify(token, JWT_SECRET);
+      userId = decoded.userId;
+  } catch (error) {
+      return res.status(401).send('Unauthorized: Invalid token');
+  }
+
+  try {
+      // Fetch the user's details from the database using the userId
+      const user = await User.findById(userId);
+      if (user && user.coursesPurchased) {
+          coursesEnrolled = user.coursesPurchased;
+      }
+
+      // Render the user page with the course names and other details
+      res.render('user_Profile', {
+          pageTitle,
+          metaRobots,
+          metaKeywords,
+          ogDescription,
+          canonicalLink,
+          isUserLoggedIn: req.isUserLoggedIn,
+          username: user.username,  // Use the username from the fetched user data
+          fullname: user.fullname,  // Similarly, use the fullname from the fetched user data
+          coursesEnrolled  // Pass the courses to the EJS template
+      });
+  } catch (error) {
+      console.error("Error fetching user's courses:", error);
+      res.status(500).send('Server Error');
+  }
+});
 // Usage
 const userId = '15'; // Replace with the actual user ID
 const courseid = '9'; // Replace with the actual Course ID
