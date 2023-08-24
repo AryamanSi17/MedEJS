@@ -12718,6 +12718,7 @@ ul.rbt-dropdown-menu.currency-menu li .sub-menu {
 .popup-mobile-menu .inner-wrapper .inner-top .content {
   display: flex;
   justify-content: space-between;
+  background: #0056b3;
 }
 .popup-mobile-menu .inner-wrapper .inner-top .logo a img {
   max-height: 45px;
