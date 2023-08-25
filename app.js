@@ -440,7 +440,7 @@ setRoutes(app);
 // sendEmail();
 
 
-// File handaling method by multer
+// File handaling method
 
 const FileModel = require("./utils/db");
 
