@@ -441,7 +441,7 @@ const courseid = '9'; // Replace with the actual Course ID
 // sendEmail();
 
 
-// File handaling method by multer
+// File handaling method
 
 const FileModel = require("./utils/db");
 
