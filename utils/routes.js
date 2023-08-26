@@ -1,6 +1,7 @@
 const { Course,User } = require("./db"); 
 const { JWT_SECRET } = require('./config');
 const mongoose = require('mongoose');
+
 function setRoutes(app) {
   
   app.get("/", function(req, res) {
@@ -35,7 +36,13 @@ function setRoutes(app) {
         });
     }
 });
-
+function checkEmailVerified(req, res, next) {
+  if (req.session.emailVerified) {
+    next();  // If email is verified, proceed to the next middleware/route
+  } else {
+    res.redirect('/auth_email');  // If not, redirect to the email authentication page
+  }
+}
 
   app.get("/data", (req,res) => {
     res.render("data");
@@ -225,17 +232,15 @@ function setRoutes(app) {
       res.render('loginn', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink });
     });
 
-    app.get("/register",function(req,res){
+    app.get("/register",checkEmailVerified,function(req,res){
       // const email=req.body.email
-      const pageTitle = 'Regsiter';
+      const pageTitle = 'Registration!';
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
       const metaKeywords = '';
       const ogDescription = '';
       const canonicalLink = 'https://globalmedacademy.com/register';
       res.render('login', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink });
     });
-
-  
 
     app.get("/becometeacher", (req, res) => {
       res.redirect(301, "/become-teacher");

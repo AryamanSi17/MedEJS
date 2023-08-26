@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { ccavPostRequest, ccavPostResponse } = require('./ccavenue/ccavRequestHandler');
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
@@ -299,11 +300,16 @@ app.post('/verify-otp', (req, res) => {
 
   if (otps[email] === parseInt(userOtp, 10)) {
     delete otps[email];
+    
+    // Set the session variable to indicate that the email has been verified
+    req.session.emailVerified = true;
+
     res.status(200).json({ message: 'OTP verified successfully' });
   } else {
     res.status(400).json({ message: 'Invalid OTP. Please try again!' });
   }
 });
+
 
 const enrollUserInCourse = async (userId, courseid) => {
   const formData = new FormData();
@@ -332,15 +338,10 @@ const enrollUserInCourse = async (userId, courseid) => {
   }
 };
 
-// Route to start the payment
-app.post('/pay', (req, res) => {
-  postReq(req, res);
-});
 
-// Route to handle the response from CCAvenue (you might need to set this URL in your CCAvenue dashboard as the response URL)
-app.post('/handleResponse', (req, res) => {
-  postRes(req, res);
-});
+app.post('/pay', ccavPostRequest);
+app.post('/handleResponse', ccavPostResponse);
+
 
 app.post('/pay/:courseObjectId', async (req, res) => {
   const courseObjectId = req.params.courseObjectId;
@@ -436,7 +437,7 @@ app.get('/user', async function(req, res) {
 const userId = '15'; // Replace with the actual user ID
 const courseid = '9'; // Replace with the actual Course ID
 // enrollUserInCourse(userId, courseid);
-setRoutes(app);
+
 // sendEmail();
 
 
@@ -533,3 +534,4 @@ app.post("/data", uploadAndSaveToDatabase, (req, res) => {
 app.listen(3000, function () {
   console.log("Server started successfully!");
 });
+setRoutes(app);

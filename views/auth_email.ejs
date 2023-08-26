@@ -124,6 +124,7 @@
                 if (data.message === 'OTP verified successfully') {
                     // Redirect or update the user interface as needed
                     localStorage.setItem('email', email);
+                    localStorage.setItem('emailVerified', 'true');
                     window.location.href = '/register';
                 } else {
                     document.querySelector('#errorMessage').style.display = 'block';
