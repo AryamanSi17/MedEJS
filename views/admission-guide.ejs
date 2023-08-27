@@ -1,4 +1,10 @@
- <%- include('header'); -%>
+<% if (isUserLoggedIn) { %>
+    <!-- Include auth_header -->
+    <%- include('auth_header') %>
+  <% } else { %>
+    <!-- Include regular header -->
+    <%- include('header') %>
+  <% } %>  
     <div class="rbt-breadcrumb-default ptb--100 ptb_md--50 ptb_sm--30 bg-gradient-1">
         <div class="container">
             <div class="row">

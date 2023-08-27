@@ -103,7 +103,14 @@ function checkEmailVerified(req, res, next) {
         username: username  });
     });
     app.get("/admission-guide", function(req, res) {
-      res.render("admission-guide");
+      const pageTitle = 'Admission Guide - GlobalMedAcademy';
+      const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+      const metaKeywords = '';
+      const ogDescription = '';
+      const canonicalLink = 'https://globalmedacademy.com/admission-guide';
+      const username = req.session.username || null;
+      res.render('admission-guide', { pageTitle, metaRobots, metaKeywords, ogDescription,canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
+        username: username  });
     });
   
     app.get("/course-details-fellowship-in-internal-medicine", function(req, res) {
