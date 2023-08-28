@@ -1020,10 +1020,12 @@ window.onload = function() {
     const trendingCoursesLink = window.location.hash === "#trending-filter";
     const advancedCoursesLink=window.location.hash==="#advancedcourses";
     const fellowshipCoursesLink=window.location.hash==="#fellowship";
+    const professionalCoursesLink=window.location.hash==="#professionalcourses";
     // Get the filter button
     const trendingFilterButton = document.getElementById("trending-filter");
     const advancedFilterButton=document.getElementById("advanced-filter");
     const fellowshipFilterButton=document.getElementById("fellowship-filter");
+    const professionalFilterButton=document.getElementById("professional-filter");
     // Trigger the click event on the trending filter button if the link is trending courses
     if (trendingCoursesLink) {
       setTimeout(function() {
@@ -1043,6 +1045,12 @@ window.onload = function() {
         setTimeout(function(){
             fellowshipFilterButton.click();
             fellowshipFilterButton.classList.add("is-checked");
+        },100);
+    }
+    if(professionalCoursesLink){
+        setTimeout(function(){
+            professionalFilterButton.click();
+            professionalFilterButton.classList.add("is-checked");
         },100);
     }
   }

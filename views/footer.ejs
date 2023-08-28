@@ -13,7 +13,7 @@
                                 </a>
                             </div>
 
-                            <p class="description mt--20">GlobalMed Academy plan to help medical professionals advance their careers by increasing their knowledge, experience and skills through innovative education and networking programs.
+                            <p class="description mt--20">GloablMed Academy promotes career advancement and up skilling of medical professionals by enhancing their knowledge and clinical exposure through innovative pedagogy and effective networking opportunities.
                               <br>  GlobalMed Academy is brand of ANVIK VALUE CHAIN PRIVATE LIMITED
                             </p>
 
@@ -195,10 +195,12 @@
     const trendingCoursesLink = window.location.hash === "#trending-filter";
     const advancedCoursesLink=window.location.hash==="#advancedcourses";
     const fellowshipCoursesLink=window.location.hash==="#fellowship";
+    const professionalCoursesLink=window.location.hash==="#professionalcourses";
     // Get the filter button
     const trendingFilterButton = document.getElementById("trending-filter");
     const advancedFilterButton=document.getElementById("advanced-filter");
     const fellowshipFilterButton=document.getElementById("fellowship-filter");
+    const professionalFilterButton=document.getElementById("professional-filter");
     // Trigger the click event on the trending filter button if the link is trending courses
     if (trendingCoursesLink) {
       setTimeout(function() {
@@ -218,6 +220,12 @@
         setTimeout(function(){
             fellowshipFilterButton.click();
             fellowshipFilterButton.classList.add("is-checked");
+        },100);
+    }
+    if(professionalCoursesLink){
+        setTimeout(function(){
+            professionalFilterButton.click();
+            professionalFilterButton.classList.add("is-checked");
         },100);
     }
   }
