@@ -387,7 +387,7 @@ function checkEmailVerified(req, res, next) {
       res.redirect(301,"/about-us")
     });
     app.get("*", function(req, res) {
-      res.render("/");
+      res.redirect(301,"/");
     });
   }
   
