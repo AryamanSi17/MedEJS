@@ -308,8 +308,86 @@ function checkEmailVerified(req, res, next) {
     app.get("/course-details-obsgynae", (req, res) => {
       res.redirect(301, "/course-details-fellowship-in-obsgynae");
     });
+    app.get("/.html", (req, res) => {
+      res.redirect(301, "/");
+    });
+    
+    app.get("/verify-otp", (req, res) => {
+      res.redirect(301, "/");
+    });
+    
+    app.get("/send-otp", (req, res) => {
+      res.redirect(301, "/");
+    });
+    
+    app.get("/instructor-wishlist.html", (req, res) => {
+      res.redirect(301, "/");
+    });
+    
+    app.get("/course-details-fellowship-in-diabetes-mellitus", (req, res) => {
+      res.redirect(301, "/course-details-fellowship-in-diabetes-management");
+    });
+    
+    app.get("/course-details-fellowship-in-obsgynae", (req, res) => {
+      res.redirect(301, "/");
+    });
+    
+    app.get("/index-2.html", (req, res) => {
+      res.redirect(301, "/");
+    });
+    
+    app.get("/:search_term_string", (req, res) => {
+      res.redirect(301, "/");
+    });
+    
+    app.get("/course-details-fpd", (req, res) => {
+      res.redirect(301, "/");
+    });
+    
+    app.get("/course-card-3.html", (req, res) => {
+      res.redirect(301, "/");
+    });
+    
+    app.get("/course-details-fcc", (req, res) => {
+      res.redirect(301, "/course-details-fellowship-in-critical-care");
+    });
+    
+    app.get("/course-details-advanceddiabetesmellitus", (req, res) => {
+      res.redirect(301, "/course-details-advanced-professional-certificate-in-diabetes-management");
+    });
+    
+    app.get("/terms-conditions", (req, res) => {
+      res.redirect(301, "/terms-conditions");
+    });
+    
+    app.get("/course-details-fellowshipincriticalcare", (req, res) => {
+      res.redirect(301, "/course-details-fellowship-in-critical-care");
+    });
+    
+    app.get("/course-details-professionaldiabetesmellitus", (req, res) => {
+      res.redirect(301, "/course-details-professional-certificate-in-diabetes-management");
+    });
+    
+    app.get("/course-details-obsgynae", (req, res) => {
+      res.redirect(301, "/");
+    });
+    
+    app.get("/course-details-fellowshipindiabetesmellitus", (req, res) => {
+      res.redirect(301, "/course-details-fellowship-in-diabetes-management");
+    });
+    
+    app.get("/course-details-fellowshipininternalmedicine", (req, res) => {
+      res.redirect(301, "/course-details-fellowship-in-internal-medicine");
+    });
+    
+    app.get("/course-details", (req, res) => {
+      res.redirect(301, "/course-masonry");
+    });
+    app.get("/about.html",(req,res)=>{
+      res.redirect(301,"/about-us")
+    });
     app.get("*", function(req, res) {
-      res.render("404");
+      res.render("/");
     });
   }
   
