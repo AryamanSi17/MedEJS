@@ -24,12 +24,5 @@ exports.postReq = function(request,response){
     });
    return; 
 };
-module.exports = {
-    ccavPostRequest: function(req, res) {
-      // ... function body
-    },
-    ccavPostResponse: function(req, res) {
-      // ... function body
-    }
-  };
+
   

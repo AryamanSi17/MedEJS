@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { ccavPostRequest, ccavPostResponse } = require('./ccavenue/ccavRequestHandler');
+const http = require('http');
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
@@ -27,7 +27,9 @@ const JWT_SECRET = "med ejs is way to success";
 const multer = require('multer');
 const checkUserLoggedIn = require('./utils/authMiddleware');
 const cookieParser = require('cookie-parser');
-const { postReq, postRes } = require('./utils/ccavRequestHandler');
+const ccavRequestHandler = require('./ccavenue/ccavRequestHandler');
+const ccavResponseHandler = require('./ccavenue/ccavResponseHandler');
+
 const {saveEnquiry}= require('./utils/kit19Integration');
 const { Types } = require('mongoose');
 let loggedIn = true;
@@ -338,10 +340,14 @@ const enrollUserInCourse = async (userId, courseid) => {
   }
 };
 
-
-app.post('/pay', ccavPostRequest);
-app.post('/handleResponse', ccavPostResponse);
-
+app.post('/payment-request', (req, res) => {
+  // Handle the payment request here using ccavRequestHandler
+  ccavRequestHandler.postReq(req, res);
+});
+app.post('/payment-response', (req, res) => {
+  // Handle the payment response here using ccavResponseHandler
+  ccavResponseHandler.postRes(req, res);
+});
 
 app.post('/pay/:courseObjectId', async (req, res) => {
   const courseObjectId = req.params.courseObjectId;
@@ -521,7 +527,6 @@ app.post('/submitRequestForMore', async (req, res) => {
       res.status(500).send('Internal server error.');
   }
 });
-
 
 
 

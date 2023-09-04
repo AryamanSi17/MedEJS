@@ -21,6 +21,8 @@
     "express-openid-connect": "^2.16.0",
     "express-session": "^1.17.3",
     "form-data": "^4.0.0",
+    "fs": "^0.0.1-security",
+    "http": "^0.0.1-security",
     "jsonwebtoken": "^9.0.1",
     "mongodb": "^5.4.0",
     "mongoose": "^7.1.1",
