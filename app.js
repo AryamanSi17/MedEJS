@@ -637,7 +637,7 @@ const upload = multer({ storage });
 
 // Define a route to handle file uploads
 app.post('/data', upload.array('file',4), (req, res) => {
-  return res.json({ message: 'File uploaded successfully' });
+  return res.json({ message: 'File uploaded successfully to the database' });
   
 });
 
