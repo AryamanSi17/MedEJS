@@ -92,6 +92,16 @@ function checkEmailVerified(req, res, next) {
       res.render('privacy-policy', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
         username: username  });
     });
+    // app.get('/paymentForm',function(req,res){
+    //   const pageTitle = 'Admission Guide - GlobalMedAcademy';
+    //   const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    //   const metaKeywords = '';
+    //   const ogDescription = '';
+    //   const canonicalLink = 'https://globalmedacademy.com/admission-guide';
+    //   const username = req.session.username || null;
+    //   res.render('paymentForm', { pageTitle, metaRobots, metaKeywords, ogDescription,canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
+    //     username: username  });
+    //  });
     app.get("/terms-conditions", function(req, res) {
       const pageTitle = 'Terms and Conditions - GlobalMedAcademy';
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
@@ -258,7 +268,6 @@ function checkEmailVerified(req, res, next) {
       const canonicalLink = 'https://globalmedacademy.com/loginn';
       res.render('loginn', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink });
     });
-
     app.get("/register",checkEmailVerified,function(req,res){
       // const email=req.body.email
       const pageTitle = 'Registration!';
@@ -268,7 +277,29 @@ function checkEmailVerified(req, res, next) {
       const canonicalLink = 'https://globalmedacademy.com/register';
       res.render('login', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink });
     });
-
+    app.get("/checkout", function(req, res) {
+      const pageTitle = 'Checkout - GlobalMedAcademy';
+      const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+      const metaKeywords = 'checkout, payment, course payment';
+      const ogDescription = 'Checkout page for GlobalMedAcademy courses.';
+      const canonicalLink = 'https://globalmedacademy.com/checkout';
+      const username = req.session.username || null;
+    
+      // Check if the user is logged in using the isUserLoggedIn property set by the middleware
+      if (req.isUserLoggedIn) {
+        res.render('checkout', {
+          pageTitle,
+          metaRobots,
+          metaKeywords,
+          ogDescription,
+          canonicalLink,
+          username: username // Pass the username to the view
+        });
+      } else {
+        res.redirect('/loginn'); // Redirect to login page if the user is not logged in
+      }
+    });
+    
     app.get("/becometeacher", (req, res) => {
       res.redirect(301, "/become-teacher");
     });
@@ -336,9 +367,9 @@ function checkEmailVerified(req, res, next) {
       res.redirect(301, "/");
     });
     
-    app.get("/:search_term_string", (req, res) => {
-      res.redirect(301, "/");
-    });
+    // app.get("/:search_term_string", (req, res) => {
+    //   res.redirect(301, "/");
+    // });
     
     app.get("/course-details-fpd", (req, res) => {
       res.redirect(301, "/");
@@ -386,9 +417,9 @@ function checkEmailVerified(req, res, next) {
     app.get("/about.html",(req,res)=>{
       res.redirect(301,"/about-us")
     });
-    app.get("*", function(req, res) {
-      res.redirect(301,"/");
-    });
+    // app.get("*", function(req, res) {
+    //   res.redirect(301,"/");
+    // });
   }
   
   

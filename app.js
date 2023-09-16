@@ -1,5 +1,4 @@
 require('dotenv').config();
-const http = require('http');
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
@@ -27,11 +26,10 @@ const JWT_SECRET = "med ejs is way to success";
 const multer = require('multer');
 const checkUserLoggedIn = require('./utils/authMiddleware');
 const cookieParser = require('cookie-parser');
-const ccavRequestHandler = require('./ccavenue/ccavRequestHandler');
-const ccavResponseHandler = require('./ccavenue/ccavResponseHandler');
-
+const querystring = require('querystring');
 const {saveEnquiry}= require('./utils/kit19Integration');
 const { Types } = require('mongoose');
+const { createCheckoutSession } = require('./utils/stripepay');
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
 const app = express();
@@ -41,7 +39,7 @@ app.use(session({
   saveUninitialized: true
 }));
 // Use the middleware globally for all routes
-
+app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -340,14 +338,47 @@ const enrollUserInCourse = async (userId, courseid) => {
   }
 };
 
-app.post('/payment-request', (req, res) => {
-  // Handle the payment request here using ccavRequestHandler
-  ccavRequestHandler.postReq(req, res);
+app.get('/success', async (req, res) => {
+  const paymentIntentId = req.query.payment_intent; // get payment intent ID from query params
+  const token = req.cookies.authToken;
+
+  if (!token) {
+    return res.status(401).send('Unauthorized: No token provided');
+  }
+
+  let userId;
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET); // replace with your JWT secret
+    userId = decoded.userId;
+  } catch (error) {
+    return res.status(401).send('Unauthorized: Invalid token');
+  }
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    const course = await Course.findById(paymentIntent.metadata.courseObjectId); // replace with how you're storing course ID in payment metadata
+    if (!course) {
+      return res.status(404).send('Course not found');
+    }
+
+    const courseName = course.title; // Assuming the course name is stored in the "title" field
+
+    await User.findByIdAndUpdate(userId, {
+      $addToSet: { coursesPurchased: courseName } // $addToSet ensures no duplicates
+    });
+
+    res.redirect('/user');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server Error');
+  }
 });
-app.post('/payment-response', (req, res) => {
-  // Handle the payment response here using ccavResponseHandler
-  ccavResponseHandler.postRes(req, res);
+
+
+app.get('/cancel', (req, res) => {
+  res.send('Your purchase was canceled.');
 });
+
 
 app.post('/pay/:courseObjectId', async (req, res) => {
   const courseObjectId = req.params.courseObjectId;
@@ -528,12 +559,103 @@ app.post('/submitRequestForMore', async (req, res) => {
   }
 });
 
+app.get('/buy-now', async (req, res) => {
+  const line_items = [
+    {
+      price_data: {
+        currency: 'inr',  // Updated to INR
+        product_data: {
+          name: 'Advanced Professional Cerificate in Diabetes Management Course',
+        },
+        unit_amount: 637500, // price in paise (100 paise = 1 INR)
+      },
+      quantity: 1,
+    },
+  ];
+
+  const session = await createCheckoutSession(line_items);
+  console.log(session);  // Log the session object to inspect it
+  if (session) {
+    res.json({ id: session.id });
+  } else {
+    res.status(500).send('Error creating checkout session');
+  }
+});
+
+
+app.get('/success', (req, res) => {
+  res.send('Payment was successful!');
+});
+
+app.get('/cancel', (req, res) => {
+  res.send('Payment was canceled.');
+});
+
+app.post('/webhook', async (req, res) => {
+  const sig = req.headers['we_1Nr0A6SAfyNJyYlU3Tdt4lEg'];
+  const endpointSecret = 'whsec_ur7gIFh1U4RWWmxvonmTnbh7b1DvsTPK';
+  
+  let event;
+  
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+  } catch (err) {
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event['type'] === 'payment_intent.succeeded') {
+    const paymentIntent = event.data.object; // contains payment details
+
+    // Your existing script to handle successful payment
+    const token = req.cookies.authToken;
+
+    if (!token) {
+      return res.status(401).send('Unauthorized: No token provided');
+    }
+
+    let userId;
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET); // replace with your JWT secret
+      userId = decoded.userId;
+    } catch (error) {
+      return res.status(401).send('Unauthorized: Invalid token');
+    }
+
+    try {
+      const course = await Course.findById(paymentIntent.metadata.courseObjectId); // replace with how you're storing course ID in payment metadata
+      if (!course) {
+        return res.status(404).send('Course not found');
+      }
+
+      const courseName = course.title; // Assuming the course name is stored in the "title" field
+
+      await User.findByIdAndUpdate(userId, {
+        $addToSet: { coursesPurchased: courseName } // $addToSet ensures no duplicates
+      });
+
+      // Respond to Stripe to acknowledge receipt of the event
+      res.json({ received: true });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Server Error');
+    }
+  } else {
+    // Handle other event types
+    res.status(200).end();
+  }
+});
+
 
 
 app.post("/data", uploadAndSaveToDatabase, (req, res) => {
   // res.send("uploaded")
   res.json({ message: 'File uploaded and saved to the database!' });
   console.log(req.file);
+});
+app.use((err, req, res, next) => {
+  if (err.name === 'UnauthorizedError') {
+    res.redirect('/auth_email');
+  }
 });
 
 app.listen(3000, function () {

@@ -1,0 +1,23 @@
+<%- include('header'); -%>
+<br>
+<br>
+<br>
+<br>
+<br>
+<form action="/pay" method="POST">
+    <!-- Add all necessary fields here -->
+    <input type="text" name="amount" placeholder="Amount" required>
+    <input type="text" name="currency" placeholder="Currency" required>
+    <input type="text" name="order_id" placeholder="Order ID" required>
+    <input type="text" name="billing_name" placeholder="Name" required>
+    <input type="text" name="billing_address" placeholder="Billing Address" required>
+    <input type="text" name="billing_city" placeholder="City" required>
+    <input type="text" name="billing_state" placeholder="State" required>
+    <input type="text" name="billing_zip" placeholder="ZIP Code" required>
+    <input type="text" name="billing_country" placeholder="Country" required>
+    <input type="text" name="billing_tel" placeholder="Telephone" required>
+    <input type="text" name="billing_email" placeholder="Email" required>
+    <!-- Add other fields as necessary -->
+    <button type="submit">Proceed to Pay</button>
+</form>
+<%- include('footer'); -%>
