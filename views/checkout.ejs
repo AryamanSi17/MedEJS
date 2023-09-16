@@ -1,0 +1,30 @@
+<!-- views/checkout.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stripe Checkout</title>
+<script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+<button id="buy-now">Buy Now</button>
+
+<script>
+ var stripe = Stripe('pk_test_51NqeaaSAfyNJyYlUw0pm6uNwqciJkrMzXpSc1svqhKrXpudidpAKkGAA7AuUrX8IV0WwHADFPsWgVLCDG6erIMu800EN3o2nPa');
+
+document.getElementById('buy-now').addEventListener('click', async () => {
+  try {
+    const response = await fetch('/buy-now');
+    const session = await response.json();
+    const result = await stripe.redirectToCheckout({ sessionId: session.id });
+    if (result.error) {
+      alert(result.error.message);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});
+</script>
+</body>
+</html>
