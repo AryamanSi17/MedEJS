@@ -1,6 +1,7 @@
 const { Course,User } = require("./db"); 
 const { JWT_SECRET } = require('./config');
 const mongoose = require('mongoose');
+const isAuthenticated = require('./authMiddleware');
 
 function setRoutes(app) {
   
@@ -300,7 +301,8 @@ function checkEmailVerified(req, res, next) {
       const canonicalLink = 'https://globalmedacademy.com/register';
       res.render('login', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink });
     });
-    app.get("/checkout", function(req, res) {
+    app.get('/checkout/:courseID',isAuthenticated, (req, res) => {
+      const courseID = req.params.courseID;
       const pageTitle = 'Checkout - GlobalMedAcademy';
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
       const metaKeywords = 'checkout, payment, course payment';
@@ -316,10 +318,12 @@ function checkEmailVerified(req, res, next) {
           metaKeywords,
           ogDescription,
           canonicalLink,
-          username: username // Pass the username to the view
+          isUserLoggedIn: req.isUserLoggedIn,
+          username: username,
+          courseID: courseID
         });
       } else {
-        res.redirect('/loginn'); // Redirect to login page if the user is not logged in
+        res.redirect('/loginn'); // This is redundant if you're using the isAuthenticated middleware, but you can keep it if you have other ways of checking user login status
       }
     });
     

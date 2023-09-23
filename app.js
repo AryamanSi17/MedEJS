@@ -26,21 +26,13 @@ const JWT_SECRET = "med ejs is way to success";
 const multer = require('multer');
 const checkUserLoggedIn = require('./utils/authMiddleware');
 const cookieParser = require('cookie-parser');
-<<<<<<< HEAD
-const ccavRequestHandler = require('./ccavenue/ccavRequestHandler');
-const ccavResponseHandler = require('./ccavenue/ccavResponseHandler');
 // const GridFsStorage = require('gridfs-stream');
 const {GridFsStorage} = require('multer-gridfs-storage');
-// const crypto = require('crypto');
-
-const {saveEnquiry}= require('./utils/kit19Integration');
+const courses = require('./utils/courses'); 
 const { Types, connection } = require('mongoose');
-=======
 const querystring = require('querystring');
 const {saveEnquiry}= require('./utils/kit19Integration');
-const { Types } = require('mongoose');
 const { createCheckoutSession } = require('./utils/stripepay');
->>>>>>> a9705a94ecd0e716ea4250e5abc82a74c252a0c6
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
 const app = express();
@@ -592,18 +584,23 @@ app.post('/submitRequestForMore', async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
 //  lolo
-=======
-app.get('/buy-now', async (req, res) => {
+app.get('/buy-now/:courseID', async (req, res) => {
+  const courseID = req.params.courseID;
+  const course = courses.find(c => c.courseID === courseID);
+
+  if (!course) {
+    return res.status(404).send('Course not found');
+  }
+
   const line_items = [
     {
       price_data: {
-        currency: 'inr',  // Updated to INR
+        currency: course.currency,
         product_data: {
-          name: 'Advanced Professional Cerificate in Diabetes Management Course',
+          name: course.name,
         },
-        unit_amount: 637500, // price in paise (100 paise = 1 INR)
+        unit_amount: course.price,
       },
       quantity: 1,
     },
@@ -618,7 +615,6 @@ app.get('/buy-now', async (req, res) => {
   }
 });
 
-
 app.get('/success', (req, res) => {
   res.send('Payment was successful!');
 });
@@ -626,63 +622,6 @@ app.get('/success', (req, res) => {
 app.get('/cancel', (req, res) => {
   res.send('Payment was canceled.');
 });
-
-app.post('/webhook', async (req, res) => {
-  const sig = req.headers['we_1Nr0A6SAfyNJyYlU3Tdt4lEg'];
-  const endpointSecret = 'whsec_ur7gIFh1U4RWWmxvonmTnbh7b1DvsTPK';
-  
-  let event;
-  
-  try {
-    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
-  } catch (err) {
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  if (event['type'] === 'payment_intent.succeeded') {
-    const paymentIntent = event.data.object; // contains payment details
-
-    // Your existing script to handle successful payment
-    const token = req.cookies.authToken;
-
-    if (!token) {
-      return res.status(401).send('Unauthorized: No token provided');
-    }
-
-    let userId;
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET); // replace with your JWT secret
-      userId = decoded.userId;
-    } catch (error) {
-      return res.status(401).send('Unauthorized: Invalid token');
-    }
-
-    try {
-      const course = await Course.findById(paymentIntent.metadata.courseObjectId); // replace with how you're storing course ID in payment metadata
-      if (!course) {
-        return res.status(404).send('Course not found');
-      }
-
-      const courseName = course.title; // Assuming the course name is stored in the "title" field
-
-      await User.findByIdAndUpdate(userId, {
-        $addToSet: { coursesPurchased: courseName } // $addToSet ensures no duplicates
-      });
-
-      // Respond to Stripe to acknowledge receipt of the event
-      res.json({ received: true });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Server Error');
-    }
-  } else {
-    // Handle other event types
-    res.status(200).end();
-  }
-});
-
->>>>>>> a9705a94ecd0e716ea4250e5abc82a74c252a0c6
-
 
 // app.post("/data", uploadAndSaveToDatabase, (req, res) => {
 //   // res.send("uploaded")
