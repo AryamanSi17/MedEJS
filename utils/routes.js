@@ -37,12 +37,16 @@ function setRoutes(app) {
     }
 });
 function checkEmailVerified(req, res, next) {
-  if (req.session.emailVerified) {
-    next();  // If email is verified, proceed to the next middleware/route
+  // Check if the user is on the auth_email page and hasn't authorized their email
+  if (req.path === '/auth_email' && !req.session.emailVerified) {
+    // If not authorized, redirect to the register page
+    res.redirect('/register');
   } else {
-    res.redirect('/auth_email');  // If not, redirect to the email authentication page
+    // If email is verified or user is not on auth_email, proceed to the next middleware/route
+    next();
   }
 }
+
 
   app.get("/data", (req,res) => {
     res.render("data");
@@ -287,7 +291,7 @@ function checkEmailVerified(req, res, next) {
       const canonicalLink = 'https://globalmedacademy.com/loginn';
       res.render('loginn', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink });
     });
-    app.get("/register",checkEmailVerified,function(req,res){
+    app.get("/register",function(req,res){
       // const email=req.body.email
       const pageTitle = 'Registration!';
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';

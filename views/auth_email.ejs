@@ -61,12 +61,12 @@
             </div>
             <div class="center-div">
                 <div class="form-group">
-                <a href="/auth/google" role="button" style="color:rgb(0, 29, 108)" class="btn btn-google">
-                  <img src="../assets/images/icons/google.png" alt="Google Icon" class="google-icon"> Signup with Google
-                </a>
-                <span class="focus-border"></span>
+                  <a href="#" onclick="submitGoogleForm()" style="color: rgb(0, 29, 108)" class="btn btn-google">
+                    <img src="../assets/images/icons/google.png" alt="Google Icon" class="google-icon"> Signup with Google
+                  </a>
+                  <span class="focus-border"></span>
+                </div>
               </div>
-            </div>
         </div>
     </div>
     <br>
@@ -140,6 +140,19 @@
             })
             .catch(error => console.error('There was an error verifying the OTP:', error));
         }
+        function submitGoogleForm() {
+    // Create a hidden form element
+    const form = document.createElement('form');
+    form.method = 'get';
+    form.action = '/auth/google';
+    form.style.display = 'none';
+
+    // Append the form to the document's body
+    document.body.appendChild(form);
+
+    // Submit the form
+    form.submit();
+  }
     </script>
 <%- include('footer'); -%>
     

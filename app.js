@@ -74,6 +74,8 @@ async function findOrCreateUser(profile) {
       displayName: profile.displayName,
       // Set other fields as needed
     });
+     // Set the signup method to 'google' for Google signups
+     newUser.signupMethod = 'google';
 
     return newUser.save();
   }
