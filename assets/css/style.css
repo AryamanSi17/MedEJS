@@ -19560,6 +19560,40 @@ span.transparent-button:hover i {
   right: -64px;
   top: 26%;
 }
+/*Google button*/
+.centered-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Adjust the height as needed */
+}
+
+.btn-google {
+  background-color: #4285F4; /* Google Blue */
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.btn-google:hover {
+  background-color: #357ABD; /* Darker Google Blue on hover */
+}
+
+.google-icon {
+  margin-right: 10px; /* Spacing between the icon and text */
+}
+.center-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Optional: If you want to center vertically too */
+}
+
+/* Google Button */
 
 /* Form Group  */
 .form-group {
@@ -28464,6 +28498,7 @@ Course Sidebar
     padding: 0;
   }
 }
+/* Button styles */
 .btn-google {
   display: inline-block;
   background-color: #fff;
@@ -28474,14 +28509,31 @@ Course Sidebar
   color: #333;
   font-weight: bold;
   font-size: smaller;
+  transition: background-color 0.3s, color 0.3s; /* Smooth hover transition */
 }
 
+/* Google icon styles */
+.center-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 15vh; /* Adjust the height as needed */
+}
 .google-icon {
   vertical-align: middle;
   margin-right: 10px;
   width: 50px; /* Adjust the width as needed */
   height: 50px; /* Adjust the height as needed */
 }
+
+/* Hover effect */
+.btn-google:hover {
+  background-color: rgb(209, 165, 251);
+  color: #fff;
+  border: 1px solid blueviolet;
+}
+/* Google Icon */
 .splash-testimonial-all-wrapper {
   position: relative;
   z-index: 2;
