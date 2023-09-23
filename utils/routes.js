@@ -258,7 +258,26 @@ function checkEmailVerified(req, res, next) {
       res.render('faqs', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
         username: username  });
     });
-
+    app.get("/blogs", function(req, res) {
+      const pageTitle = 'Blogs';
+      const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+      const metaKeywords = 'Fellowship & Certificate Faqs';
+      const ogDescription = 'Blogs';
+      const canonicalLink = 'https://globalmedacademy.com/blogs';
+      const username = req.session.username || null;
+      res.render('blogs', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
+        username: username  });
+    });
+    app.get("/blog-details", function(req, res) {
+      const pageTitle = 'Blogs';
+      const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+      const metaKeywords = 'Fellowship & Certificate Faqs';
+      const ogDescription = 'Blogs';
+      const canonicalLink = 'https://globalmedacademy.com/blogs';
+      const username = req.session.username || null;
+      res.render('blog-details', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
+        username: username  });
+    });
   
     app.get("/loginn",function(req,res){
       const pageTitle = 'Login';
