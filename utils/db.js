@@ -24,6 +24,7 @@ const UserSchema = new Schema({
     email: String,
     course: String,
     coursesPurchased: [String],
+
 });
 
 // UserSchema.plugin(passportLocalMongoose, {
@@ -43,13 +44,13 @@ const User = mongoose.model('User', UserSchema);
 
 
 const FileSchema = new Schema({
-  // originalname: String,
+  originalname: String,
   name: String,
   path: String,
   size: Number,
 })
 
-const FileModel = mongoose.model('File',FileSchema);
+const File = mongoose.model('File',FileSchema);
 const Request = mongoose.model('Request', requestSchema);
 
-module.exports = { mongoose, User,FileModel,Request, Course};
+module.exports = { mongoose, User,File,Request, Course};
