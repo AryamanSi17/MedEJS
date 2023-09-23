@@ -18,7 +18,7 @@ const setRoutes = require('./utils/routes');
 const crypto = require('crypto');
 const emailAuth = require('./utils/emailAuth');
 const LocalStrategy = require("passport-local").Strategy; // Import LocalStrategy
-const { log } = require('console');
+const { log, error } = require('console');
 const jwt = require('jsonwebtoken');
 const isAuthenticated = require('./utils/authMiddleware');
 const bcrypt = require('bcrypt');
@@ -26,10 +26,21 @@ const JWT_SECRET = "med ejs is way to success";
 const multer = require('multer');
 const checkUserLoggedIn = require('./utils/authMiddleware');
 const cookieParser = require('cookie-parser');
+<<<<<<< HEAD
+const ccavRequestHandler = require('./ccavenue/ccavRequestHandler');
+const ccavResponseHandler = require('./ccavenue/ccavResponseHandler');
+// const GridFsStorage = require('gridfs-stream');
+const {GridFsStorage} = require('multer-gridfs-storage');
+// const crypto = require('crypto');
+
+const {saveEnquiry}= require('./utils/kit19Integration');
+const { Types, connection } = require('mongoose');
+=======
 const querystring = require('querystring');
 const {saveEnquiry}= require('./utils/kit19Integration');
 const { Types } = require('mongoose');
 const { createCheckoutSession } = require('./utils/stripepay');
+>>>>>>> a9705a94ecd0e716ea4250e5abc82a74c252a0c6
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
 const app = express();
@@ -482,64 +493,84 @@ const courseid = '9'; // Replace with the actual Course ID
 
 // File handaling method
 
-const FileModel = require("./utils/db");
+// const FileModel = require("./utils/db");
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads/tmp/')
-  },
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, './uploads/tmp/')
+  // },
+
   //   filename: function (req, file, cb) {
   //     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9.pdf)
   //     cb(null, file.filename + '-' + uniqueSuffix)
   //   }
   // })
 
-  filename: function (req, file, cb) {
+//   filename: function (req, file, cb) {
 
-    const originalName = file.originalname;
-    const timestamp = Date.now();
-    const fileExtension = originalName.split('.').pop(); // Get the file extension
-    cb(null, `${timestamp}-${file.fieldname}.${fileExtension}`);
-  },
-});
+//     const originalName = file.originalname;
+//     const timestamp = Date.now();
+//     const fileExtension = originalName.split('.').pop(); // Get the file extension
+//     cb(null, `${timestamp}-${file.fieldname}.${fileExtension}`);
+//   },
+// });
 
-const upload = multer({ storage: storage })
-
-app.get("/data", (req, res) => {
+// const upload = multer({ storage: storage })
+app.get("/data", verifyToken, (req, res) => {
   res.render("data");
-})
+});
 
 
 //multer db config starts
 
-function uploadAndSaveToDatabase(req, res, next) {
-  upload.array('photu', 24)(req, res, function (err) {
-    if (err) {
-      // Handle any upload errors
-      return res.status(500).json({ error: 'File upload failed' });
-    }
+// const { ObjectID } = require('mongodb');
+
+
+// const connection = mongoose.connection;
+
+// let gfs;
+// connection.once('open', () => {
+//   gfs = Grid(conn.db, mongoose.mongo);
+//   gfs.collection('uploads');
+// });
+
+// const storage = multer.memoryStorage();
+// const upload = multer({ storage: storage });
+
+// starting my old
+
+
+// function uploadAndSaveToDatabase(req, res, next) {
+//   upload.array('photu', 24)(req, res, function (err) {
+//     if (err) {
+//       // Handle any upload errors
+//       return res.status(500).json({ error: 'File upload failed' });
+//     }})};
 
     // Create a new document with file information from req.file
-    const { originalname, filename, path, size } = req.file;
-    const fileData = {
-      originalname,
-      filename,
-      path,
-      size,
-      // Add other relevant fields as needed
-    };
 
-    FileModel.create(fileData, function (err, photu) {
-      if (err) {
-        // Handle any database save errors
-        return res.status(500).json({ error: 'Database save failed' });
-      }
 
-      // File information saved successfully
-      res.json({ message: 'File uploaded and saved to the database!' });
-    });
-  });
-}
+//     const { originalname, filename, path, size } = req.photu;
+//     const fileData = {
+//       originalname,
+//       filename,
+//       path,
+//       size,
+//       // Add other relevant fields as needed
+//     };
+
+//     File.create(fileData, function (err, photu) {
+//       if (err) {
+//         // Handle any database save errors
+//         return res.status(500).json({ error: 'Database save failed' });
+//       }
+
+//       // File information saved successfully
+//       res.json({ message: 'File uploaded and saved to the database!' });
+//     });
+//   });
+// }
+
 
 //  multer config ends here 
 
@@ -561,6 +592,9 @@ app.post('/submitRequestForMore', async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
+//  lolo
+=======
 app.get('/buy-now', async (req, res) => {
   const line_items = [
     {
@@ -647,18 +681,103 @@ app.post('/webhook', async (req, res) => {
   }
 });
 
+>>>>>>> a9705a94ecd0e716ea4250e5abc82a74c252a0c6
 
 
-app.post("/data", uploadAndSaveToDatabase, (req, res) => {
-  // res.send("uploaded")
-  res.json({ message: 'File uploaded and saved to the database!' });
-  console.log(req.file);
+// app.post("/data", uploadAndSaveToDatabase, (req, res) => {
+//   // res.send("uploaded")
+//   res.json({ message: 'File uploaded and saved to the database!' });
+//   // console.log(req.file);
+
+//   const writestream = gfs.createWriteStream({
+//     filename: req.file.originalname,
+//   });
+
+//   writestream.on('close', (photu) => {
+//     // return res.send(`File uploaded to MongoDB with id: ${file._id}`);
+//     res.redirect("/data");
+//   });
+
+//   // Pipe the file data to MongoDB
+
+//   writestream.write(req.file.buffer);
+//   writestream.end();
+//   console.log(error);
+// });
+
+// ...
+
+// Configure Multer to handle multiple file uploads
+
+// const storage = multer.memoryStorage();
+// const upload = multer({ storage: storage });
+
+// Define a route to upload multiple files
+
+// app.post('/data', upload.array('files'), (req, res) => {
+//   if (!req.files || req.files.length === 0) {
+//     return res.status(400).send('No files uploaded.');
+//   }
+
+//   const uploadPromises = req.files.map((file) => {
+//     return new Promise((resolve, reject) => {
+//       // Create a writable stream to MongoDB
+//       const writestream = gfs.createWriteStream({
+//         filename: file.originalname,
+//       });
+
+//       writestream.on('close', (file) => {
+//         resolve(`File uploaded to MongoDB with id: ${file._id}`);
+//       });
+
+//       writestream.on('error', (error) => {
+//         reject(error);
+//       });
+
+//       // Pipe the file data to MongoDB
+//       writestream.write(file.buffer);
+//       writestream.end();
+//     });
+//   });
+
+//   Promise.all(uploadPromises)
+//     .then((results) => {
+//       return res.send(results.join('\n'));
+//     })
+//     .catch((error) => {
+//       return res.status(500).send(`Error uploading files: ${error.message}`);
+//     });
+// });
+
+// ...
+
+// new latest logic
+
+// const storage = new GridFsStorage({
+  const url = process.env.MONGODB_URI;
+//   file: (req, file) => {
+//     return {
+//       filename: `${crypto.randomBytes(16).toString('hex')}${path.extname(file.originalname)}`,
+//     };
+//   },
+// });
+const storage = new GridFsStorage({ url });
+
+const upload = multer({ storage });
+
+// Define a route to handle file uploads
+app.post('/data', upload.array('file',4), (req, res) => {
+  return res.json({ message: 'File uploaded successfully to the database' });
+  
 });
 app.use((err, req, res, next) => {
   if (err.name === 'UnauthorizedError') {
     res.redirect('/auth_email');
   }
 });
+
+
+
 
 app.listen(3000, function () {
   console.log("Server started successfully!");
