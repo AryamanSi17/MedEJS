@@ -49,9 +49,9 @@ function checkEmailVerified(req, res, next) {
 }
 
 
-  app.get("/data", (req,res) => {
-    res.render("data");
-  })
+  // app.get("/data", (req,res) => {
+  //   res.render("data");
+  // })
   app.get("/course-masonry", async function(req, res) {
     const pageTitle = 'Professional, Advanced, Fellowship courses';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';

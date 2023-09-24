@@ -1,17 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>hey welcome to globalmedacademy</h1>
+<% if (isUserLoggedIn) { %>
+    <!-- Include auth_header -->
+    <%- include('auth_header') %>
+  <% } else { %>
+    <!-- Include regular header -->
+    <%- include('header') %>
+  <% } %> 
+<br>
+<br>
+<br>
+<br>
+<br>
+    <h1>Upload  Your Files Here</h1>
     <form action="/data" method="post" enctype="multipart/form-data">
-     <input type="file" name="file" />
-    <input type="submit" value="let's see"> 
-    
+     <input name="file" type="file" multiple/>
+     <!-- <input name="PanCard" type="file" /> -->
+     <!-- <input type="certificate" name="file" /> -->
+    <input type="submit" value="SUBMIT DOC'S"> 
     </form>
-</body>
-</html>
+
+    <%- include('footer') %>
