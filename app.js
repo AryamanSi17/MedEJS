@@ -511,9 +511,17 @@ const courseid = '9'; // Replace with the actual Course ID
 // });
 
 // const upload = multer({ storage: storage })
-app.get("/data", verifyToken, (req, res) => {
-  res.render("data");
+app.get("/data", function(req, res) {
+  const pageTitle = 'Upload your Documents here';
+  const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+  const metaKeywords = 'medical instructor, medical teacher, apply for medical instructor';
+  const ogDescription = 'Medical Academic Instructor - Apply for medical teacher and shine your career with us.';
+  const canonicalLink = 'https://globalmedacademy.com/become-teacher';
+  const username = req.session.username || null;
+  res.render('data', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink ,isUserLoggedIn: req.isUserLoggedIn,
+    username: username });
 });
+
 
 
 //multer db config starts
@@ -698,27 +706,169 @@ app.get('/buy-now/:courseID', async (req, res) => {
 // new latest logic
 
 // const storage = new GridFsStorage({
-  const url = process.env.MONGODB_URI;
+
 //   file: (req, file) => {
 //     return {
 //       filename: `${crypto.randomBytes(16).toString('hex')}${path.extname(file.originalname)}`,
 //     };
 //   },
 // });
+
+const url = process.env.MONGODB_URI;
 const storage = new GridFsStorage({ url });
 
 const upload = multer({ storage });
 
-// Define a route to handle file uploads
-app.post('/data', upload.array('file',4), (req, res) => {
-  return res.json({ message: 'File uploaded successfully to the database' });
+// app.post('/data', upload.array('AadharCard',4), (req, res) => {
+//   // return res.json({ message: 'File uploaded successfully to the database' });
+
+//   const { originalname, filename, path, size } = req.file;
+
+//   // taking jws token as user id
+
+
+//   const token = req.cookies.authToken;
+
+//   if (!token) {
+//     return res.status(401).send('Unauthorized: No token provided');
+//   }
+
+//   let userId;
+//   try {
+//     // Verify and decode the token to get the user's ID
+//     const decoded = jwt.verify(token, JWT_SECRET);
+//     userId = decoded.userId;
+//   } catch (error) {
+//     return res.status(401).send('Unauthorized: Invalid token');
+//   }
+
+//   // end 1
+
+//   console.log('User ID:', req.user._id);
+
+//   // Create a GridFS stream to store the file
+//   const writestream = gfs.createWriteStream({
+//     filename: originalname,
+//     metadata: {
+//       userId: req.user._id, // Assuming you have user data in the request
+//     },
+//   });
+
+//   fs.createReadStream(path).pipe(writestream);
+
+//   writestream.on('close', (file) => {
+
+//     User.findByIdAndUpdate(
+//       req.user._id, 
+//       { $push: { files: file._id } },
+//       { new: true },
+//       (err, updatedUser) => {
+//         if (err) {
+//           // Handle the error
+//           console.error('Error updating user:', err);
+//           return res.status(500).send('File upload failed');
+//         }
+
+//         res.status(200).send('File uploaded and associated with the user');
+//       }
+//     );
+//     });
+
+//   });
+
+  app.post('/data', upload.array('AadharCard',4), async (req, res) => {
+    // return res.json({ message: 'File uploaded successfully to the database' });
   
-});
+    // const { originalname, filename, path, size } = req.file;
+  
+    // taking jws token as user id
+  
+    const token = req.cookies.authToken;
+  
+    if (!token) {
+      return res.status(401).send('Unauthorized: No token provided');
+    }
+  
+    let userId;
+    try {
+      // Verify and decode the token to get the user's ID
+      const decoded = jwt.verify(token, JWT_SECRET);
+      userId = decoded.userId;
+    } catch (error) {
+      return res.status(401).send('Unauthorized: Invalid token');
+    }
+
+    const file = new File({
+      originalname,
+      filename,
+      path,
+      size,
+      contentType,
+      userId: req.user._id,
+    });
+    
+    // Save the file to the database
+    await file.save();
+    
+    // Update the user's files array to include the new file ID
+    req.user.files.push(file._id);
+    
+    // Save the user to the database
+    await req.user.save();
+  
+    // Create a GridFS stream to store the file
+    const writestream = gfs.createWriteStream({
+      filename: originalname,
+      metadata: {
+        userId: userId, // Assuming you have user data in the request
+      },
+    });
+  
+    // Pipe the file buffer to the GridFS stream
+    await fs.promises.pipeline(fs.createReadStream(path), writestream);
+  
+    // Get the file ID from the GridFS stream
+    const fileId = writestream.id;
+  
+    // Update the user's files array to include the new file ID
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $push: { files: fileId } },
+      { new: true }
+    );
+  
+    // Return a success response to the user
+    res.status(200).send('File uploaded and associated with the user');
+  });
+
+
+    // User.findById(userId)
+    // .populate('files')
+    // .exec((err, user) => {
+    //   if (err) {
+    //     // Handle the error
+    //     console.error('Error fetching user:', err);
+    //     return res.status(500).send('Failed to retrieve user data');
+    //   }
+  
+    //   // Log the user object to the console for inspection
+    //   console.log('User:', user);
+  
+    //   // User and associated files retrieved successfully
+    //   res.json(user);
+    // });
+
+
+
+
+
 app.use((err, req, res, next) => {
   if (err.name === 'UnauthorizedError') {
     res.redirect('/auth_email');
   }
 });
+
+
 
 
 

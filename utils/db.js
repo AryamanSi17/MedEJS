@@ -24,6 +24,7 @@ const UserSchema = new Schema({
     email: String,
     course: String,
     coursesPurchased: [String],
+    files: [{ type: Schema.Types.ObjectId, ref: 'File' }],
 
 });
 
@@ -43,14 +44,22 @@ const requestSchema = new mongoose.Schema({
 const User = mongoose.model('User', UserSchema);
 
 
-const FileSchema = new Schema({
+// const FileSchema = new Schema({
+//   originalname: String,
+//   name: String,
+//   path: String,
+//   size: Number,
+// })
+const FileSchema = new mongoose.Schema({
   originalname: String,
-  name: String,
+  filename: String,
   path: String,
   size: Number,
-})
+  contentType: String,
+  userId: { type: Schema.Types.ObjectId, ref: 'User' },
+});
 
 const File = mongoose.model('File',FileSchema);
 const Request = mongoose.model('Request', requestSchema);
 
-module.exports = { mongoose, User,File,Request, Course};
+module.exports = { mongoose,File,User,Request, Course};
