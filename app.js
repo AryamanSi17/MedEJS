@@ -343,54 +343,57 @@ const enrollUserInCourse = async (userId, courseid) => {
   }
 };
 
-app.get('/success', async (req, res) => {
-  const paymentIntentId = req.query.payment_intent; // get payment intent ID from query params
-  const token = req.cookies.authToken;
+app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (req, res) => {
+  const sig = req.headers['stripe-signature'];
 
-  if (!token) {
-    return res.status(401).send('Unauthorized: No token provided');
-  }
-
-  let userId;
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET); // replace with your JWT secret
-    userId = decoded.userId;
-  } catch (error) {
-    return res.status(401).send('Unauthorized: Invalid token');
-  }
+  let event;
 
   try {
-    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-    const course = await Course.findById(paymentIntent.metadata.courseObjectId); // replace with how you're storing course ID in payment metadata
-    if (!course) {
-      return res.status(404).send('Course not found');
+    event = stripe.webhooks.constructEvent(req.body, sig, we_1NtmDCSAfyNJyYlUiBdxaRNc);
+  } catch (err) {
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+
+    // Extract courseObjectId and userId from the session (you'll need to have stored them in the session's metadata when creating the session)
+    const courseObjectId = session.metadata.courseObjectId;
+    const userId = session.metadata.userId;
+
+    try {
+      // Find the course using the ObjectId to ensure it exists and fetch its name
+      const course = await Course.findById(courseObjectId);
+      if (!course) {
+        return res.status(404).send('Course not found');
+      }
+
+      const courseName = course.title; // Assuming the course name is stored in the "title" field
+
+      // Update the user's coursesPurchased field with the course name
+      await User.findByIdAndUpdate(userId, {
+        $addToSet: { coursesPurchased: courseName } // $addToSet ensures no duplicates
+      });
+
+      // Respond to Stripe to acknowledge receipt of the event
+      res.json({received: true});
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Server Error');
     }
-
-    const courseName = course.title; // Assuming the course name is stored in the "title" field
-
-    await User.findByIdAndUpdate(userId, {
-      $addToSet: { coursesPurchased: courseName } // $addToSet ensures no duplicates
-    });
-
-    res.redirect('/user');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Server Error');
+  } else {
+    // Handle other event types
+    res.json({received: true});
   }
-});
-
-
-app.get('/cancel', (req, res) => {
-  res.send('Your purchase was canceled.');
 });
 
 
 app.post('/pay/:courseObjectId', async (req, res) => {
   const courseObjectId = req.params.courseObjectId;
-
+  
   // Extract the JWT token from the cookie
   const token = req.cookies.authToken;
-
+  console.log(token)
   if (!token) {
     return res.status(401).send('Unauthorized: No token provided');
   }
@@ -437,7 +440,7 @@ app.get('/user', async function(req, res) {
 
   // Extract the JWT token from the cookie
   const token = req.cookies.authToken;
-
+  console.log(token)
   if (!token) {
       return res.status(401).send('Unauthorized: No token provided');
   }
@@ -606,22 +609,24 @@ app.get('/buy-now/:courseID', async (req, res) => {
     },
   ];
 
-  const session = await createCheckoutSession(line_items);
-  console.log(session);  // Log the session object to inspect it
-  if (session) {
+  try {
+    const session = await createCheckoutSession(line_items);
+    console.log(session);  // Log the session object to inspect it
     res.json({ id: session.id });
-  } else {
+  } catch (error) {
+    console.error(error);
     res.status(500).send('Error creating checkout session');
   }
 });
 
-app.get('/success', (req, res) => {
-  res.send('Payment was successful!');
-});
-
-app.get('/cancel', (req, res) => {
-  res.send('Payment was canceled.');
-});
+//   const session = await createCheckoutSession(line_items);
+//   console.log(session);  // Log the session object to inspect it
+//   if (session) {
+//     res.json({ id: session.id });
+//   } else {
+//     res.status(500).send('Error creating checkout session');
+//   }
+// });
 
 // app.post("/data", uploadAndSaveToDatabase, (req, res) => {
 //   // res.send("uploaded")
