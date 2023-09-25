@@ -199,11 +199,11 @@ function checkEmailVerified(req, res, next) {
         username: username  });
     });
     app.get("/course-details-advanced-professional-certificate-in-general-practice", function(req, res) {
-      const pageTitle = 'Advanced Certificate in Diabetes Mellitus, Diabetology Online';
+      const pageTitle = 'Advanced Professional Certificate in General Practice';
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
       const metaKeywords = 'diabetes management, diabetes certificate course, certificate course in diabetology, certificate in diabetes, diabetes certificate course online, certificate course in diabetes management, advanced certificate course in diabetes, certificate in diabetes management, certificate in diabetes mellitus, certificate in diabetology, advanced certificate in diabetes mellitus, advanced diabetes management, certificate course in diabetes mellitus, diabetes certificate program online';
       const ogDescription = 'Advanced Certificate in Diabetes Mellitus is designed by leading diabetologists to cover the clinical features, screening & diagnosis etc to help you.';
-      const canonicalLink = 'https://globalmedacademy.com/course-details-advanced-professional-certificate-in-diabetes-management';
+      const canonicalLink = 'https://globalmedacademy.com/course-details-advanced-professional-certificate-in-general-practice';
       const username = req.session.username || null;
       res.render('course-details-advanced-professional-certificate-in-general-practice', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
         username: username  });
