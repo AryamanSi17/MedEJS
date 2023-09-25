@@ -273,12 +273,12 @@ function checkEmailVerified(req, res, next) {
       res.render('blogs', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
         username: username  });
     });
-    app.get("/blog1-details", function(req, res) {
+    app.get("/blog/elevate-your-expertise-in-diabetes-care-join-our-fellowship-to-lead-the-fight-against-diabetes-mellitus", function(req, res) {
       const pageTitle = 'Elevate Your Expertise in Diabetes Care: Join Our Fellowship to Lead the Fight Against Diabetes Mellitus';
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
       const metaKeywords = 'Fellowship in diabetology, fellowship in diabetes, fellowship in diabetes mellitus, diabetes fellowship online, diabetes fellowship courses, fellowship in diabetology online';
       const ogDescription = 'Blogs';
-      const canonicalLink = 'https://globalmedacademy.com/blogs';
+      const canonicalLink = 'https://globalmedacademy.com/blog/elevate-your-expertise-in-diabetes-care-join-our-fellowship-to-lead-the-fight-against-diabetes-mellitus';
       const username = req.session.username || null;
       res.render('blog-details', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
         username: username  });
