@@ -1,5 +1,10 @@
-<%- include('header'); -%>
-
+<% if (isUserLoggedIn) { %>
+    <!-- Include auth_header -->
+    <%- include('auth_header') %>
+  <% } else { %>
+    <!-- Include regular header -->
+    <%- include('header') %>
+  <% } %> 
 <div class="rbt-breadcrumb-default rbt-breadcrumb-style-3">
     <div class="breadcrumb-inner">
         <img src="assets/images/bg/bg-image-10.jpg" alt="Education Images">
@@ -546,10 +551,10 @@
                                 </div>
                             </div>
                             <div class="buy-now-btn mt--15">
-                                <a class="rbt-btn btn-gradient icon-hover w-100 d-block text-center btn-unauthorised" href="/pay">
-                                    <span class="btn-text">Buy Now</span>
-                                    <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                </a>
+                                <form action="/checkout/64b977cffa47d3d1072b49b8" method="get">
+                                
+                                    <button type="submit">Pay Now</button>
+                                </form>
                             </div>
 
                             <span class="subtitle"><i class="feather-rotate-ccw"></i> 30-Day Money-Back

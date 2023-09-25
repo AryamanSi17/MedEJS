@@ -51,6 +51,12 @@ const FileSchema = new Schema({
 })
 
 const File = mongoose.model('File',FileSchema);
+const sessionSchema = new mongoose.Schema({
+  sessionId: String,
+  courseID: String,
+});
+
+const Session = mongoose.model('Session', sessionSchema);
 const Request = mongoose.model('Request', requestSchema);
 
-module.exports = { mongoose, User,File,Request, Course};
+module.exports = { mongoose, User, File, Request, Course, Session };

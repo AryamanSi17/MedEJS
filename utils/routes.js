@@ -189,10 +189,10 @@ function checkEmailVerified(req, res, next) {
         username: username  });
     });
     app.get("/course-details-fellowship-in-general-practice", function(req, res) {
-      const pageTitle = 'Advanced Certificate in Diabetes Mellitus, Diabetology Online';
+      const pageTitle = 'Fellowship in General Practice, Online Course, After MBBS';
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
-      const metaKeywords = 'diabetes management, diabetes certificate course, certificate course in diabetology, certificate in diabetes, diabetes certificate course online, certificate course in diabetes management, advanced certificate course in diabetes, certificate in diabetes management, certificate in diabetes mellitus, certificate in diabetology, advanced certificate in diabetes mellitus, advanced diabetes management, certificate course in diabetes mellitus, diabetes certificate program online';
-      const ogDescription = 'Advanced Certificate in Diabetes Mellitus is designed by leading diabetologists to cover the clinical features, screening & diagnosis etc to help you.';
+      const metaKeywords = 'fellowship in general practice, online fellowship in general practice';
+      const ogDescription = 'Advanced Certificate in Diabetes Mellitus is designed by leading diabetologists to cover the clinical features, screening & diagnosis etc to help youFellowship in General Practice to meet the pressing demand for specialized medical training in India intricate healthcare landscape.';
       const canonicalLink = 'https://globalmedacademy.com/course-details-advanced-professional-certificate-in-diabetes-management';
       const username = req.session.username || null;
       res.render('course-details-fellowship-in-general-practice', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
@@ -260,7 +260,7 @@ function checkEmailVerified(req, res, next) {
       const ogDescription = 'Ask your question regarding our fellowship and certificate programs from our experts.';
       const canonicalLink = 'https://globalmedacademy.com/faqs';
       const username = req.session.username || null;
-      res.render('faqs', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
+      res.render('faqs', { isUserLoggedIn: req.isUserLoggedIn,pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,
         username: username  });
     });
     app.get("/blogs", function(req, res) {
@@ -273,10 +273,10 @@ function checkEmailVerified(req, res, next) {
       res.render('blogs', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
         username: username  });
     });
-    app.get("/blog-details", function(req, res) {
-      const pageTitle = 'Blogs';
+    app.get("/blog1-details", function(req, res) {
+      const pageTitle = 'Elevate Your Expertise in Diabetes Care: Join Our Fellowship to Lead the Fight Against Diabetes Mellitus';
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
-      const metaKeywords = 'Fellowship & Certificate Faqs';
+      const metaKeywords = 'Fellowship in diabetology, fellowship in diabetes, fellowship in diabetes mellitus, diabetes fellowship online, diabetes fellowship courses, fellowship in diabetology online';
       const ogDescription = 'Blogs';
       const canonicalLink = 'https://globalmedacademy.com/blogs';
       const username = req.session.username || null;

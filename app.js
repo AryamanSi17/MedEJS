@@ -6,7 +6,7 @@ const ejs = require("ejs");
 const passportLocalMongoose = require("passport-local-mongoose");
 const passport = require("passport");
 const session = require("express-session");
-const { mongoose, User, Course, Request } = require("./utils/db"); // Import from db.js
+const { mongoose, User, Course, Request,Session } = require("./utils/db"); // Import from db.js
 const nodemailer = require('nodemailer');
 const mongodb = require("mongodb");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -33,6 +33,7 @@ const { Types, connection } = require('mongoose');
 const querystring = require('querystring');
 const {saveEnquiry}= require('./utils/kit19Integration');
 const { createCheckoutSession } = require('./utils/stripepay');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
 const app = express();
@@ -45,7 +46,9 @@ app.use(session({
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
 app.use(express.json());
+// Serve static files from the 'public' directory
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -343,92 +346,6 @@ const enrollUserInCourse = async (userId, courseid) => {
   }
 };
 
-app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (req, res) => {
-  const sig = req.headers['stripe-signature'];
-
-  let event;
-
-  try {
-    event = stripe.webhooks.constructEvent(req.body, sig, we_1NtmDCSAfyNJyYlUiBdxaRNc);
-  } catch (err) {
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
-
-    // Extract courseObjectId and userId from the session (you'll need to have stored them in the session's metadata when creating the session)
-    const courseObjectId = session.metadata.courseObjectId;
-    const userId = session.metadata.userId;
-
-    try {
-      // Find the course using the ObjectId to ensure it exists and fetch its name
-      const course = await Course.findById(courseObjectId);
-      if (!course) {
-        return res.status(404).send('Course not found');
-      }
-
-      const courseName = course.title; // Assuming the course name is stored in the "title" field
-
-      // Update the user's coursesPurchased field with the course name
-      await User.findByIdAndUpdate(userId, {
-        $addToSet: { coursesPurchased: courseName } // $addToSet ensures no duplicates
-      });
-
-      // Respond to Stripe to acknowledge receipt of the event
-      res.json({received: true});
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Server Error');
-    }
-  } else {
-    // Handle other event types
-    res.json({received: true});
-  }
-});
-
-
-app.post('/pay/:courseObjectId', async (req, res) => {
-  const courseObjectId = req.params.courseObjectId;
-  
-  // Extract the JWT token from the cookie
-  const token = req.cookies.authToken;
-  console.log(token)
-  if (!token) {
-    return res.status(401).send('Unauthorized: No token provided');
-  }
-
-  let userId;
-  try {
-    // Verify and decode the token to get the user's ID
-    const decoded = jwt.verify(token, JWT_SECRET);
-    userId = decoded.userId;
-  } catch (error) {
-    return res.status(401).send('Unauthorized: Invalid token');
-  }
-
-  try {
-    // Find the course using the ObjectId to ensure it exists and fetch its name
-    const course = await Course.findById(courseObjectId);
-    if (!course) {
-      return res.status(404).send('Course not found');
-    }
-
-    const courseName = course.title; // Assuming the course name is stored in the "title" field
-
-    // Update the user's coursesPurchased field with the course name
-    await User.findByIdAndUpdate(userId, {
-      $addToSet: { coursesPurchased: courseName } // $addToSet ensures no duplicates
-    });
-
-    // Redirect to the user profile page
-    res.redirect('/user');
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Server Error');
-  }
-});
-
 app.get('/user', async function(req, res) {
   const pageTitle = 'User Profile';
   const metaRobots = '';
@@ -436,11 +353,8 @@ app.get('/user', async function(req, res) {
   const ogDescription = '';
   const canonicalLink = 'https://globalmedacademy.com/user';
 
-  let coursesEnrolled = [];
-
   // Extract the JWT token from the cookie
   const token = req.cookies.authToken;
-  console.log(token)
   if (!token) {
       return res.status(401).send('Unauthorized: No token provided');
   }
@@ -457,9 +371,12 @@ app.get('/user', async function(req, res) {
   try {
       // Fetch the user's details from the database using the userId
       const user = await User.findById(userId);
-      if (user && user.coursesPurchased) {
-          coursesEnrolled = user.coursesPurchased;
+      if (!user) {
+          return res.status(404).send('User not found');
       }
+
+      // Extract coursesPurchased from the user or initialize it to an empty array if it doesn't exist
+      const coursesPurchased = user.coursesPurchased || [];
 
       // Render the user page with the course names and other details
       res.render('user_Profile', {
@@ -471,101 +388,21 @@ app.get('/user', async function(req, res) {
           isUserLoggedIn: req.isUserLoggedIn,
           username: user.username,  // Use the username from the fetched user data
           fullname: user.fullname,  // Similarly, use the fullname from the fetched user data
-          coursesEnrolled  // Pass the courses to the EJS template
+          coursesPurchased  // Pass the coursesPurchased to the EJS template
       });
   } catch (error) {
       console.error("Error fetching user's courses:", error);
       res.status(500).send('Server Error');
   }
 });
+
 // Usage
 const userId = '15'; // Replace with the actual user ID
 const courseid = '9'; // Replace with the actual Course ID
-// enrollUserInCourse(userId, courseid);
 
-// sendEmail();
-
-
-// File handaling method
-
-// const FileModel = require("./utils/db");
-
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, './uploads/tmp/')
-  // },
-
-  //   filename: function (req, file, cb) {
-  //     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9.pdf)
-  //     cb(null, file.filename + '-' + uniqueSuffix)
-  //   }
-  // })
-
-//   filename: function (req, file, cb) {
-
-//     const originalName = file.originalname;
-//     const timestamp = Date.now();
-//     const fileExtension = originalName.split('.').pop(); // Get the file extension
-//     cb(null, `${timestamp}-${file.fieldname}.${fileExtension}`);
-//   },
-// });
-
-// const upload = multer({ storage: storage })
 app.get("/data", verifyToken, (req, res) => {
   res.render("data");
 });
-
-
-//multer db config starts
-
-// const { ObjectID } = require('mongodb');
-
-
-// const connection = mongoose.connection;
-
-// let gfs;
-// connection.once('open', () => {
-//   gfs = Grid(conn.db, mongoose.mongo);
-//   gfs.collection('uploads');
-// });
-
-// const storage = multer.memoryStorage();
-// const upload = multer({ storage: storage });
-
-// starting my old
-
-
-// function uploadAndSaveToDatabase(req, res, next) {
-//   upload.array('photu', 24)(req, res, function (err) {
-//     if (err) {
-//       // Handle any upload errors
-//       return res.status(500).json({ error: 'File upload failed' });
-//     }})};
-
-    // Create a new document with file information from req.file
-
-
-//     const { originalname, filename, path, size } = req.photu;
-//     const fileData = {
-//       originalname,
-//       filename,
-//       path,
-//       size,
-//       // Add other relevant fields as needed
-//     };
-
-//     File.create(fileData, function (err, photu) {
-//       if (err) {
-//         // Handle any database save errors
-//         return res.status(500).json({ error: 'Database save failed' });
-//       }
-
-//       // File information saved successfully
-//       res.json({ message: 'File uploaded and saved to the database!' });
-//     });
-//   });
-// }
-
 
 //  multer config ends here 
 
@@ -596,22 +433,29 @@ app.get('/buy-now/:courseID', async (req, res) => {
     return res.status(404).send('Course not found');
   }
 
-  const line_items = [
-    {
-      price_data: {
-        currency: course.currency,
-        product_data: {
-          name: course.name,
-        },
-        unit_amount: course.price,
+  const line_items = [{
+    price_data: {
+      currency: course.currency,
+      product_data: {
+        name: course.name,
       },
-      quantity: 1,
+      unit_amount: course.price,
     },
-  ];
+    quantity: 1,
+  }];
 
   try {
-    const session = await createCheckoutSession(line_items);
-    console.log(session);  // Log the session object to inspect it
+    const success_url = `http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}&courseID=${courseID}`;
+    const cancel_url = 'http://localhost:3000/cancel';
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: line_items,
+      mode: 'payment',
+      success_url: success_url,
+      cancel_url: cancel_url,
+    });
+
     res.json({ id: session.id });
   } catch (error) {
     console.error(error);
@@ -619,94 +463,158 @@ app.get('/buy-now/:courseID', async (req, res) => {
   }
 });
 
-//   const session = await createCheckoutSession(line_items);
-//   console.log(session);  // Log the session object to inspect it
-//   if (session) {
-//     res.json({ id: session.id });
-//   } else {
-//     res.status(500).send('Error creating checkout session');
-//   }
-// });
 
-// app.post("/data", uploadAndSaveToDatabase, (req, res) => {
-//   // res.send("uploaded")
-//   res.json({ message: 'File uploaded and saved to the database!' });
-//   // console.log(req.file);
 
-//   const writestream = gfs.createWriteStream({
-//     filename: req.file.originalname,
-//   });
 
-//   writestream.on('close', (photu) => {
-//     // return res.send(`File uploaded to MongoDB with id: ${file._id}`);
-//     res.redirect("/data");
-//   });
+app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, 'whsec_abbb919e09c71cb6e2399c58dbf51a71e0666987a3a49ebe0c143f190e152cbb');
+  } catch (err) {
+    console.error('Error constructing event:', err);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+  
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    
+    // Log the successful payment for security or auditing purposes
+    console.log('Payment Successful:', session.id);
+    
+    // Optionally, perform any other security-related tasks or verifications here
+    
+  } else {
+    // Handle other event types as necessary
+    console.log('Received event:', event.type);
+  }
+  
+  // Always respond with 200 OK to acknowledge receipt of the event
+  res.json({received: true});
+});
 
-//   // Pipe the file data to MongoDB
 
-//   writestream.write(req.file.buffer);
-//   writestream.end();
-//   console.log(error);
-// });
 
-// ...
+app.get('/success', async (req, res) => {
+  const sessionId = req.query.session_id;
+  const courseID = req.query.courseID; // Extract courseID from the URL
+  
+  if (!sessionId || !courseID) {
+    return res.status(400).send('Session ID and Course ID are required');
+  }
 
-// Configure Multer to handle multiple file uploads
+  // Extract the JWT token from the cookie
+  const token = req.cookies.authToken;
+  if (!token) {
+    return res.status(401).send('Unauthorized: No token provided');
+  }
 
-// const storage = multer.memoryStorage();
-// const upload = multer({ storage: storage });
+  let userId;
+  try {
+    // Verify and decode the token to get the user's ID
+    const decoded = jwt.verify(token, JWT_SECRET);
+    userId = decoded.userId;
+  } catch (error) {
+    return res.status(401).send('Unauthorized: Invalid token');
+  }
 
-// Define a route to upload multiple files
+  try {
+    // Retrieve the session from Stripe
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    
+    // Verify if the payment was successful
+    if (session.payment_status !== 'paid') {
+      return res.status(400).send('Payment was not successful');
+    }
+    
+    // Find the course and the user, then add the course to the user's purchased courses
+    const course = await Course.findById(courseID);
+    if (!course) return res.status(404).send('Course not found');
+    
+    const courseName = course.title;
+    const user = await User.findByIdAndUpdate(userId, {
+      $addToSet: { coursesPurchased: courseName }
+    }, { new: true });
+    
+    if (!user) {
+      console.error('User not found:', userId);
+      return res.status(404).send('User not found');
+    }
+    
+    // Redirect to the user page or another appropriate page with a success message
+    res.redirect('/user?message=Payment is successful!');
+  } catch (error) {
+    console.error('Error in success route:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
-// app.post('/data', upload.array('files'), (req, res) => {
-//   if (!req.files || req.files.length === 0) {
-//     return res.status(400).send('No files uploaded.');
-//   }
+app.get('/cancel', (req, res) => {
+  // Define the message and the redirect URL to the home route
+  const message = 'Payment Unsuccessful!';
+  const redirectUrl = '/'; // Redirect to the home URL
+  
+  // Send a simple HTML response with a script to redirect after a delay
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <title>${message}</title>
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f0f0f0;
+      }
+      #message-container {
+        text-align: center;
+      }
+    </style>
+    </head>
+    <body>
+    <div id="message-container">
+      <p>${message}</p>
+    </div>
+    <script>
+      setTimeout(() => {
+        window.location.href = '${redirectUrl}';
+      }, 3000);
+    </script>
+    </body>
+    </html>
+  `);
+});
 
-//   const uploadPromises = req.files.map((file) => {
-//     return new Promise((resolve, reject) => {
-//       // Create a writable stream to MongoDB
-//       const writestream = gfs.createWriteStream({
-//         filename: file.originalname,
-//       });
+  
 
-//       writestream.on('close', (file) => {
-//         resolve(`File uploaded to MongoDB with id: ${file._id}`);
-//       });
 
-//       writestream.on('error', (error) => {
-//         reject(error);
-//       });
 
-//       // Pipe the file data to MongoDB
-//       writestream.write(file.buffer);
-//       writestream.end();
-//     });
-//   });
 
-//   Promise.all(uploadPromises)
-//     .then((results) => {
-//       return res.send(results.join('\n'));
-//     })
-//     .catch((error) => {
-//       return res.status(500).send(`Error uploading files: ${error.message}`);
-//     });
-// });
 
-// ...
 
-// new latest logic
 
-// const storage = new GridFsStorage({
-  const url = process.env.MONGODB_URI;
-//   file: (req, file) => {
-//     return {
-//       filename: `${crypto.randomBytes(16).toString('hex')}${path.extname(file.originalname)}`,
-//     };
-//   },
-// });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const url = process.env.MONGODB_URI;
 const storage = new GridFsStorage({ url });
-
 const upload = multer({ storage });
 
 // Define a route to handle file uploads
@@ -719,8 +627,6 @@ app.use((err, req, res, next) => {
     res.redirect('/auth_email');
   }
 });
-
-
 
 
 app.listen(3000, function () {

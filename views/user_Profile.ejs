@@ -149,16 +149,17 @@
                                 <div class="col-lg-8">
                                     <p class="mt--10 mb--20">Your purchased courses will be displayed over here .....</p>
                                     <ul class="rbt-information-list mt--15">
-                                        <% if (coursesEnrolled && coursesEnrolled.length > 0) { %>
-                                            <h3>Courses Enrolled:</h3>
+                                        <% if (coursesPurchased && coursesPurchased.length > 0) { %>
+                                            <h3>Courses Purchased:</h3>
                                             <ul>
-                                                <% coursesEnrolled.forEach(function(course) { %>
-                                                    <li><a href="https://moodle.upskill.globalmedacademy.com/"><%= course %></a></li>
-                                                <% }); %>
+                                              <% coursesPurchased.forEach(function(course) { %>
+                                                <li><a href="https://moodle.upskill.globalmedacademy.com/"><%= course %></a></li>
+                                              <% }); %>
                                             </ul>
-                                        <% } else { %>
-                                            <p>You haven't enrolled in any courses yet.</p>
-                                        <% } %>
+                                          <% } else { %>
+                                            <p>You haven't purchased any courses yet.</p>
+                                          <% } %>
+                                          
                                     </ul>
                                 </div>
                                 <div class="col-lg-2 offset-lg-2">
