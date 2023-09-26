@@ -1,10 +1,11 @@
 <% if (isUserLoggedIn) { %>
     <!-- Include auth_header -->
-    <%- include('auth_header') %>
-        <% } else { %>
-            <!-- Include regular header -->
-            <%- include('header') %>
-                <% } %>
+    <%- include('../auth_header') %>
+<% } else { %>
+    <!-- Include regular header -->
+    <%- include('../header') %> <!-- Adjust this path as well if header is in the views directory -->
+<% } %>
+
 
     <div class="rbt-overlay-page-wrapper">
         <div class="breadcrumb-image-container breadcrumb-style-max-width">
@@ -55,4 +56,4 @@
     </div>
 
 
- <%-include('footer')-%>
+ <%-include('../footer')-%>

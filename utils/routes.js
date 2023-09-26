@@ -280,7 +280,7 @@ function checkEmailVerified(req, res, next) {
       const ogDescription = 'Blogs';
       const canonicalLink = 'https://globalmedacademy.com/blog/elevate-your-expertise-in-diabetes-care-join-our-fellowship-to-lead-the-fight-against-diabetes-mellitus';
       const username = req.session.username || null;
-      res.render('blog-details', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
+      res.render('blog/blog-details', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
         username: username  });
     });
   
