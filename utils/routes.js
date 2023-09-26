@@ -292,7 +292,7 @@ function checkEmailVerified(req, res, next) {
       const canonicalLink = 'https://globalmedacademy.com/loginn';
       res.render('loginn', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink });
     });
-    app.get("/register",function(req,res){
+    app.get("/register",isAuthenticated,function(req,res){
       // const email=req.body.email
       const pageTitle = 'Registration!';
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';

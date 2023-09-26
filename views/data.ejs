@@ -4,14 +4,61 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Document Submission</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: #50b3a2;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+        }
+        form {
+            width: 50%;
+            margin: auto;
+            padding: 2em;
+            box-shadow: 0px 0px 10px 0px #000;
+        }
+        label, input {
+            display: block;
+            margin-bottom: 1em;
+        }
+        input[type="submit"] {
+            cursor: pointer;
+            background: #50b3a2;
+            color: #fff;
+            border: none;
+            padding: 1em;
+            width: 100%;
+        }
+        input[type="submit"]:hover {
+            background: #338773;
+        }
+    </style>
 </head>
 <body>
-    <h1>hey welcome to globalmedacademy</h1>
+    <header>
+        <h1>Welcome to GlobalMedAcademy</h1>
+    </header>
     <form action="/data" method="post" enctype="multipart/form-data">
-     <input type="file" name="file" />
-    <input type="submit" value="let's see"> 
-    
+        <label for="aadharCard">Aadhar Card:</label>
+        <input type="file" name="aadharCard" accept="image/*" multiple/>
+        
+        <label for="panCard">PAN Card:</label>
+        <input type="file" name="panCard" accept="image/*" required />
+        
+        <label for="medicalCertificate">Medical Certificate:</label>
+        <input type="file" name="medicalCertificate" accept="image/*" required />
+        
+        <label for="mciCertificate">MCI Certificate:</label>
+        <input type="file" name="mciCertificate" accept="image/*" required />
+        
+        <input type="submit" value="Submit Documents">
     </form>
 </body>
 </html>

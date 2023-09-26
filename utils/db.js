@@ -24,7 +24,14 @@ const UserSchema = new Schema({
     email: String,
     course: String,
     coursesPurchased: [String],
-
+    uploadedFiles: [
+      {
+        originalname: String,
+        name: String,
+        path: String,
+        size: Number,
+      },
+    ],
 });
 
 // UserSchema.plugin(passportLocalMongoose, {
@@ -48,7 +55,8 @@ const FileSchema = new Schema({
   name: String,
   path: String,
   size: Number,
-})
+  userId : {type : Schema.Types.ObjectId, ref:'User' },
+});
 
 const File = mongoose.model('File',FileSchema);
 const sessionSchema = new mongoose.Schema({

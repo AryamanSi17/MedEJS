@@ -20,7 +20,7 @@ const emailAuth = require('./utils/emailAuth');
 const LocalStrategy = require("passport-local").Strategy; // Import LocalStrategy
 const { log, error } = require('console');
 const jwt = require('jsonwebtoken');
-const isAuthenticated = require('./utils/authMiddleware');
+// const isAuthenticated = require('./utils/authMiddleware');
 const bcrypt = require('bcrypt');
 const JWT_SECRET = "med ejs is way to success";
 const multer = require('multer');
@@ -33,6 +33,7 @@ const { Types, connection } = require('mongoose');
 const querystring = require('querystring');
 const {saveEnquiry}= require('./utils/kit19Integration');
 const { createCheckoutSession } = require('./utils/stripepay');
+const isAuthenticated = require('./utils/isAuthenticatedMiddleware');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
@@ -400,9 +401,6 @@ app.get('/user', async function(req, res) {
 const userId = '15'; // Replace with the actual user ID
 const courseid = '9'; // Replace with the actual Course ID
 
-app.get("/data", verifyToken, (req, res) => {
-  res.render("data");
-});
 
 //  multer config ends here 
 
@@ -617,16 +615,59 @@ const url = process.env.MONGODB_URI;
 const storage = new GridFsStorage({ url });
 const upload = multer({ storage });
 
-// Define a route to handle file uploads
-app.post('/data', upload.array('file',4), (req, res) => {
-  return res.json({ message: 'File uploaded successfully to the database' });
-  
+app.get("/data", isAuthenticated, (req, res) => {
+  res.render("data");
 });
-app.use((err, req, res, next) => {
-  if (err.name === 'UnauthorizedError') {
-    res.redirect('/auth_email');
+
+
+
+app.post('/data', upload.fields([
+  { name: 'aadharCard' },
+  { name: 'panCard' },
+  { name: 'medicalCertificate' },
+  { name: 'mciCertificate' }
+]), async (req, res) => {
+  // Extract the JWT token from the cookie
+  const token = req.cookies.authToken;
+  if (!token) {
+    return res.status(401).send('Unauthorized: No token provided');
+  }
+
+  let userId;
+  try {
+    // Verify and decode the token to get the user's ID
+    const decoded = jwt.verify(token, JWT_SECRET);
+    userId = decoded.userId;
+  } catch (error) {
+    return res.status(401).send('Unauthorized: Invalid token');
+  }
+
+  try {
+    // Prepare the uploadedFiles array with the uploaded files information
+    const uploadedFiles = [];
+    if (req.files.aadharCard) uploadedFiles.push({ ...req.files.aadharCard[0], title: 'Aadhar Card' });
+    if (req.files.panCard) uploadedFiles.push({ ...req.files.panCard[0], title: 'Pan Card' });
+    if (req.files.medicalCertificate) uploadedFiles.push({ ...req.files.medicalCertificate[0], title: 'Medical Certificate' });
+    if (req.files.mciCertificate) uploadedFiles.push({ ...req.files.mciCertificate[0], title: 'MCI Certificate' });
+
+    // Find the user by ID and update the uploadedFiles array
+    const user = await User.findByIdAndUpdate(userId, {
+      $push: { uploadedFiles: { $each: uploadedFiles } }
+    }, { new: true });
+
+    if (!user) {
+      console.error('User not found:', userId);
+      return res.status(404).send('User not found');
+    }
+
+    // Redirect to the user page or another appropriate page with a success message
+    res.redirect('/user?message=Files uploaded successfully!');
+  } catch (error) {
+    console.error('Error in upload route:', error);
+    res.status(500).send('Internal Server Error');
   }
 });
+
 
 
 app.listen(3000, function () {
