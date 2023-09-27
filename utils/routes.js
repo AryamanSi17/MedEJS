@@ -301,7 +301,7 @@ function checkEmailVerified(req, res, next) {
       const canonicalLink = 'https://globalmedacademy.com/register';
       res.render('login', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink });
     });
-    app.get('/checkout/:courseID',isAuthenticated, (req, res) => {
+    app.get('/checkout/:courseID', isAuthenticated, async (req, res) => {
       const courseID = req.params.courseID;
       const pageTitle = 'Checkout - GlobalMedAcademy';
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
@@ -312,18 +312,28 @@ function checkEmailVerified(req, res, next) {
     
       // Check if the user is logged in using the isUserLoggedIn property set by the middleware
       if (req.isUserLoggedIn) {
-        res.render('checkout', {
-          pageTitle,
-          metaRobots,
-          metaKeywords,
-          ogDescription,
-          canonicalLink,
-          isUserLoggedIn: req.isUserLoggedIn,
-          username: username,
-          courseID: courseID
-        });
+        try {
+          // Assuming that the user's ID is stored in req.session.userId
+          const user = await User.findById(req.session.userId);
+          const canCheckout = user && user.uploadedFiles && user.uploadedFiles.length > 0;
+    
+          res.render('checkout', {
+            pageTitle,
+            metaRobots,
+            metaKeywords,
+            ogDescription,
+            canonicalLink,
+            isUserLoggedIn: req.isUserLoggedIn,
+            username: username,
+            courseID: courseID,
+            canCheckout: canCheckout // Pass the canCheckout variable to the view
+          });
+        } catch (error) {
+          console.error('Error in checkout route:', error);
+          res.status(500).send('Internal Server Error');
+        }
       } else {
-        res.redirect('/loginn'); // This is redundant if you're using the isAuthenticated middleware, but you can keep it if you have other ways of checking user login status
+        res.redirect('/loginn');
       }
     });
     

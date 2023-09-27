@@ -1,4 +1,10 @@
-<%- include('header'); -%>
+<% if (isUserLoggedIn) { %>
+    <!-- Include auth_header -->
+    <%- include('auth_header') %>
+        <% } else { %>
+            <!-- Include regular header -->
+            <%- include('header') %>
+                <% } %>
 <div class="rbt-breadcrumb-default rbt-breadcrumb-style-3">
     <div class="breadcrumb-inner">
         <img src="assets/images/bg/bg-image-10.jpg" alt="Education Images">
@@ -481,23 +487,34 @@
                 <div class="course-sidebar sticky-top rbt-shadow-box course-sidebar-top rbt-gradient-border">
                     <div class="inner">
 
-                        <!-- Start Viedo Wrapper  -->
-                        <a class="video-popup-with-text video-popup-wrapper text-center popup-video sidebar-video-hidden mb--15"
-                            href="https://www.youtube.com/watch?v=nA1Aqp0sPQo">
+                        <div class="video-popup-with-text video-popup-wrapper text-center popup-video sidebar-video-hidden mb--15" id="videoTrigger">
                             <div class="video-content">
-                                <img class="w-100 rbt-radius" src="assets/images/others/video-01.jpg"
-                                    alt="Video Images">
+                                <img class="w-100 rbt-radius" src="assets/images/others/video-01.jpg" alt="Video Images">
                                 <div class="position-to-top">
                                     <span class="rbt-btn rounded-player-2 with-animation">
                                         <span class="play-icon"></span>
                                     </span>
                                 </div>
-                                <span class="play-view-text d-block color-white"><i class="feather-eye"></i> Preview
-                                    this course</span>
+                                <span class="play-view-text d-block color-white"><i class="feather-eye"></i> Preview this course</span>
                             </div>
-                        </a>
-                        <!-- End Viedo Wrapper  -->
-
+                        </div>
+                        
+                        <!-- Modal -->
+                        <div class="modal" id="videoModal">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <video id="videoPlayer" controls>
+                                            <source src="assets/videos/ProCertDB.mp4" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                        <button type="button" class="close" id="closeModalBtn">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="content-item-content">
                             <div
                                 class="rbt-price-wrapper d-flex flex-wrap align-items-center justify-content-between">
@@ -888,4 +905,23 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+       const videoTrigger = document.getElementById('videoTrigger');
+       const videoModal = document.getElementById('videoModal');
+       const videoPlayer = document.getElementById('videoPlayer');
+       const closeModalBtn = document.getElementById('closeModalBtn');
+
+       videoTrigger.addEventListener('click', function () {
+           videoModal.style.display = 'flex';
+           videoPlayer.play();
+       });
+
+       closeModalBtn.addEventListener('click', function () {
+           videoModal.style.display = 'none';
+           videoPlayer.pause();
+           videoPlayer.currentTime = 0; // Optional: Reset video to start position
+       });
+   });
+</script>
 <%- include('footer'); -%>

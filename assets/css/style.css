@@ -28792,3 +28792,36 @@ input::-webkit-inner-spin-button {
   display: none;
 }
 
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  align-items: center;
+  justify-content: center;
+}
+.modal-dialog {
+  max-width: 800px;
+  margin: auto;
+}
+.modal-content {
+  position: relative;
+}
+.close {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  cursor: pointer;
+  background-color: #ffffff;
+  border: none;
+  padding: 5px;
+  border-radius: 50%;
+}
+#videoPlayer {
+  width: 100%;
+}
+  
+

@@ -7,12 +7,18 @@
 <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
-<button id="buy-now">Buy Now</button>
+<% if (canCheckout) { %>
+  <button id="buy-now">Buy Now</button>
+<% } else { %>
+  <script>
+    window.location.href = '/data';
+  </script>
+<% } %>
 
 <script>
  var stripe = Stripe('pk_test_51NqeaaSAfyNJyYlUw0pm6uNwqciJkrMzXpSc1svqhKrXpudidpAKkGAA7AuUrX8IV0WwHADFPsWgVLCDG6erIMu800EN3o2nPa');
 
-document.getElementById('buy-now').addEventListener('click', async () => {
+document.getElementById('buy-now')?.addEventListener('click', async () => {
   try {
     const courseID = '<%= courseID %>'; // Get the courseID passed to the view
     const response = await fetch(`/buy-now/${courseID}`); // Use the courseID in the fetch URL

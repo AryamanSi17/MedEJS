@@ -616,7 +616,9 @@ const storage = new GridFsStorage({ url });
 const upload = multer({ storage });
 
 app.get("/data", isAuthenticated, (req, res) => {
-  res.render("data");
+  const username = req.session.username || null;
+  res.render('data', {isUserLoggedIn: req.isUserLoggedIn,
+    username: username  });
 });
 
 
