@@ -1,9 +1,9 @@
 <% if (isUserLoggedIn) { %>
     <!-- Include auth_header -->
-    <%- include('../auth_header') %>
+    <%- include('auth_header') %>
 <% } else { %>
     <!-- Include regular header -->
-    <%- include('../header') %> <!-- Adjust this path as well if header is in the views directory -->
+    <%- include('header') %> <!-- Adjust this path as well if header is in the views directory -->
 <% } %>
 
 
@@ -56,4 +56,4 @@
     </div>
 
 
- <%-include('../footer')-%>
+ <%-include('footer')-%>
