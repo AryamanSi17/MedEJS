@@ -1,32 +1,28 @@
 const jwt = require('jsonwebtoken');
-const User = require('../User'); // Adjust the path according to your project structure
+const {User} = require('./db'); // Adjust the path according to your project structure
 const JWT_SECRET = 'med ejs is way to success'; // Replace with your JWT secret or import it from your config file
 
-const checkUploadedFiles = async (req, res, next) => {
+const checkUploadedDocuments = async (req, res, next) => {
   try {
-    // Extract the JWT token from the cookie
     const token = req.cookies.authToken;
-    if (!token) {
-      return res.status(401).send('Unauthorized: No token provided');
-    }
+    if (!token) return res.status(401).redirect('/login');
 
-    // Verify and decode the token to get the user's ID
     const decoded = jwt.verify(token, JWT_SECRET);
     const userId = decoded.userId;
 
-    // Find the user by ID and check if they have uploaded the required files
     const user = await User.findById(userId);
-    if (!user || (user.uploadedFiles && user.uploadedFiles.length === 0)) {
-      // Redirect to the data route if the user hasn't uploaded any files
-      return res.redirect('/data');
+    if (!user) return res.status(404).send('User not found');
+
+    if (user.uploadedFiles && user.uploadedFiles.length < 4) {
+      return res.redirect(`/upload-documents?courseID=${req.params.courseID}`);
     }
 
-    // If the user has uploaded the required files, call the next middleware
     next();
   } catch (error) {
-    console.error('Error in checkUploadedFiles middleware:', error);
+    console.error('Error in checkUploadedDocuments middleware:', error);
     res.status(500).send('Internal Server Error');
   }
 };
 
-module.exports = checkUploadedFiles;
+module.exports = checkUploadedDocuments;
+

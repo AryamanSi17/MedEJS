@@ -2,6 +2,7 @@ const { Course,User } = require("./db");
 const { JWT_SECRET } = require('./config');
 const mongoose = require('mongoose');
 const isAuthenticated = require('./authMiddleware');
+const checkUploadedDocuments = require('./checkUploadedFiles');
 
 function setRoutes(app) {
   
@@ -273,14 +274,14 @@ function checkEmailVerified(req, res, next) {
       res.render('blogs', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
         username: username  });
     });
-    app.get("/blog/elevate-your-expertise-in-diabetes-care-join-our-fellowship-to-lead-the-fight-against-diabetes-mellitus", function(req, res) {
+    app.get("/elevate-your-expertise-in-diabetes-care-join-our-fellowship-to-lead-the-fight-against-diabetes-mellitus", function(req, res) {
       const pageTitle = 'Elevate Your Expertise in Diabetes Care: Join Our Fellowship to Lead the Fight Against Diabetes Mellitus';
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
       const metaKeywords = 'Fellowship in diabetology, fellowship in diabetes, fellowship in diabetes mellitus, diabetes fellowship online, diabetes fellowship courses, fellowship in diabetology online';
       const ogDescription = 'Blogs';
       const canonicalLink = 'https://globalmedacademy.com/blog/elevate-your-expertise-in-diabetes-care-join-our-fellowship-to-lead-the-fight-against-diabetes-mellitus';
       const username = req.session.username || null;
-      res.render('blog/blog-details', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
+      res.render('blog-details', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
         username: username  });
     });
   
@@ -301,7 +302,7 @@ function checkEmailVerified(req, res, next) {
       const canonicalLink = 'https://globalmedacademy.com/register';
       res.render('login', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink });
     });
-    app.get('/checkout/:courseID', isAuthenticated, async (req, res) => {
+    app.get('/checkout/:courseID', isAuthenticated,checkUploadedDocuments, async (req, res) => {
       const courseID = req.params.courseID;
       const pageTitle = 'Checkout - GlobalMedAcademy';
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
@@ -309,14 +310,9 @@ function checkEmailVerified(req, res, next) {
       const ogDescription = 'Checkout page for GlobalMedAcademy courses.';
       const canonicalLink = 'https://globalmedacademy.com/checkout';
       const username = req.session.username || null;
-    
-      // Check if the user is logged in using the isUserLoggedIn property set by the middleware
+      
       if (req.isUserLoggedIn) {
         try {
-          // Assuming that the user's ID is stored in req.session.userId
-          const user = await User.findById(req.session.userId);
-          const canCheckout = user && user.uploadedFiles && user.uploadedFiles.length > 0;
-    
           res.render('checkout', {
             pageTitle,
             metaRobots,
@@ -325,15 +321,14 @@ function checkEmailVerified(req, res, next) {
             canonicalLink,
             isUserLoggedIn: req.isUserLoggedIn,
             username: username,
-            courseID: courseID,
-            canCheckout: canCheckout // Pass the canCheckout variable to the view
+            courseID: courseID
           });
         } catch (error) {
           console.error('Error in checkout route:', error);
           res.status(500).send('Internal Server Error');
         }
       } else {
-        res.redirect('/loginn');
+        res.redirect('/login');
       }
     });
     

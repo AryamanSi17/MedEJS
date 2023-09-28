@@ -40,7 +40,10 @@
     <header>
         <h1>Welcome to GlobalMedAcademy</h1>
     </header>
-    <form action="/data" method="post" enctype="multipart/form-data">
+    <form action="/upload-documents" method="post" enctype="multipart/form-data">
+        <!-- Hidden input for courseID -->
+        <input type="hidden" name="courseID" value="<%= courseID %>">
+        
         <label for="aadharCard">Aadhar Card:</label>
         <input type="file" name="aadharCard" accept="image/*" multiple/>
         

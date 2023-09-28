@@ -5,20 +5,45 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Stripe Checkout</title>
 <script src="https://js.stripe.com/v3/"></script>
+<style>
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+  }
+  img {
+    width: 200px; /* Adjust as needed */
+    height: 200px; /* Adjust as needed */
+    object-fit: cover;
+    border-radius: 10px; /* Optional: for rounded corners */
+    margin-bottom: 20px;
+  }
+  button {
+    padding: 10px 20px;
+    background-color: #185ee0; /* Green */
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  button:hover {
+    background-color: #218838;
+  }
+</style>
 </head>
 <body>
-<% if (canCheckout) { %>
+  <img src="../assets/images/course/course-list-07.jpg" alt="Descriptive Alt Text">
   <button id="buy-now">Buy Now</button>
-<% } else { %>
-  <script>
-    window.location.href = '/data';
-  </script>
-<% } %>
 
 <script>
  var stripe = Stripe('pk_test_51NqeaaSAfyNJyYlUw0pm6uNwqciJkrMzXpSc1svqhKrXpudidpAKkGAA7AuUrX8IV0WwHADFPsWgVLCDG6erIMu800EN3o2nPa');
 
-document.getElementById('buy-now')?.addEventListener('click', async () => {
+document.getElementById('buy-now').addEventListener('click', async () => {
   try {
     const courseID = '<%= courseID %>'; // Get the courseID passed to the view
     const response = await fetch(`/buy-now/${courseID}`); // Use the courseID in the fetch URL

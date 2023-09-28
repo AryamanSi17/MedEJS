@@ -34,6 +34,7 @@ const querystring = require('querystring');
 const {saveEnquiry}= require('./utils/kit19Integration');
 const { createCheckoutSession } = require('./utils/stripepay');
 const isAuthenticated = require('./utils/isAuthenticatedMiddleware');
+
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
@@ -469,7 +470,7 @@ app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (req, res
   
   let event;
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, 'whsec_abbb919e09c71cb6e2399c58dbf51a71e0666987a3a49ebe0c143f190e152cbb');
+    event = stripe.webhooks.constructEvent(req.body, sig, 'whsec_SoQwbnJNYBfhZj33irF1IOmIUxoi9TKw');
   } catch (err) {
     console.error('Error constructing event:', err);
     return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -615,15 +616,16 @@ const url = process.env.MONGODB_URI;
 const storage = new GridFsStorage({ url });
 const upload = multer({ storage });
 
-app.get("/data", isAuthenticated, (req, res) => {
+app.get('/upload-documents', isAuthenticated, (req, res) => {
+  const courseID = req.query.courseID || '';
   const username = req.session.username || null;
-  res.render('data', {isUserLoggedIn: req.isUserLoggedIn,
-    username: username  });
+  res.render('data', { courseID,isUserLoggedIn: req.isUserLoggedIn,
+    username: username   });
 });
 
 
 
-app.post('/data', upload.fields([
+app.post('/upload-documents', upload.fields([
   { name: 'aadharCard' },
   { name: 'panCard' },
   { name: 'medicalCertificate' },
@@ -662,13 +664,24 @@ app.post('/data', upload.fields([
       return res.status(404).send('User not found');
     }
 
-    // Redirect to the user page or another appropriate page with a success message
-    res.redirect('/user?message=Files uploaded successfully!');
+    const courseID = req.body.courseID || req.query.courseID; // Extract courseID from either body or query
+  if(courseID) {
+    res.redirect(`/checkout/${courseID}`);
+  } else {
+    console.error('courseID is undefined in request body');
+    res.status(400).send('Bad Request: courseID is undefined');
+  }
   } catch (error) {
     console.error('Error in upload route:', error);
     res.status(500).send('Internal Server Error');
   }
 });
+// app.get('/pre-checkout/:courseID', isAuthenticated, checkUploadedFiles, async (req, res) => {
+//   // If the middleware passes, it means the user has uploaded all required documents.
+//   const courseID = req.params.courseID; // Use params instead of query to get the courseID
+//   res.redirect(`/checkout/${courseID}`);
+// });
+
 
 
 

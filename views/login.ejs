@@ -1,4 +1,20 @@
 <%- include("header"); -%>
+<style>
+  #password-requirements {
+    margin-top: 10px;
+}
+
+#password-requirements p {
+    color: red;
+    margin: 0;
+}
+
+#password-requirements .fulfilled {
+    color: green;
+    text-decoration: line-through;
+}
+
+</style>
 <!-- Start breadcrumb Area -->
 <div class="rbt-breadcrumb-default ptb--100 ptb_md--50 ptb_sm--30 bg-gradient-1">
   <div class="container">
@@ -38,10 +54,18 @@
               <span class="focus-border"></span>
             </div>
             <div class="form-group">
-              <input name="password" type="password" required>
+              <input id="password" name="password" type="password" required>
               <label>Password *</label>
               <span class="focus-border"></span>
-            </div>
+              <div id="password-requirements">
+                  <p id="length">Password length - 8</p>
+                  <p id="digit">Digits - 1</p>
+                  <p id="lowercase">Lowercase letters - 1</p>
+                  <p id="uppercase">Uppercase letters - 1</p>
+                  <p id="non-alphanumeric">Non-alphanumeric characters - 1</p>
+              </div>
+          </div>
+          
             <div class="form-group">
               <a href="/auth/google" role="button" style="color:blueviolet" class="btn btn-google">
                 <img src="../assets/images/icons/google.png" alt="Google Icon" class="google-icon"> Signup with Google
@@ -98,6 +122,13 @@
   document.querySelector('form[action="/register"]').addEventListener('submit', function(event) {
     localStorage.removeItem('email');
 });
-
+document.getElementById('password').addEventListener('input', function() {
+    const password = this.value;
+    document.getElementById('length').classList.toggle('fulfilled', password.length >= 8);
+    document.getElementById('digit').classList.toggle('fulfilled', /\d/.test(password));
+    document.getElementById('lowercase').classList.toggle('fulfilled', /[a-z]/.test(password));
+    document.getElementById('uppercase').classList.toggle('fulfilled', /[A-Z]/.test(password));
+    document.getElementById('non-alphanumeric').classList.toggle('fulfilled', /\W|_/.test(password));
+});
 </script>
 <%- include("footer"); -%>
