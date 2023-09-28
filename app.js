@@ -470,7 +470,7 @@ app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (req, res
   
   let event;
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, 'whsec_SoQwbnJNYBfhZj33irF1IOmIUxoi9TKw');
+    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_SIGNING_SECRET);
   } catch (err) {
     console.error('Error constructing event:', err);
     return res.status(400).send(`Webhook Error: ${err.message}`);
