@@ -28824,4 +28824,22 @@ input::-webkit-inner-spin-button {
   width: 100%;
 }
   
+.upload-icon-label {
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  margin-left: 10px;
+  font-size: 1em;
+  float: right;
+  margin-right: 20px; /* Adjust as needed */
+}
 
+.file-input {
+  display: none;
+}
+
+.file-upload-group {
+  margin-bottom: 20px;
+  overflow: hidden; /* Clear floats */
+}

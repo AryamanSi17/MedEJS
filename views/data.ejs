@@ -4,59 +4,145 @@
   <% } else { %>
     <!-- Include regular header -->
     <%- include('header') %>
-  <% } %> 
-    <title>Document Submission</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        form {
-            width: 50%;
-            margin: auto;
-            padding: 2em;
-            box-shadow: 0px 0px 10px 0px #000;
-        }
-        label, input {
-            display: block;
-            margin-bottom: 1em;
-        }
-        input[type="submit"] {
-            cursor: pointer;
-            background: #8d50b3;
-            color: #fff;
-            border: none;
-            padding: 1em;
-            width: 100%;
-        }
-        input[type="submit"]:hover {
-            background: #338773;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Welcome to GlobalMedAcademy</h1>
-    </header>
-    <form action="/upload-documents" method="post" enctype="multipart/form-data">
-        <!-- Hidden input for courseID -->
-        <input type="hidden" name="courseID" value="<%= courseID %>">
-        
-        <label for="aadharCard">Aadhar Card:</label>
-        <input type="file" name="aadharCard" accept="image/*" multiple/>
-        
-        <label for="panCard">PAN Card:</label>
-        <input type="file" name="panCard" accept="image/*" required />
-        
-        <label for="medicalCertificate">Medical Certificate:</label>
-        <input type="file" name="medicalCertificate" accept="image/*" required />
-        
-        <label for="mciCertificate">MCI Certificate:</label>
-        <input type="file" name="mciCertificate" accept="image/*" required />
-        
-        <input type="submit" value="Submit Documents">
-    </form>
-</body>
-</html>
+  <% } %>  
+                    <title>Document Submission</title>
+                        <div class="slider-area rbt-banner-10 height-750 bg_image bg_image--10">
+                            <div class="container">
+                                <div class="row justify-content-center">
+                                    <div class="col-lg-6">
+                                        <h4>Before proceeding...</h4>
+                                        <div class="rbt-contact-form contact-form-style-1 max-width-auto">
+                                            <form action="/upload-documents" method="post"
+                                                enctype="multipart/form-data">
+                                                <!-- Hidden input for courseID -->
+                                                <input type="hidden" name="courseID" value="<%= courseID %>">
+
+                                                <div class="file-upload-group">
+                                                    <h5>Aadhar Card <label for="aadharCard"
+                                                            class="upload-icon-label"><span class="upload-icon"><i
+                                                                    class="fas fa-upload"></i></span></label></h5>
+                                                    <input type="file" name="aadharCard" accept="image/*" multiple
+                                                        id="aadharCard" class="file-input" />
+                                                </div>
+
+                                                <div class="file-upload-group">
+                                                    <h5>Pan Card <label for="panCard" class="upload-icon-label"><span
+                                                                class="upload-icon"><i
+                                                                    class="fas fa-upload"></i></span></label></h5>
+                                                    <input type="file" name="panCard" accept="image/*" required
+                                                        id="panCard" class="file-input" />
+                                                </div>
+                                                <div class="file-upload-group">
+                                                    <h5>Medical Certificate <label for="medicalCertificate" class="upload-icon-label"><span class="upload-icon"><i class="fas fa-upload"></i></span></label></h5>
+                                                    <input type="file" name="medicalCertificate" accept="image/*" required id="medicalCertificate" class="file-input"/>
+                                                </div>
+                                                
+                                                <div class="file-upload-group">
+                                                    <h5>MCI Certificate <label for="mciCertificate" class="upload-icon-label"><span class="upload-icon"><i class="fas fa-upload"></i></span></label></h5>
+                                                    <input type="file" name="mciCertificate" accept="image/*" required id="mciCertificate" class="file-input"/>
+                                                </div>
+                                                
+
+                                                <input type="submit" value="Submit Documents"
+                                                    class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </body>
+                    <br>
+                    <br>
+
+                    <br>
+                    <br>
+                    <br>
+
+                    <div class="container-fluid">
+                        <div class="row g-3">
+                            <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+                                <div class="instagram-grid">
+                                    <a>
+                                        <img src="assets/images/instagram/instagram-01.jpg" alt="instagram">
+                                        <span class="user-info">
+                                            <span class="icon"><i class="icon-instagram"></i></span>
+
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+                                <div class="instagram-grid">
+                                    <a>
+                                        <img src="assets/images/instagram/instagram-02.jpg" alt="instagram">
+                                        <span class="user-info">
+                                            <span class="icon"><i class="icon-instagram"></i></span>
+
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+                                <div class="instagram-grid">
+                                    <a>
+                                        <img src="assets/images/instagram/instagram-03.jpg" alt="instagram">
+                                        <span class="user-info">
+                                            <span class="icon"><i class="icon-instagram"></i></span>
+
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+                                <div class="instagram-grid">
+                                    <a>
+                                        <img src="assets/images/instagram/instagram-04.jpg" alt="instagram">
+                                        <span class="user-info">
+                                            <span class="icon"><i class="icon-instagram"></i></span>
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+                                <div class="instagram-grid">
+                                    <a>
+                                        <img src="assets/images/instagram/instagram-05.jpg" alt="instagram">
+                                        <span class="user-info">
+                                            <span class="icon"><i class="icon-instagram"></i></span>
+
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+                                <div class="instagram-grid">
+                                    <a>
+                                        <img src="assets/images/instagram/instagram-06.jpg" alt="instagram">
+                                        <span class="user-info">
+                                            <span class="icon"><i class="icon-instagram"></i></span>
+
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            document.querySelectorAll('.file-input').forEach(function (input) {
+                                input.addEventListener('change', function () {
+                                    const iconSpan = input.parentElement.querySelector('.upload-icon');
+                                    if (input.files.length > 0) {
+                                        iconSpan.innerHTML = '<i class="fas fa-check"></i>';
+                                    } else {
+                                        iconSpan.innerHTML = '<i class="fas fa-upload"></i>';
+                                    }
+                                });
+                            });
+                        });
+                    </script>
+
+
+
+                    <%- include('footer') %>

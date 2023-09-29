@@ -70,7 +70,19 @@ passport.use(new GoogleStrategy({
       return done(error, null);
     }
   }));
-
+  passport.serializeUser((user, done) => {
+    console.log('Serializing user:', user); // Log the user object
+    done(null, user.id);
+  });
+  
+  passport.deserializeUser(async (id, done) => {
+    try {
+      const user = await User.findById(id);
+      done(null, user);
+    } catch (error) {
+      done(error, null);
+    }
+  });
 async function findOrCreateUser(profile) {
   const existingUser = await User.findOne({ googleId: profile.id });
 
@@ -616,66 +628,66 @@ const url = process.env.MONGODB_URI;
 const storage = new GridFsStorage({ url });
 const upload = multer({ storage });
 
-app.get('/upload-documents', isAuthenticated, (req, res) => {
-  const courseID = req.query.courseID || '';
-  const username = req.session.username || null;
-  res.render('data', { courseID,isUserLoggedIn: req.isUserLoggedIn,
-    username: username   });
-});
+// app.get('/upload-documents', isAuthenticated, (req, res) => {
+//   const courseID = req.query.courseID || '';
+//   const username = req.session.username || null;
+//   res.render('data', { courseID,isUserLoggedIn: req.isUserLoggedIn,
+//     username: username   });
+// });
 
 
 
-app.post('/upload-documents', upload.fields([
-  { name: 'aadharCard' },
-  { name: 'panCard' },
-  { name: 'medicalCertificate' },
-  { name: 'mciCertificate' }
-]), async (req, res) => {
-  // Extract the JWT token from the cookie
-  const token = req.cookies.authToken;
-  if (!token) {
-    return res.status(401).send('Unauthorized: No token provided');
-  }
+// app.post('/upload-documents', upload.fields([
+//   { name: 'aadharCard' },
+//   { name: 'panCard' },
+//   { name: 'medicalCertificate' },
+//   { name: 'mciCertificate' }
+// ]), async (req, res) => {
+//   // Extract the JWT token from the cookie
+//   const token = req.cookies.authToken;
+//   if (!token) {
+//     return res.status(401).send('Unauthorized: No token provided');
+//   }
 
-  let userId;
-  try {
-    // Verify and decode the token to get the user's ID
-    const decoded = jwt.verify(token, JWT_SECRET);
-    userId = decoded.userId;
-  } catch (error) {
-    return res.status(401).send('Unauthorized: Invalid token');
-  }
+//   let userId;
+//   try {
+//     // Verify and decode the token to get the user's ID
+//     const decoded = jwt.verify(token, JWT_SECRET);
+//     userId = decoded.userId;
+//   } catch (error) {
+//     return res.status(401).send('Unauthorized: Invalid token');
+//   }
 
-  try {
-    // Prepare the uploadedFiles array with the uploaded files information
-    const uploadedFiles = [];
-    if (req.files.aadharCard) uploadedFiles.push({ ...req.files.aadharCard[0], title: 'Aadhar Card' });
-    if (req.files.panCard) uploadedFiles.push({ ...req.files.panCard[0], title: 'Pan Card' });
-    if (req.files.medicalCertificate) uploadedFiles.push({ ...req.files.medicalCertificate[0], title: 'Medical Certificate' });
-    if (req.files.mciCertificate) uploadedFiles.push({ ...req.files.mciCertificate[0], title: 'MCI Certificate' });
+//   try {
+//     // Prepare the uploadedFiles array with the uploaded files information
+//     const uploadedFiles = [];
+//     if (req.files.aadharCard) uploadedFiles.push({ ...req.files.aadharCard[0], title: 'Aadhar Card' });
+//     if (req.files.panCard) uploadedFiles.push({ ...req.files.panCard[0], title: 'Pan Card' });
+//     if (req.files.medicalCertificate) uploadedFiles.push({ ...req.files.medicalCertificate[0], title: 'Medical Certificate' });
+//     if (req.files.mciCertificate) uploadedFiles.push({ ...req.files.mciCertificate[0], title: 'MCI Certificate' });
 
-    // Find the user by ID and update the uploadedFiles array
-    const user = await User.findByIdAndUpdate(userId, {
-      $push: { uploadedFiles: { $each: uploadedFiles } }
-    }, { new: true });
+//     // Find the user by ID and update the uploadedFiles array
+//     const user = await User.findByIdAndUpdate(userId, {
+//       $push: { uploadedFiles: { $each: uploadedFiles } }
+//     }, { new: true });
 
-    if (!user) {
-      console.error('User not found:', userId);
-      return res.status(404).send('User not found');
-    }
+//     if (!user) {
+//       console.error('User not found:', userId);
+//       return res.status(404).send('User not found');
+//     }
 
-    const courseID = req.body.courseID || req.query.courseID; // Extract courseID from either body or query
-  if(courseID) {
-    res.redirect(`/checkout/${courseID}`);
-  } else {
-    console.error('courseID is undefined in request body');
-    res.status(400).send('Bad Request: courseID is undefined');
-  }
-  } catch (error) {
-    console.error('Error in upload route:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
+//     const courseID = req.body.courseID || req.query.courseID; // Extract courseID from either body or query
+//   if(courseID) {
+//     res.redirect(`/checkout/${courseID}`);
+//   } else {
+//     console.error('courseID is undefined in request body');
+//     res.status(400).send('Bad Request: courseID is undefined');
+//   }
+//   } catch (error) {
+//     console.error('Error in upload route:', error);
+//     res.status(500).send('Internal Server Error');
+//   }
+// });
 // app.get('/pre-checkout/:courseID', isAuthenticated, checkUploadedFiles, async (req, res) => {
 //   // If the middleware passes, it means the user has uploaded all required documents.
 //   const courseID = req.params.courseID; // Use params instead of query to get the courseID
