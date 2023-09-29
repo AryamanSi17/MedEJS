@@ -33,6 +33,7 @@
       <label for="password">Password:</label>
       <input type="password" id="password" name="password" required>
       <br>
+      
       <button type="button" onclick="registerUser()">Register</button>
     </form>
   <% } %>
@@ -112,6 +113,11 @@
     }
 
     async function registerUser() {
+      const termsCheckbox = document.getElementById('termsCheckbox');
+  if (!termsCheckbox.checked) {
+    alert('Please agree to Terms and Conditions.');
+    return;
+  }
       const emailInput = document.getElementById('email');
       const fullnameInput = document.getElementById('fullname');
       const passwordInput = document.getElementById('password');
@@ -119,7 +125,7 @@
       const email = emailInput.value;
       const fullname = fullnameInput.value;
       const password = passwordInput.value;
-
+      
       try {
         const response = await fetch('/register', {
           method: 'POST',

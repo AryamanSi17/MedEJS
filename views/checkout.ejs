@@ -34,28 +34,48 @@
   button:hover {
     background-color: #218838;
   }
+  .loading {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+  padding: 20px;
+  border-radius: 5px;
+  display: none; /* Initially hidden */
+}
+
 </style>
 </head>
 <body>
-  <img src="../assets/images/course/course-list-07.jpg" alt="Descriptive Alt Text">
+  <div id="loading" class="loading">Redirecting to payment gateway...</div>
+
   <button id="buy-now">Buy Now</button>
 
-<script>
- var stripe = Stripe('pk_test_51NqeaaSAfyNJyYlUw0pm6uNwqciJkrMzXpSc1svqhKrXpudidpAKkGAA7AuUrX8IV0WwHADFPsWgVLCDG6erIMu800EN3o2nPa');
-
-document.getElementById('buy-now').addEventListener('click', async () => {
-  try {
-    const courseID = '<%= courseID %>'; // Get the courseID passed to the view
-    const response = await fetch(`/buy-now/${courseID}`); // Use the courseID in the fetch URL
-    const session = await response.json();
-    const result = await stripe.redirectToCheckout({ sessionId: session.id });
-    if (result.error) {
-      alert(result.error.message);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-});
-</script>
+  <script>
+    var stripe = Stripe('pk_test_51NqeaaSAfyNJyYlUw0pm6uNwqciJkrMzXpSc1svqhKrXpudidpAKkGAA7AuUrX8IV0WwHADFPsWgVLCDG6erIMu800EN3o2nPa');
+  
+    // Immediately Invoked Function Expression (IIFE) to handle the redirection
+    (async function() {
+      try {
+        document.getElementById('loading').style.display = 'block'; // Show loading element
+        
+        const courseID = '<%= courseID %>'; // Get the courseID passed to the view
+        const response = await fetch(`/buy-now/${courseID}`); // Use the courseID in the fetch URL
+        const session = await response.json();
+        const result = await stripe.redirectToCheckout({ sessionId: session.id });
+        
+        if (result.error) {
+          alert(result.error.message);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        document.getElementById('loading').style.display = 'none'; // Hide loading element
+      }
+    })();
+  </script>
+  
+   
 </body>
 </html>

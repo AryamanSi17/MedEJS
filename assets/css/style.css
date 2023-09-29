@@ -28843,3 +28843,56 @@ input::-webkit-inner-spin-button {
   margin-bottom: 20px;
   overflow: hidden; /* Clear floats */
 }
+.locked-course {
+  position: relative;
+  display: inline-block;
+  cursor: not-allowed; /* Display a not-allowed cursor when hovering over the locked course */
+}
+
+.lock-icon {
+  margin-left: 5px; /* Add some space between the course name and the lock icon */
+  color: #ccc; /* Make the lock icon grey */
+}
+
+.lock-icon:hover::after {
+  content: attr(title); /* Display the tooltip text when hovering over the lock icon */
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 5px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.document-upload-alert {
+  font-size: 20px;
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #b2e9ff; /* Light orange background */
+  border: 1px solid #c2dbf3; /* Orange border */
+  border-radius: 5px; /* Rounded corners */
+  text-align: center; /* Centered text */
+}
+
+.alert-text {
+  margin-bottom: 10px; /* Space between the text and the button */
+  color: #e64a19; /* Dark orange text */
+}
+
+.upload-btn {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.upload-btn:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+/* ... other styles ... */
+
+/* Remove the hover and checked styles for .checkmark */

@@ -370,45 +370,53 @@ app.get('/user', async function(req, res) {
   // Extract the JWT token from the cookie
   const token = req.cookies.authToken;
   if (!token) {
-      return res.status(401).send('Unauthorized: No token provided');
+    return res.status(401).send('Unauthorized: No token provided');
   }
 
   let userId;
   try {
-      // Verify and decode the token to get the user's ID
-      const decoded = jwt.verify(token, JWT_SECRET);
-      userId = decoded.userId;
+    // Verify and decode the token to get the user's ID
+    const decoded = jwt.verify(token, JWT_SECRET);
+    userId = decoded.userId;
   } catch (error) {
-      return res.status(401).send('Unauthorized: Invalid token');
+    return res.status(401).send('Unauthorized: Invalid token');
   }
 
   try {
-      // Fetch the user's details from the database using the userId
-      const user = await User.findById(userId);
-      if (!user) {
-          return res.status(404).send('User not found');
-      }
+    // Fetch the user's details from the database using the userId
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+    const coursesPurchased = user.coursesPurchased || [];
 
-      // Extract coursesPurchased from the user or initialize it to an empty array if it doesn't exist
-      const coursesPurchased = user.coursesPurchased || [];
+    // Check if the user has purchased any courses
+    const hasPurchasedCourses = coursesPurchased.length > 0;
 
-      // Render the user page with the course names and other details
-      res.render('user_Profile', {
-          pageTitle,
-          metaRobots,
-          metaKeywords,
-          ogDescription,
-          canonicalLink,
-          isUserLoggedIn: req.isUserLoggedIn,
-          username: user.username,  // Use the username from the fetched user data
-          fullname: user.fullname,  // Similarly, use the fullname from the fetched user data
-          coursesPurchased  // Pass the coursesPurchased to the EJS template
-      });
+    // Check if the user has uploaded the required documents
+    const documentsUploaded = user.uploadedFiles && user.uploadedFiles.length > 0;
+
+
+    // Render the user page with the course names and other details
+    res.render('user_Profile', {
+      pageTitle,
+      metaRobots,
+      metaKeywords,
+      ogDescription,
+      canonicalLink,
+      isUserLoggedIn: req.isUserLoggedIn,
+      username: user.username,
+      fullname: user.fullname,
+      coursesPurchased,
+      documentsUploaded,
+      hasPurchasedCourses // Pass the documentsUploaded to the EJS template
+    });
   } catch (error) {
-      console.error("Error fetching user's courses:", error);
-      res.status(500).send('Server Error');
+    console.error("Error fetching user's courses:", error);
+    res.status(500).send('Server Error');
   }
 });
+
 
 // Usage
 const userId = '15'; // Replace with the actual user ID
@@ -482,7 +490,7 @@ app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (req, res
   
   let event;
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_SIGNING_SECRET);
+    event = stripe.webhooks.constructEvent(req.body, sig,process.env.STRIPE_SIGNING_SECRET);
   } catch (err) {
     console.error('Error constructing event:', err);
     return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -628,66 +636,68 @@ const url = process.env.MONGODB_URI;
 const storage = new GridFsStorage({ url });
 const upload = multer({ storage });
 
-// app.get('/upload-documents', isAuthenticated, (req, res) => {
-//   const courseID = req.query.courseID || '';
-//   const username = req.session.username || null;
-//   res.render('data', { courseID,isUserLoggedIn: req.isUserLoggedIn,
-//     username: username   });
-// });
+app.get('/upload-documents', isAuthenticated, (req, res) => {
+  const courseID = req.query.courseID || '';
+  const username = req.session.username || null;
+  res.render('data', { courseID,isUserLoggedIn: req.isUserLoggedIn,
+    username: username   });
+});
 
 
 
-// app.post('/upload-documents', upload.fields([
-//   { name: 'aadharCard' },
-//   { name: 'panCard' },
-//   { name: 'medicalCertificate' },
-//   { name: 'mciCertificate' }
-// ]), async (req, res) => {
-//   // Extract the JWT token from the cookie
-//   const token = req.cookies.authToken;
-//   if (!token) {
-//     return res.status(401).send('Unauthorized: No token provided');
-//   }
+app.post('/upload-documents', upload.fields([
+  { name: 'aadharCard' },
+  { name: 'panCard' },
+  { name: 'medicalCertificate' },
+  { name: 'mciCertificate' },
+  { name: 'degree' }
+]), async (req, res) => {
+  // Extract the JWT token from the cookie
+  const token = req.cookies.authToken;
+  if (!token) {
+    return res.status(401).send('Unauthorized: No token provided');
+  }
 
-//   let userId;
-//   try {
-//     // Verify and decode the token to get the user's ID
-//     const decoded = jwt.verify(token, JWT_SECRET);
-//     userId = decoded.userId;
-//   } catch (error) {
-//     return res.status(401).send('Unauthorized: Invalid token');
-//   }
+  let userId;
+  try {
+    // Verify and decode the token to get the user's ID
+    const decoded = jwt.verify(token, JWT_SECRET);
+    userId = decoded.userId;
+  } catch (error) {
+    return res.status(401).send('Unauthorized: Invalid token');
+  }
 
-//   try {
-//     // Prepare the uploadedFiles array with the uploaded files information
-//     const uploadedFiles = [];
-//     if (req.files.aadharCard) uploadedFiles.push({ ...req.files.aadharCard[0], title: 'Aadhar Card' });
-//     if (req.files.panCard) uploadedFiles.push({ ...req.files.panCard[0], title: 'Pan Card' });
-//     if (req.files.medicalCertificate) uploadedFiles.push({ ...req.files.medicalCertificate[0], title: 'Medical Certificate' });
-//     if (req.files.mciCertificate) uploadedFiles.push({ ...req.files.mciCertificate[0], title: 'MCI Certificate' });
+  try {
+    // Prepare the uploadedFiles array with the uploaded files information
+    const uploadedFiles = [];
+    if (req.files.aadharCard) uploadedFiles.push({ ...req.files.aadharCard[0], title: 'Aadhar Card' });
+    if (req.files.panCard) uploadedFiles.push({ ...req.files.panCard[0], title: 'Pan Card' });
+    if (req.files.medicalCertificate) uploadedFiles.push({ ...req.files.medicalCertificate[0], title: 'Medical Certificate' });
+    if (req.files.mciCertificate) uploadedFiles.push({ ...req.files.mciCertificate[0], title: 'MCI Certificate' });
 
-//     // Find the user by ID and update the uploadedFiles array
-//     const user = await User.findByIdAndUpdate(userId, {
-//       $push: { uploadedFiles: { $each: uploadedFiles } }
-//     }, { new: true });
+    const userUpdate = {
+      $push: { uploadedFiles: { $each: uploadedFiles } },
+      mciNumber: req.body.mciNumber,
+      address: req.body.address,
+      idNumber: req.body.idNumber,
+    };
+    // Find the user by ID and update the uploadedFiles array
+    const user = await User.findByIdAndUpdate(userId, userUpdate, { new: true });
+    
+  
+    if (!user) {
+      console.error('User not found:', userId);
+      return res.status(404).send('User not found');
+    }
 
-//     if (!user) {
-//       console.error('User not found:', userId);
-//       return res.status(404).send('User not found');
-//     }
+    // Redirect the user to the /user route after uploading the documents
+    res.redirect('/user');
+  } catch (error) {
+    console.error('Error in upload route:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
-//     const courseID = req.body.courseID || req.query.courseID; // Extract courseID from either body or query
-//   if(courseID) {
-//     res.redirect(`/checkout/${courseID}`);
-//   } else {
-//     console.error('courseID is undefined in request body');
-//     res.status(400).send('Bad Request: courseID is undefined');
-//   }
-//   } catch (error) {
-//     console.error('Error in upload route:', error);
-//     res.status(500).send('Internal Server Error');
-//   }
-// });
 // app.get('/pre-checkout/:courseID', isAuthenticated, checkUploadedFiles, async (req, res) => {
 //   // If the middleware passes, it means the user has uploaded all required documents.
 //   const courseID = req.params.courseID; // Use params instead of query to get the courseID

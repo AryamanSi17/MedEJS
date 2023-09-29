@@ -6,11 +6,14 @@
     <%- include('header') %>
   <% } %>  
                     <title>Document Submission</title>
+                    <br>
+                    <br>
+                    <br>
                         <div class="slider-area rbt-banner-10 height-750 bg_image bg_image--10">
                             <div class="container">
                                 <div class="row justify-content-center">
                                     <div class="col-lg-6">
-                                        <h4>Before proceeding...</h4>
+                                        <h1>Before proceeding...</h1>
                                         <div class="rbt-contact-form contact-form-style-1 max-width-auto">
                                             <form action="/upload-documents" method="post"
                                                 enctype="multipart/form-data">
@@ -41,6 +44,30 @@
                                                     <h5>MCI Certificate <label for="mciCertificate" class="upload-icon-label"><span class="upload-icon"><i class="fas fa-upload"></i></span></label></h5>
                                                     <input type="file" name="mciCertificate" accept="image/*" required id="mciCertificate" class="file-input"/>
                                                 </div>
+                                                <!-- MCI Number -->
+<div class="file-upload-group">
+    <h5>MCI Number</h5>
+    <input type="text" name="mciNumber" required class="text-input" />
+</div>
+
+<!-- Address -->
+<div class="file-upload-group">
+    <h5>Address</h5>
+    <textarea name="address" required class="text-input"></textarea>
+</div>
+
+<!-- ID Number for Aadhar Card -->
+<div class="file-upload-group">
+    <h5>ID Number</h5>
+    <input type="text" name="idNumber" required class="text-input" />
+</div>
+
+<!-- Copy of Degree -->
+<div class="file-upload-group">
+    <h5>Copy of Degree <label for="degree" class="upload-icon-label"><span class="upload-icon"><i class="fas fa-upload"></i></span></label></h5>
+    <input type="file" name="degree" accept="image/*" required id="degree" class="file-input" />
+</div>
+
                                                 
 
                                                 <input type="submit" value="Submit Documents"

@@ -302,7 +302,7 @@ function checkEmailVerified(req, res, next) {
       const canonicalLink = 'https://globalmedacademy.com/register';
       res.render('login', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink });
     });
-    app.get('/checkout/:courseID', isAuthenticated,checkUploadedDocuments, async (req, res) => {
+    app.get('/checkout/:courseID', isAuthenticated,async (req, res) => {
       const courseID = req.params.courseID;
       const pageTitle = 'Checkout - GlobalMedAcademy';
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';

@@ -153,12 +153,36 @@
                                             <h3>Courses Purchased:</h3>
                                             <ul>
                                               <% coursesPurchased.forEach(function(course) { %>
-                                                <li><a href="https://moodle.upskill.globalmedacademy.com/login/index.php?username=<%= username %>""><%= course %></a></li>
+                                                <% if (documentsUploaded) { %>
+                                                  <!-- Render the active link if documents are uploaded -->
+                                                  <li><a href="https://moodle.upskill.globalmedacademy.com/login/index.php?username=<%= username %>"><%= course %></a></li>
+                                                <% } else { %>
+                                                  <!-- Render the locked link if documents are not uploaded -->
+                                                  <li>
+                                                    <span class="locked-course"><%= course %> <i class="lock-icon" title="Please upload documents before proceeding.">&#x1F512;</i></span>
+                                                  </li>
+                                                <% } %>
                                               <% }); %>
                                             </ul>
                                           <% } else { %>
                                             <p>You haven't purchased any courses yet.</p>
                                           <% } %>
+                                          
+                                          <% if (hasPurchasedCourses) { %>
+                                            <% if (documentsUploaded) { %>
+                                              <!-- Render the Moodle link -->
+                                              <a href="https://moodle.upskill.globalmedacademy.com/login/index.php?username=<%= username %>" class="btn btn-success">Access Moodle</a>
+                                            <% } else { %>
+                                              <!-- Display the message in a larger font and provide a link to upload documents -->
+                                              <div class="document-upload-alert">
+                                                <p class="alert-text">Document uploading pending</p>
+                                                <a href="/upload-documents" class="btn btn-primary upload-btn">Upload Documents</a>
+                                              </div>
+                                            <% } %>
+                                          <% } %>
+                                          
+                                          
+                                          
                                           
                                     </ul>
                                 </div>
