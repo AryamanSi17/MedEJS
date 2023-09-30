@@ -23,25 +23,81 @@
       gtag('config', 'G-DC75849QGK');
     </script>
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon.png">
+    <% if (isBlogPage) { %>
+        <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.png">
+    <% } else { %>
+        <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon.png">
+    <% } %>
+
 
     <!-- CSS
 	============================================ -->
-    <link rel="stylesheet" href="assets/css/vendor/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/vendor/slick.css">
-    <link rel="stylesheet" href="assets/css/vendor/slick-theme.css">
-    <link rel="stylesheet" href="assets/css/plugins/sal.css">
-    <link rel="stylesheet" href="assets/css/plugins/feather.css">
-    <link rel="stylesheet" href="assets/css/plugins/fontawesome.min.css">
-    <link rel="stylesheet" href="assets/css/plugins/euclid-circulara.css">
-    <link rel="stylesheet" href="assets/css/plugins/swiper.css">
-    <link rel="stylesheet" href="assets/css/plugins/magnify.css">
-    <link rel="stylesheet" href="assets/css/plugins/odometer.css">
-    <link rel="stylesheet" href="assets/css/plugins/animation.css">
-    <link rel="stylesheet" href="assets/css/plugins/bootstrap-select.min.css">
-    <link rel="stylesheet" href="assets/css/plugins/jquery-ui.css">
-    <link rel="stylesheet" href="assets/css/plugins/magnigy-popup.min.css">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <% if (isBlogPage) { %>
+        <!-- Absolute Paths for Blog Page -->
+        <link rel="stylesheet" href="/assets/css/vendor/bootstrap.min.css">
+        <!-- ... -->
+        <link rel="stylesheet" href="/assets/css/style.css">
+        <link rel="stylesheet" href="assets/css/plugins/animation.css">
+      <link rel="stylesheet" href="/assets/css/plugins/bootstrap-select.min.css">
+      <link rel="stylesheet" href="/assets/css/plugins/jquery-ui.css">
+      <link rel="stylesheet" href="/assets/css/plugins/magnigy-popup.min.css">
+      <link rel="stylesheet" href="/assets/css/plugins/swiper.css">
+      <link rel="stylesheet" href="/assets/css/plugins/magnify.css">
+      <link rel="stylesheet" href="/assets/css/plugins/odometer.css">
+      <link rel="stylesheet" href="/assets/css/vendor/slick.css">
+      <link rel="stylesheet" href="/assets/css/vendor/slick-theme.css">
+      <link rel="stylesheet" href="/assets/css/plugins/sal.css">
+      <link rel="stylesheet" href="/assets/css/plugins/feather.css">
+      <link rel="stylesheet" href="/assets/css/plugins/fontawesome.min.css">
+      <link rel="stylesheet" href="/assets/css/plugins/euclid-circulara.css">
+      <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "mainEntityOfPage": {
+                "@type": "WebPage",
+                "@id": "https://globalmedacademy.com/blog/elevate-your-expertise-in-diabetes-care-join-our-fellowship-to-lead-the-fight-against-diabetes-mellitus" // Replace with your actual canonical link
+            },
+            "headline": "<%= pageTitle %>",
+            "description": "<%= ogDescription %>",
+            "image": "https://globalmedacademy.com/blog/elevate-your-expertise-in-diabetes-care-join-our-fellowship-to-lead-the-fight-against-diabetes-mellitus/assets/images/blog/blog-bl-01.jpg", // Replace with your actual canonical link
+            "author": {
+                "@type": "Organization",
+                "name": "GlobalMed Academy"
+            },
+            "publisher": {
+                "@type": "Organization",
+                "name": "GlobalMed Academy",
+                "logo": {
+                    "@type": "ImageObject",
+                    "url": "https://globalmedacademy.com/blog/elevate-your-expertise-in-diabetes-care-join-our-fellowship-to-lead-the-fight-against-diabetes-mellitus/assets/images/logo.png" // Replace with your actual canonical link
+                }
+            },
+            "datePublished": "2023-09-30T08:00:00+00:00", // Replace with your actual date published
+            "dateModified": "2023-09-30T08:00:00+00:00"
+        }
+        </script>
+    <% } else { %>
+        <!-- Relative Paths for Other Pages -->
+        <link rel="stylesheet" href="assets/css/vendor/bootstrap.min.css">
+        <!-- ... -->
+        <link rel="stylesheet" href="assets/css/style.css">
+        <link rel="stylesheet" href="assets/css/plugins/animation.css">
+      <link rel="stylesheet" href="assets/css/plugins/bootstrap-select.min.css">
+      <link rel="stylesheet" href="assets/css/plugins/jquery-ui.css">
+      <link rel="stylesheet" href="assets/css/plugins/magnigy-popup.min.css">
+      <link rel="stylesheet" href="assets/css/plugins/swiper.css">
+      <link rel="stylesheet" href="assets/css/plugins/magnify.css">
+      <link rel="stylesheet" href="assets/css/plugins/odometer.css">
+      <link rel="stylesheet" href="assets/css/vendor/slick.css">
+      <link rel="stylesheet" href="assets/css/vendor/slick-theme.css">
+      <link rel="stylesheet" href="assets/css/plugins/sal.css">
+      <link rel="stylesheet" href="assets/css/plugins/feather.css">
+      <link rel="stylesheet" href="assets/css/plugins/fontawesome.min.css">
+      <link rel="stylesheet" href="assets/css/plugins/euclid-circulara.css">
+      
+    <% } %>
+    
 </head>
 
 <body class="rbt-header-sticky">
@@ -57,10 +113,18 @@
                     <div class="header-left rbt-header-content">
                         <div class="header-info">
                             <div class="logo">
-                                <a href="/">
-                                    <img src="assets/images/logo/logo1.png" alt="GlobaMedAcademy
-                                    ">
-                                </a>
+                                <% if (isBlogPage) { %>
+                                    <a href="/">
+                                        <img src="/assets/images/logo/logo1.png" alt="GlobaMedAcademy
+                                        ">
+                                    </a>
+                                <% } else { %>
+                                    <a href="/">
+                                        <img src="assets/images/logo/logo1.png" alt="GlobaMedAcademy
+                                        ">
+                                    </a>
+                                <% } %>
+                                
                             </div>
                         </div>
                     </div>
@@ -125,6 +189,7 @@
                                                         <li><a href="/become-teacher">Teach with us</a></li>
                                                         <li><a href="/terms-conditions">Terms & Conditions</a></li>
                                                         <li><a href="/">Verify Certificate</a></li>
+                                                        <li><a href="/blogs">Blogs</a></li>
                                                     </ul>
                                                 </div>
                                                 <div class="col-lg-12 col-xl-6 col-xxl-6 single-mega-item">

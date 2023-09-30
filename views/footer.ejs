@@ -7,10 +7,17 @@
                     <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                         <div class="footer-widget">
                             <div class="logo1">
-                                <a href="/">
-                                    <img src="assets/images/logo/gmafooter.png" alt="GlobaMedAcademy
-                                    ">
-                                </a>
+                                <% if (isBlogPage) { %>
+                                    <a href="/">
+                                        <img src="/assets/images/logo/gmafooter.png" alt="GlobaMedAcademy
+                                        ">
+                                    </a>
+                                <% } else { %>
+                                    <a href="/">
+                                        <img src="assets/images/logo/gmafooter.png" alt="GlobaMedAcademy
+                                        ">
+                                    </a>
+                                <% } %>
                             </div>
 
                             <p class="description mt--20">GloablMed Academy promotes career advancement and up skilling of medical professionals by enhancing their knowledge and clinical exposure through innovative pedagogy and effective networking opportunities.
@@ -159,6 +166,7 @@
     <!-- JS
 ============================================ -->
     <!-- Modernizer JS -->
+    
     <script src="assets/js/vendor/modernizr.min.js"></script>
     <!-- jQuery JS -->
     <script src="assets/js/vendor/jquery.js"></script>

@@ -171,6 +171,7 @@ app.post("/register", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
+  
   try {
     const { username, password } = req.body;
 
@@ -192,7 +193,7 @@ app.post("/login", async (req, res) => {
     // Set username in the session
     req.session.username = username;
     // req.session.fullname= fullname;
-    res.render("auth_index", { username: username });
+    res.render("auth_index", { username: username,isBlogPage:false });
   } catch (error) {
     console.error("Error while logging in:", error);
     res.status(500).json({ error: "Error while logging in" });
@@ -409,7 +410,8 @@ app.get('/user', async function(req, res) {
       fullname: user.fullname,
       coursesPurchased,
       documentsUploaded,
-      hasPurchasedCourses // Pass the documentsUploaded to the EJS template
+      hasPurchasedCourses,
+      isBlogPage:false // Pass the documentsUploaded to the EJS template
     });
   } catch (error) {
     console.error("Error fetching user's courses:", error);
