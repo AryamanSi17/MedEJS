@@ -47,7 +47,7 @@ app.use(session({
 // Use the middleware globally for all routes
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
-app.use(express.json());
+// app.use(express.json());
 // Serve static files from the 'public' directory
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
@@ -515,7 +515,7 @@ app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (req, res
   res.json({received: true});
 });
 
-
+app.use(express.json());
 
 app.get('/success', async (req, res) => {
   const sessionId = req.query.session_id;
