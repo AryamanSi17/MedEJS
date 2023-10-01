@@ -35,6 +35,7 @@ const UserSchema = new Schema({
     mciNumber: String,
     address: String,
     idNumber: String,
+    
 });
 
 // UserSchema.plugin(passportLocalMongoose, {

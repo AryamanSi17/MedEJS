@@ -34,7 +34,7 @@ const querystring = require('querystring');
 const {saveEnquiry}= require('./utils/kit19Integration');
 const { createCheckoutSession } = require('./utils/stripepay');
 const isAuthenticated = require('./utils/isAuthenticatedMiddleware');
-
+const forestAdmin = require('./utils/forestAdmin');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
@@ -44,6 +44,7 @@ app.use(session({
   resave: false,
   saveUninitialized: true
 }));
+forestAdmin.mountOnExpress(app).start();
 // Use the middleware globally for all routes
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
