@@ -136,7 +136,7 @@ app.get('/logout', (req, res) => {
 // Store generated OTP
 let storedOTP = null;
 
-app.use(express.json()); // Add this middleware to parse JSON in requests
+// Add this middleware to parse JSON in requests
 app.post("/register", async (req, res) => {
   try {
     const { username, fullname, password } = req.body;
@@ -171,7 +171,11 @@ app.post("/register", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  
+    const pageTitle = 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ';
+    const ogDescription = 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals';
+    const canonicalLink = 'https://globalmedacademy.com/';
   try {
     const { username, password } = req.body;
 
@@ -193,7 +197,11 @@ app.post("/login", async (req, res) => {
     // Set username in the session
     req.session.username = username;
     // req.session.fullname= fullname;
-    res.render("auth_index", { username: username,isBlogPage:false });
+    res.render("auth_index", { username: username,isBlogPage:false,pageTitle,
+      metaRobots,
+      metaKeywords,
+      ogDescription,
+      canonicalLink, });
   } catch (error) {
     console.error("Error while logging in:", error);
     res.status(500).json({ error: "Error while logging in" });
@@ -484,15 +492,12 @@ app.get('/buy-now/:courseID', async (req, res) => {
   }
 });
 
-
-
-
 app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (req, res) => {
   const sig = req.headers['stripe-signature'];
   
   let event;
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig,process.env.STRIPE_SIGNING_SECRET);
+    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_SIGNING_SECRET);
   } catch (err) {
     console.error('Error constructing event:', err);
     return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -515,7 +520,6 @@ app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (req, res
   res.json({received: true});
 });
 
-app.use(express.json());
 
 app.get('/success', async (req, res) => {
   const sessionId = req.query.session_id;
@@ -571,6 +575,7 @@ app.get('/success', async (req, res) => {
   }
 });
 
+app.use(express.json());
 app.get('/cancel', (req, res) => {
   // Define the message and the redirect URL to the home route
   const message = 'Payment Unsuccessful!';
@@ -639,10 +644,19 @@ const storage = new GridFsStorage({ url });
 const upload = multer({ storage });
 
 app.get('/upload-documents', isAuthenticated, (req, res) => {
+  const pageTitle = 'Upload Documents';
+  const metaRobots = '';
+  const metaKeywords = '';
+  const ogDescription = '';
+  const canonicalLink = 'https://globalmedacademy.com/upload-documents';
   const courseID = req.query.courseID || '';
   const username = req.session.username || null;
   res.render('data', { courseID,isUserLoggedIn: req.isUserLoggedIn,
-    username: username   });
+    username: username ,pageTitle,
+    metaRobots,
+    metaKeywords,
+    ogDescription,
+    canonicalLink,isBlogPage:false });
 });
 
 
@@ -652,7 +666,8 @@ app.post('/upload-documents', upload.fields([
   { name: 'panCard' },
   { name: 'medicalCertificate' },
   { name: 'mciCertificate' },
-  { name: 'degree' }
+  { name: 'degree' },
+  { name: 'passportPhoto' }
 ]), async (req, res) => {
   // Extract the JWT token from the cookie
   const token = req.cookies.authToken;
@@ -676,6 +691,7 @@ app.post('/upload-documents', upload.fields([
     if (req.files.panCard) uploadedFiles.push({ ...req.files.panCard[0], title: 'Pan Card' });
     if (req.files.medicalCertificate) uploadedFiles.push({ ...req.files.medicalCertificate[0], title: 'Medical Certificate' });
     if (req.files.mciCertificate) uploadedFiles.push({ ...req.files.mciCertificate[0], title: 'MCI Certificate' });
+    if (req.files.passportPhoto) uploadedFiles.push({ ...req.files.passportPhoto[0], title: 'Passport Size Photo' }); // Added new field
 
     const userUpdate = {
       $push: { uploadedFiles: { $each: uploadedFiles } },
@@ -699,14 +715,6 @@ app.post('/upload-documents', upload.fields([
     res.status(500).send('Internal Server Error');
   }
 });
-
-// app.get('/pre-checkout/:courseID', isAuthenticated, checkUploadedFiles, async (req, res) => {
-//   // If the middleware passes, it means the user has uploaded all required documents.
-//   const courseID = req.params.courseID; // Use params instead of query to get the courseID
-//   res.redirect(`/checkout/${courseID}`);
-// });
-
-
 
 
 app.listen(3000, function () {

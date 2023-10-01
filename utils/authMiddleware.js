@@ -1,30 +1,44 @@
 // authMiddleware.js
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = "med ejs is way to success"; // Make sure to keep this secret and possibly store it in environment variables
+const {User} = require('./db'); // Adjust the path as needed
+const JWT_SECRET = "med ejs is way to success"; // Consider storing it in environment variables
 
-function checkUserLoggedIn(req, res, next) {
-  let isUserLoggedIn = false;
 
+async function checkUserLoggedIn(req, res, next) {
+  req.isUserLoggedIn = false;
+  req.user = null; // Initialize user property on the request object
+  
   // Extract token from cookies
   const token = req.cookies && req.cookies['authToken'];
-  // console.log("Token:", token); 
-
+  
   if (token) {
     try {
-      // Verify the token
-      jwt.verify(token, JWT_SECRET);
-      isUserLoggedIn = true;
+      // Verify and decode the token to get the user's ID
+      const decoded = jwt.verify(token, JWT_SECRET);
+      const userId = decoded.userId; // Get userId from decoded token
+      
+      try {
+        // Fetch the user's details from the database using the userId
+        const user = await User.findById(userId);
+        
+        if (user) {
+          req.isUserLoggedIn = true;
+          req.user = {
+            username: user.username,
+            fullname: user.fullname
+          };
+        }
+      } catch (err) {
+        console.error('Error fetching user:', err);
+      }
     } catch (err) {
       // Token is invalid or expired
-      isUserLoggedIn = false;
+      console.error('Error verifying token:', err);
     }
   }
-
-  // Attach the isUserLoggedIn status to the request object
-  req.isUserLoggedIn = isUserLoggedIn;
-  // console.log(isUserLoggedIn);
-  // Continue to the next middleware or route handler
-  next();
+  
+  next(); // Continue to the next middleware or route handler
 }
+
 
 module.exports = checkUserLoggedIn;

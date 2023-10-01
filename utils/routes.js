@@ -3,30 +3,30 @@ const { JWT_SECRET } = require('./config');
 const mongoose = require('mongoose');
 const isAuthenticated = require('./authMiddleware');
 const checkUploadedDocuments = require('./checkUploadedFiles');
-
+const checkUserLoggedIn = require('./authMiddleware');
 function setRoutes(app) {
   
-  app.get("/", function(req, res) {
+  app.get("/",checkUserLoggedIn, function(req, res) {
     const pageTitle = 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ';
     const ogDescription = 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals';
     const canonicalLink = 'https://globalmedacademy.com/';
-
+    // const username = req.session.username || null;
     // Check if the user is logged in using the isUserLoggedIn property set by the middleware
     if (req.isUserLoggedIn) {
         // Retrieve username from the session
-        const username = req.session.username || null;
-
         // Render the authenticated view and pass necessary variables
-        res.render('auth_index', {
+        res.render('index', {
             pageTitle,
             metaRobots,
             metaKeywords,
             ogDescription,
             canonicalLink,
-            username: username,
-            isBlogPage: false // Pass the username to the view
+            username: req.user.username,
+            fullname: req.isUserLoggedIn ? req.user.fullname : null,
+            isBlogPage: false,
+            isUserLoggedIn:true // Pass the username to the view
         });
     } else {
         // Render the non-authenticated view and pass necessary variables
@@ -36,7 +36,8 @@ function setRoutes(app) {
             metaKeywords,
             ogDescription,
             canonicalLink,
-            isBlogPage:false
+            isBlogPage:false,
+            isUserLoggedIn:false
         });
     }
 });
@@ -348,7 +349,7 @@ function checkEmailVerified(req, res, next) {
           res.status(500).send('Internal Server Error');
         }
       } else {
-        res.redirect('/login');
+        res.redirect('/loginn');
       }
     });
     

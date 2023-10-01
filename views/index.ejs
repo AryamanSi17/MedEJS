@@ -1,4 +1,10 @@
-<%- include('header'); -%>
+<% if (isUserLoggedIn) { %>
+    <!-- Include auth_header -->
+    <%- include('auth_header') %>
+        <% } else { %>
+            <!-- Include regular header -->
+            <%- include('header') %>
+                <% } %>
   <!-- Start Slider Area  -->
   <style>
     .rbt-feature-column {
