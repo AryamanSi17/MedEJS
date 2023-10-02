@@ -35,7 +35,7 @@ const UserSchema = new Schema({
     mciNumber: String,
     address: String,
     idNumber: String,
-    
+    ipAddress: String, 
 });
 
 // UserSchema.plugin(passportLocalMongoose, {
@@ -67,8 +67,15 @@ const sessionSchema = new mongoose.Schema({
   sessionId: String,
   courseID: String,
 });
+const UserSessionSchema = new mongoose.Schema({
+  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  token: { type: String, required: true },
+  ipAddress: { type: String, required: true },
+  userAgent: { type: String, required: true }, // Add this line
+});
 
+const UserSession = mongoose.model('UserSession', UserSessionSchema);
 const Session = mongoose.model('Session', sessionSchema);
 const Request = mongoose.model('Request', requestSchema);
 
-module.exports = { mongoose, User, File, Request, Course, Session };
+module.exports = { mongoose, User, File, Request, Course, Session,UserSession };

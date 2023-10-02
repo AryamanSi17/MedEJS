@@ -6,7 +6,7 @@ const ejs = require("ejs");
 const passportLocalMongoose = require("passport-local-mongoose");
 const passport = require("passport");
 const session = require("express-session");
-const { mongoose, User, Course, Request,Session } = require("./utils/db"); // Import from db.js
+const { mongoose, User, Course, Request,Session, UserSession } = require("./utils/db"); // Import from db.js
 const nodemailer = require('nodemailer');
 const mongodb = require("mongodb");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -57,6 +57,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(cookieParser());
 app.use(checkUserLoggedIn);
+app.set('trust proxy', true);
+
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
@@ -117,21 +119,31 @@ app.get("/auth/google/test",
     res.render('auth_index');
   }
 );
-app.get('/logout', (req, res) => {
+app.get('/logout', async (req, res) => {
   // Clear the authToken cookie
   res.clearCookie('authToken');
+  
+  try {
+      // Extract the JWT token from the cookie
+      const token = req.cookies.authToken;
+      if (token) {
+          await UserSession.findOneAndDelete({ token });
+      }
+  } catch (error) {
+      console.error("Error while deleting session:", error);
+  }
 
   // Destroy the session
   req.session.destroy((err) => {
-    if (err) {
-      console.error("Error destroying session:", err);
-      return res.status(500).send("Error logging out");
-    }
-
-    // Redirect to homepage or login page
-    res.redirect('/');
+      if (err) {
+          console.error("Error destroying session:", err);
+          return res.status(500).send("Error logging out");
+      }
+      // Redirect to homepage or login page
+      res.redirect('/');
   });
 });
+
 
 
 // Store generated OTP
@@ -172,40 +184,47 @@ app.post("/register", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-    const pageTitle = 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy';
-    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
-    const metaKeywords = 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ';
-    const ogDescription = 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals';
-    const canonicalLink = 'https://globalmedacademy.com/';
+  const pageTitle = 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy';
+  const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+  const metaKeywords = 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ';
+  const ogDescription = 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals';
+  const canonicalLink = 'https://globalmedacademy.com/';
   try {
-    const { username, password } = req.body;
+      const { username, password } = req.body;
+      const user = await User.findOne({ username });
+      if (!user) {
+          return res.status(401).json({ error: "Invalid credentials" });
+      }
 
-    const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+          return res.status(401).json({ error: "Invalid credentials" });
+      }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
+      // Get the IP address of the user
+      const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        
+      // Get the User-Agent string of the user
+      const userAgent = req.headers['user-agent'];
 
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET);
-    // console.log("Generated Token:", token);
-    // Set JWT token as a cookie
-    res.cookie('authToken', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // Cookie will expire after 24 hours
+      // Check if there is already an active session for this user with the same IP address and User-Agent string
+      const existingSession = await UserSession.findOne({ userId: user._id, ipAddress, userAgent });
+      if (existingSession) {
+          return res.status(403).json({ error: "User already logged in from a different browser or location. Please logout to continue." });
+      }
 
-    // Set username in the session
-    req.session.username = username;
-    // req.session.fullname= fullname;
-    res.render("auth_index", { username: username,isBlogPage:false,pageTitle,
-      metaRobots,
-      metaKeywords,
-      ogDescription,
-      canonicalLink, });
+      const token = jwt.sign({ userId: user._id }, JWT_SECRET);
+      res.cookie('authToken', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+
+      // Create a new session with ipAddress and userAgent included
+      const newUserSession = new UserSession({ userId: user._id, token, ipAddress, userAgent });
+      await newUserSession.save();
+
+      req.session.username = username;
+      res.render("auth_index", { username: username, isBlogPage: false, pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink });
   } catch (error) {
-    console.error("Error while logging in:", error);
-    res.status(500).json({ error: "Error while logging in" });
+      console.error("Error while logging in:", error);
+      res.status(500).json({ error: "Error while logging in" });
   }
 });
 
