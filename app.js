@@ -5,7 +5,7 @@ const path = require("path");
 const ejs = require("ejs");
 const passportLocalMongoose = require("passport-local-mongoose");
 const passport = require("passport");
-const session = require("express-session");
+const cookieSession = require('cookie-session')
 const { mongoose, User, Course, Request,Session, UserSession } = require("./utils/db"); // Import from db.js
 const nodemailer = require('nodemailer');
 const mongodb = require("mongodb");
@@ -39,12 +39,12 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
 const app = express();
-app.use(session({
-  secret: "global med academy is way to success",
-  resave: false,
-  saveUninitialized: true
+app.use(cookieSession({
+  name: 'session',
+  keys: ['medEjs is way to success'], // Replace with your secret key
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
-forestAdmin.mountOnExpress(app).start();
+// forestAdmin.mountOnExpress(app).start();
 // Use the middleware globally for all routes
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
@@ -120,29 +120,27 @@ app.get("/auth/google/test",
   }
 );
 app.get('/logout', async (req, res) => {
-  // Clear the authToken cookie
-  res.clearCookie('authToken');
-  
   try {
-      // Extract the JWT token from the cookie
-      const token = req.cookies.authToken;
-      if (token) {
-          await UserSession.findOneAndDelete({ token });
-      }
+    // Clear the authToken cookie
+    res.clearCookie('authToken');
+    
+    // Extract the JWT token from the cookie
+    const token = req.cookies.authToken;
+    if (token) {
+        await UserSession.findOneAndDelete({ token });
+    }
+    
+    // Clear the session
+    req.session = null;
+    
+    // Redirect to homepage or login page
+    res.redirect('/');
   } catch (error) {
-      console.error("Error while deleting session:", error);
+    console.error("Error during logout:", error);
+    res.status(500).send("Error logging out");
   }
-
-  // Destroy the session
-  req.session.destroy((err) => {
-      if (err) {
-          console.error("Error destroying session:", err);
-          return res.status(500).send("Error logging out");
-      }
-      // Redirect to homepage or login page
-      res.redirect('/');
-  });
 });
+
 
 
 
