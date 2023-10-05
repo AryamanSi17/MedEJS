@@ -44,7 +44,7 @@ app.use(cookieSession({
   keys: ['medEjs is way to success'], // Replace with your secret key
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
-// forestAdmin.mountOnExpress(app).start();
+forestAdmin.mountOnExpress(app).start();
 // Use the middleware globally for all routes
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
