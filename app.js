@@ -44,11 +44,11 @@ app.use(cookieSession({
   keys: ['medEjs is way to success'], // Replace with your secret key
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
-forestAdmin.mountOnExpress(app).start();
+// forestAdmin.mountOnExpress(app).start();
 // Use the middleware globally for all routes
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
-// app.use(express.json());
+app.use(express.json());
 // Serve static files from the 'public' directory
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
@@ -593,7 +593,7 @@ app.get('/success', async (req, res) => {
   }
 });
 
-app.use(express.json());
+// app.use(express.json());
 app.get('/cancel', (req, res) => {
   // Define the message and the redirect URL to the home route
   const message = 'Payment Unsuccessful!';
