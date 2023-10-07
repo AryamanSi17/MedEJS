@@ -12418,7 +12418,35 @@ ul.rbt-dropdown-menu.currency-menu li .sub-menu {
   margin-bottom: 0;
   color: #fff;
 }
-
+.mega-top-banner-2 {
+  background-image: url(../images/course/category-9.png), radial-gradient(100% 100% at 100% 0%, #484C7A 0%, #23263B 100%);
+  background-size: contain;
+  background-position: right 30%;
+  margin: -25px;
+  width: auto;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  padding: 25px;
+  position: relative;
+  margin-bottom: 30px;
+  background-size: cover;
+}
+.mega-top-banner-2 .content {
+  width: 56%;
+}
+.mega-top-banner-2 .content .title {
+  font-size: 16px;
+  color: #fff;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.mega-top-banner-2 .content .description {
+  font-weight: 400;
+  font-size: 14px;
+  margin-bottom: 0;
+  color: #fff;
+}
 .nav-quick-access {
   display: flex;
   flex-wrap: wrap;

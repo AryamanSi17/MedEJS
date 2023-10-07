@@ -44,7 +44,7 @@ app.use(cookieSession({
   keys: ['medEjs is way to success'], // Replace with your secret key
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
-// forestAdmin.mountOnExpress(app).start();
+forestAdmin.mountOnExpress(app).start();
 // Use the middleware globally for all routes
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
@@ -190,13 +190,8 @@ app.post("/login", async (req, res) => {
   try {
       const { username, password } = req.body;
       const user = await User.findOne({ username });
-      if (!user) {
-          return res.status(401).json({ error: "Invalid credentials" });
-      }
-
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) {
-          return res.status(401).json({ error: "Invalid credentials" });
+      if (!user || !await bcrypt.compare(password, user.password)) {
+          return res.status(401).json({ success: false, message: "Invalid credentials" });
       }
 
       // Get the IP address of the user
@@ -208,7 +203,7 @@ app.post("/login", async (req, res) => {
       // Check if there is already an active session for this user with the same IP address and User-Agent string
       const existingSession = await UserSession.findOne({ userId: user._id, ipAddress, userAgent });
       if (existingSession) {
-          return res.status(403).json({ error: "User already logged in from a different browser or location. Please logout to continue." });
+          return res.status(403).json({ success: false, message: "User already logged in from a different browser or location. Please logout to continue." });
       }
 
       const token = jwt.sign({ userId: user._id }, JWT_SECRET);
@@ -219,12 +214,15 @@ app.post("/login", async (req, res) => {
       await newUserSession.save();
 
       req.session.username = username;
-      res.render("auth_index", { username: username, isBlogPage: false, pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink });
+      
+      // Render the page and end the response
+      return res.json({ success: true, redirectUrl: '/' });
   } catch (error) {
       console.error("Error while logging in:", error);
-      res.status(500).json({ error: "Error while logging in" });
+      return res.status(500).json({ success: false, message: "Error while logging in" });
   }
 });
+
 
 
 const tokens = jwt.sign({ userId: User._id }, JWT_SECRET);
