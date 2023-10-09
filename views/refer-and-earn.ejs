@@ -6,7 +6,7 @@
             <%- include('header') %>
                 <% } %>
 
-<br><br>
+                    <br><br>
                     <div class="rbt-conatct-area bg-gradient-11 rbt-section-gap">
                         <div class="container">
                             <div class="row">
@@ -72,37 +72,65 @@
                                 <div class="col-lg-6">
                                     <div class="rbt-contact-form contact-form-style-1 max-width-auto">
                                         <div class="section-title text-start">
-                                            <span class="subtitle bg-primary-opacity">EDUCATION FOR EVERYONE</span>
+                                            <span class="subtitle bg-primary-opacity">Refer</span>
                                         </div>
-                                        <h3 class="title">Get a Free Course You Can Contact With Me</h3>
-                                        <form id="contact-form" method="POST"
-                                            action="https://rainbowit.net/html/histudy/mail.php"
+                                        <!-- <h3 class="title">Get a Free Course You Can Contact With Me</h3> -->
+                                        <form id="contact-form" method="POST" action="/refer-and-earn"
                                             class="rainbow-dynamic-form max-width-auto">
-                                            <div class="form-group">
-                                                <input name="contact-name" id="contact-name" type="text">
-                                                <label>Name</label>
-                                                <span class="focus-border"></span>
+
+                                            <div class="col-12 mb--20">
+                                                <label>Enter Your Friend's Mobile Number</label>
+                                                <input type="number" name="friendMobile" placeholder="+91"
+                                                    maxlength="10">
                                             </div>
-                                            <div class="form-group">
-                                                <input name="contact-phone" type="email">
-                                                <label>Email</label>
-                                                <span class="focus-border"></span>
+                                            <div class="col-12 mb--20">
+                                                <label>Enter Your Friend's Name</label>
+                                                <input type="text" placeholder="Name">
                                             </div>
-                                            <div class="form-group">
-                                                <input type="text" id="subject" name="subject">
-                                                <label>Your Subject</label>
-                                                <span class="focus-border"></span>
+                                            <div class="col-12 mb--20">
+                                                <label>Course recommended</label>
+                                                <div class="rbt-modern-select bg-transparent height-45">
+                                                    <select class="w-100">
+                                                        <option>Fellowship in Diabetes Management</option>
+                                                        <option>Professional Certificate in Diabetes Management</option>
+                                                        <option>Advance Professional Certificate in Diabetes Management
+                                                        </option>
+                                                        <option>Professional Certificate in Obs & Gynae</option>
+                                                        <option>Advance Professional Certificate in Obs & Gynae</option>
+                                                        <option>Fellowship in Obs & Gynae</option>
+                                                        <option>Professional Certificate in Critical Care</option>
+                                                        <option>Advance Professional Certificate in Critical Care
+                                                        </option>
+                                                        <option>Fellowship in Critical Care</option>
+                                                        <option>Professional Certificate in Internal Medicine</option>
+                                                        <option>Advance Professional Certificate in Internal Medicine
+                                                        </option>
+                                                        <option>Fellowship in Internal Medicine</option>
+                                                        <option>Professional Certificate in Pediatrics</option>
+                                                        <option>Advance Professional Certificate in Pediatrics</option>
+                                                        <option>Fellowship in Pediatrics</option>
+                                                        <option>Professional Certificate in Clinical Cardiology</option>
+                                                        <option>Advance Professional Certificate in Clinical Cardiology
+                                                        </option>
+                                                        <option>Fellowship in Clinical Cardiology</option>
+                                                        <option>Professional Certificate in Pediatrics Diabetes</option>
+                                                        <option>Advance Professional Certificate in General Practice
+                                                        </option>
+                                                        <option>Fellowship in General Practice</option>
+
+                                                    </select>
+                                                </div>
                                             </div>
-                                            <div class="form-group">
-                                                <textarea name="contact-message" id="contact-message"></textarea>
-                                                <label>Message</label>
-                                                <span class="focus-border"></span>
+                                            <div class="col-12 mb--20">
+                                                <label>Enter Your GMA Enrollment Number</label>
+                                                <input type="number" name="enrollmentNumber" placeholder=""
+                                                    maxlength="10">
                                             </div>
                                             <div class="form-submit-group">
                                                 <button name="submit" type="submit" id="submit"
                                                     class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
                                                     <span class="icon-reverse-wrapper">
-                                                        <span class="btn-text">GET IT NOW</span>
+                                                        <span class="btn-text">Submit</span>
                                                         <span class="btn-icon"><i
                                                                 class="feather-arrow-right"></i></span>
                                                         <span class="btn-icon"><i
@@ -116,4 +144,42 @@
                             </div>
                         </div>
                     </div>
+                    <script>
+                        document.getElementById('contact-form').addEventListener('submit', function (e) {
+                            // Prevent the form from submitting
+                            e.preventDefault();
+
+                            // Validate the form inputs
+                            const friendMobile = document.querySelector('[name="friendMobile"]').value;
+                            const enrollmentNumber = document.querySelector('[name="enrollmentNumber"]').value;
+
+                            if (friendMobile.length !== 10 || enrollmentNumber.length !== 10) {
+                                alert('Mobile number and Enrollment number must be 10 digits!');
+                                return;
+                            }
+
+                            // Submit the form via fetch (AJAX)
+                            fetch('/refer-and-earn', {
+                                method: 'POST',
+                                body: new FormData(this),
+                                headers: {
+                                    'Accept': 'application/json'
+                                }
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        alert('Submitted successfully!');
+                                        window.location.href = "/";
+                                    } else {
+                                        alert('Submission failed: ' + data.error);
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    alert('An error occurred. Please try again.');
+                                });
+                        });
+                    </script>
+
                     <%- include('footer');-%>

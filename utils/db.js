@@ -18,6 +18,7 @@ const UserSchema = new Schema({
   username: String,
   password: String,
   googleId: String,
+  enrollmentNumber: Number,
     // Add form data fields for handling form submissions
     name: String,
     phone: String,
@@ -36,6 +37,13 @@ const UserSchema = new Schema({
     address: String,
     idNumber: String,
     ipAddress: String, 
+    referrals: [
+      {
+          friendMobile: String,
+          friendName: String,
+          recommendedCourse: String,
+      },
+  ],
 });
 
 // UserSchema.plugin(passportLocalMongoose, {

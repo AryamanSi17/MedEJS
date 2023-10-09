@@ -6,7 +6,7 @@ const ejs = require("ejs");
 const passportLocalMongoose = require("passport-local-mongoose");
 const passport = require("passport");
 const cookieSession = require('cookie-session')
-const { mongoose, User, Course, Request,Session, UserSession,InstructorApplication } = require("./utils/db"); // Import from db.js
+const { mongoose, User, Course, Request, Session, UserSession, InstructorApplication } = require("./utils/db"); // Import from db.js
 const nodemailer = require('nodemailer');
 const mongodb = require("mongodb");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -27,13 +27,14 @@ const multer = require('multer');
 const checkUserLoggedIn = require('./utils/authMiddleware');
 const cookieParser = require('cookie-parser');
 // const GridFsStorage = require('gridfs-stream');
-const {GridFsStorage} = require('multer-gridfs-storage');
-const courses = require('./utils/courses'); 
+const { GridFsStorage } = require('multer-gridfs-storage');
+const courses = require('./utils/courses');
 const { Types, connection } = require('mongoose');
 const querystring = require('querystring');
-const {saveEnquiry}= require('./utils/kit19Integration');
+const { saveEnquiry } = require('./utils/kit19Integration');
 const { createCheckoutSession } = require('./utils/stripepay');
 const isAuthenticated = require('./utils/isAuthenticatedMiddleware');
+const getUniqueEnrollmentNumber = require('./utils/enrollmentNumber');
 const forestAdmin = require('./utils/forestAdmin');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 let loggedIn = true;
@@ -73,19 +74,19 @@ passport.use(new GoogleStrategy({
       return done(error, null);
     }
   }));
-  passport.serializeUser((user, done) => {
-    console.log('Serializing user:', user); // Log the user object
-    done(null, user.id);
-  });
-  
-  passport.deserializeUser(async (id, done) => {
-    try {
-      const user = await User.findById(id);
-      done(null, user);
-    } catch (error) {
-      done(error, null);
-    }
-  });
+passport.serializeUser((user, done) => {
+  console.log('Serializing user:', user); // Log the user object
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (error) {
+    done(error, null);
+  }
+});
 async function findOrCreateUser(profile) {
   const existingUser = await User.findOne({ googleId: profile.id });
 
@@ -97,8 +98,8 @@ async function findOrCreateUser(profile) {
       displayName: profile.displayName,
       // Set other fields as needed
     });
-     // Set the signup method to 'google' for Google signups
-     newUser.signupMethod = 'google';
+    // Set the signup method to 'google' for Google signups
+    newUser.signupMethod = 'google';
 
     return newUser.save();
   }
@@ -123,16 +124,16 @@ app.get('/logout', async (req, res) => {
   try {
     // Clear the authToken cookie
     res.clearCookie('authToken');
-    
+
     // Extract the JWT token from the cookie
     const token = req.cookies.authToken;
     if (token) {
-        await UserSession.findOneAndDelete({ token });
+      await UserSession.findOneAndDelete({ token });
     }
-    
+
     // Clear the session
     req.session = null;
-    
+
     // Redirect to homepage or login page
     res.redirect('/');
   } catch (error) {
@@ -150,18 +151,27 @@ let storedOTP = null;
 // Add this middleware to parse JSON in requests
 app.post("/register", async (req, res) => {
   const pageTitle = 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy';
-    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
-    const metaKeywords = 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ';
-    const ogDescription = 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals';
-    const canonicalLink = 'https://globalmedacademy.com/';
+  const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+  const metaKeywords = 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ';
+  const ogDescription = 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals';
+  const canonicalLink = 'https://globalmedacademy.com/';
   try {
     const { username, fullname, password } = req.body;
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(409).json({ error: "User already exists" });
     }
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ username, fullname, password: hashedPassword });
+    const enrollmentNumber = await getUniqueEnrollmentNumber(); // Get unique enrollment number
+
+    const newUser = new User({
+      username,
+      fullname,
+      password: hashedPassword,
+      enrollmentNumber  // Assign enrollment number
+    });
+
     await newUser.save();
 
     // Generate and set the JWT token
@@ -169,20 +179,22 @@ app.post("/register", async (req, res) => {
     res.cookie('authToken', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // Cookie will expire after 24 hours
 
     createUserInMoodle(username, password, fullname, '.', username)
-  .then(() => {
-    passport.authenticate("local")(req, res, function () {
-      res.render("auth_index", { username: username,pageTitle,
-        metaRobots,
-        metaKeywords,
-        ogDescription,
-        canonicalLink,isBlogPage: false, });
-      getUserIdFromUsername(username);
-    });
-  })
-  .catch((error) => {
-    console.error(error);
-    res.status(500).send("An error occurred during user registration.");
-  });
+      .then(() => {
+        passport.authenticate("local")(req, res, function () {
+          res.render("auth_index", {
+            username: username, pageTitle,
+            metaRobots,
+            metaKeywords,
+            ogDescription,
+            canonicalLink, isBlogPage: false,
+          });
+          getUserIdFromUsername(username);
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).send("An error occurred during user registration.");
+      });
 
   } catch (error) {
     console.error("Error while registering:", error);
@@ -197,38 +209,38 @@ app.post("/login", async (req, res) => {
   const ogDescription = 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals';
   const canonicalLink = 'https://globalmedacademy.com/';
   try {
-      const { username, password } = req.body;
-      const user = await User.findOne({ username });
-      if (!user || !await bcrypt.compare(password, user.password)) {
-          return res.status(401).json({ success: false, message: "Invalid credentials" });
-      }
+    const { username, password } = req.body;
+    const user = await User.findOne({ username });
+    if (!user || !await bcrypt.compare(password, user.password)) {
+      return res.status(401).json({ success: false, message: "Invalid credentials" });
+    }
 
-      // Get the IP address of the user
-      const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        
-      // Get the User-Agent string of the user
-      const userAgent = req.headers['user-agent'];
+    // Get the IP address of the user
+    const ipAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
-      // Check if there is already an active session for this user with the same IP address and User-Agent string
-      const existingSession = await UserSession.findOne({ userId: user._id, ipAddress, userAgent });
-      if (existingSession) {
-          return res.status(403).json({ success: false, message: "User already logged in from a different browser or location. Please logout to continue." });
-      }
+    // Get the User-Agent string of the user
+    const userAgent = req.headers['user-agent'];
 
-      const token = jwt.sign({ userId: user._id }, JWT_SECRET);
-      res.cookie('authToken', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+    // Check if there is already an active session for this user with the same IP address and User-Agent string
+    const existingSession = await UserSession.findOne({ userId: user._id, ipAddress, userAgent });
+    if (existingSession) {
+      return res.status(403).json({ success: false, message: "User already logged in from a different browser or location. Please logout to continue." });
+    }
 
-      // Create a new session with ipAddress and userAgent included
-      const newUserSession = new UserSession({ userId: user._id, token, ipAddress, userAgent });
-      await newUserSession.save();
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET);
+    res.cookie('authToken', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
 
-      req.session.username = username;
-      
-      // Render the page and end the response
-      return res.json({ success: true, redirectUrl: '/' });
+    // Create a new session with ipAddress and userAgent included
+    const newUserSession = new UserSession({ userId: user._id, token, ipAddress, userAgent });
+    await newUserSession.save();
+
+    req.session.username = username;
+
+    // Render the page and end the response
+    return res.json({ success: true, redirectUrl: '/' });
   } catch (error) {
-      console.error("Error while logging in:", error);
-      return res.status(500).json({ success: false, message: "Error while logging in" });
+    console.error("Error while logging in:", error);
+    return res.status(500).json({ success: false, message: "Error while logging in" });
   }
 });
 
@@ -356,7 +368,7 @@ app.post('/verify-otp', (req, res) => {
 
   if (otps[email] === parseInt(userOtp, 10)) {
     delete otps[email];
-    
+
     // Set the session variable to indicate that the email has been verified
     req.session.emailVerified = true;
 
@@ -399,11 +411,46 @@ app.post('/apply-as-instructor', async (req, res) => {
   try {
     await newApplication.save();
     res.status(200).json({ message: 'Application submitted successfully' });
-} catch (err) {
+  } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Error saving application' });
-}
+  }
 });
+// app.js
+
+// ... other code ...
+
+app.post("/refer-and-earn", async (req, res) => {
+  try {
+      const { friendMobile, friendName, recommendedCourse, enrollmentNumber } = req.body;
+      
+      // Validate data as needed
+      
+      // Find the logged-in user using the provided enrollmentNumber
+      const user = await User.findOne({ enrollmentNumber });
+      
+      if (!user) {
+          // Handle case where user is not found
+          return res.status(400).send("User not found");
+      }
+      
+      // Update user data
+      // Example: Add friend's details to a 'referrals' array in user document
+      user.referrals = user.referrals || [];
+      user.referrals.push({ friendMobile, friendName, recommendedCourse });
+      
+      await user.save();
+      
+      // Redirect or render a page as needed
+      res.json({ success: true });
+    } catch (error) {
+        console.error("Error while submitting referral:", error);
+        // Send an error response
+        res.status(500).json({ success: false, error: "Error while submitting referral" });
+    }
+});
+
+// ... other code ...
 
 
 const enrollUserInCourse = async (userId, courseid) => {
@@ -433,7 +480,7 @@ const enrollUserInCourse = async (userId, courseid) => {
   }
 };
 
-app.get('/user', async function(req, res) {
+app.get('/user', async function (req, res) {
   const pageTitle = 'User Profile';
   const metaRobots = '';
   const metaKeywords = '';
@@ -483,7 +530,7 @@ app.get('/user', async function(req, res) {
       coursesPurchased,
       documentsUploaded,
       hasPurchasedCourses,
-      isBlogPage:false // Pass the documentsUploaded to the EJS template
+      isBlogPage: false // Pass the documentsUploaded to the EJS template
     });
   } catch (error) {
     console.error("Error fetching user's courses:", error);
@@ -502,18 +549,18 @@ const courseid = '9'; // Replace with the actual Course ID
 //Kit19Integration
 app.post('/submitRequestForMore', async (req, res) => {
   try {
-      const response = await saveEnquiry(req.body);
+    const response = await saveEnquiry(req.body);
 
-      console.log("Kit19 Response:", response);  // Log the entire response
+    console.log("Kit19 Response:", response);  // Log the entire response
 
-      if (response.data.Status === 0) {
-        res.send('Form data submitted successfully. Redirecting to the homepage...<meta http-equiv="refresh" content="2;url=/">');
-      } else {
-          res.status(400).send('Failed to save enquiry.');
-      }
+    if (response.data.Status === 0) {
+      res.send('Form data submitted successfully. Redirecting to the homepage...<meta http-equiv="refresh" content="2;url=/">');
+    } else {
+      res.status(400).send('Failed to save enquiry.');
+    }
   } catch (error) {
-      console.error('Error:', error);
-      res.status(500).send('Internal server error.');
+    console.error('Error:', error);
+    res.status(500).send('Internal server error.');
   }
 });
 
@@ -556,9 +603,9 @@ app.get('/buy-now/:courseID', async (req, res) => {
   }
 });
 
-app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (req, res) => {
+app.post('/webhook', bodyParser.raw({ type: 'application/json' }), async (req, res) => {
   const sig = req.headers['stripe-signature'];
-  
+
   let event;
   try {
     event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_SIGNING_SECRET);
@@ -566,29 +613,29 @@ app.post('/webhook', bodyParser.raw({type: 'application/json'}), async (req, res
     console.error('Error constructing event:', err);
     return res.status(400).send(`Webhook Error: ${err.message}`);
   }
-  
+
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    
+
     // Log the successful payment for security or auditing purposes
     console.log('Payment Successful:', session.id);
-    
+
     // Optionally, perform any other security-related tasks or verifications here
-    
+
   } else {
     // Handle other event types as necessary
     console.log('Received event:', event.type);
   }
-  
+
   // Always respond with 200 OK to acknowledge receipt of the event
-  res.json({received: true});
+  res.json({ received: true });
 });
 
 
 app.get('/success', async (req, res) => {
   const sessionId = req.query.session_id;
   const courseID = req.query.courseID; // Extract courseID from the URL
-  
+
   if (!sessionId || !courseID) {
     return res.status(400).send('Session ID and Course ID are required');
   }
@@ -611,26 +658,26 @@ app.get('/success', async (req, res) => {
   try {
     // Retrieve the session from Stripe
     const session = await stripe.checkout.sessions.retrieve(sessionId);
-    
+
     // Verify if the payment was successful
     if (session.payment_status !== 'paid') {
       return res.status(400).send('Payment was not successful');
     }
-    
+
     // Find the course and the user, then add the course to the user's purchased courses
     const course = await Course.findById(courseID);
     if (!course) return res.status(404).send('Course not found');
-    
+
     const courseName = course.title;
     const user = await User.findByIdAndUpdate(userId, {
       $addToSet: { coursesPurchased: courseName }
     }, { new: true });
-    
+
     if (!user) {
       console.error('User not found:', userId);
       return res.status(404).send('User not found');
     }
-    
+
     // Redirect to the user page or another appropriate page with a success message
     res.redirect('/user?message=Payment is successful!');
   } catch (error) {
@@ -644,7 +691,7 @@ app.get('/cancel', (req, res) => {
   // Define the message and the redirect URL to the home route
   const message = 'Payment Unsuccessful!';
   const redirectUrl = '/'; // Redirect to the home URL
-  
+
   // Send a simple HTML response with a script to redirect after a delay
   res.send(`
     <!DOCTYPE html>
@@ -680,7 +727,7 @@ app.get('/cancel', (req, res) => {
   `);
 });
 
-  
+
 
 
 
@@ -715,12 +762,14 @@ app.get('/upload-documents', isAuthenticated, (req, res) => {
   const canonicalLink = 'https://globalmedacademy.com/upload-documents';
   const courseID = req.query.courseID || '';
   const username = req.session.username || null;
-  res.render('data', { courseID,isUserLoggedIn: req.isUserLoggedIn,
-    username: username ,pageTitle,
+  res.render('data', {
+    courseID, isUserLoggedIn: req.isUserLoggedIn,
+    username: username, pageTitle,
     metaRobots,
     metaKeywords,
     ogDescription,
-    canonicalLink,isBlogPage:false });
+    canonicalLink, isBlogPage: false
+  });
 });
 
 
@@ -765,8 +814,8 @@ app.post('/upload-documents', upload.fields([
     };
     // Find the user by ID and update the uploadedFiles array
     const user = await User.findByIdAndUpdate(userId, userUpdate, { new: true });
-    
-  
+
+
     if (!user) {
       console.error('User not found:', userId);
       return res.status(404).send('User not found');

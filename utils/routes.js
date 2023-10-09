@@ -90,15 +90,32 @@ function checkEmailVerified(req, res, next) {
       res.render('becometeacher', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink ,isUserLoggedIn: req.isUserLoggedIn,
         username: username,isBlogPage:false });
     });
-    app.get("/refer-and-earn", function(req, res) {
+    app.get("/refer-and-earn",isAuthenticated, function(req, res) {
       const pageTitle = 'Refer and Earn';
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
       const metaKeywords = '';
       const ogDescription = '';
       const canonicalLink = 'https://globalmedacademy.com/become-teacher';
       const username = req.session.username || null;
-      res.render('refer-and-earn', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink ,isUserLoggedIn: req.isUserLoggedIn,
-        username: username,isBlogPage:false });
+      if (req.isUserLoggedIn) {
+        try {
+          res.render('refer-and-earn', {
+            pageTitle,
+            metaRobots,
+            metaKeywords,
+            ogDescription,
+            canonicalLink,
+            isUserLoggedIn: req.isUserLoggedIn,
+            username: username,
+            isBlogPage:false
+          });
+        } catch (error) {
+          console.error('Error in checkout route:', error);
+          res.status(500).send('Internal Server Error');
+        }
+      } else {
+        res.redirect('/loginn');
+      }
     });
   
     app.get("/privacy-policy", function(req, res) {
