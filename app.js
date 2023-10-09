@@ -6,7 +6,7 @@ const ejs = require("ejs");
 const passportLocalMongoose = require("passport-local-mongoose");
 const passport = require("passport");
 const cookieSession = require('cookie-session')
-const { mongoose, User, Course, Request,Session, UserSession } = require("./utils/db"); // Import from db.js
+const { mongoose, User, Course, Request,Session, UserSession,InstructorApplication } = require("./utils/db"); // Import from db.js
 const nodemailer = require('nodemailer');
 const mongodb = require("mongodb");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -149,6 +149,11 @@ let storedOTP = null;
 
 // Add this middleware to parse JSON in requests
 app.post("/register", async (req, res) => {
+  const pageTitle = 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ';
+    const ogDescription = 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals';
+    const canonicalLink = 'https://globalmedacademy.com/';
   try {
     const { username, fullname, password } = req.body;
     const existingUser = await User.findOne({ username });
@@ -164,17 +169,21 @@ app.post("/register", async (req, res) => {
     res.cookie('authToken', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // Cookie will expire after 24 hours
 
     createUserInMoodle(username, password, fullname, '.', username)
-      .then(() => {
-        req.session.save();
-        passport.authenticate("local")(req, res, function () {
-          res.render("auth_index", { username: username });
-          getUserIdFromUsername(username);
-        });
-      })
-      .catch((error) => {
-        console.error(error);
-        res.status(500).send("An error occurred during user registration.");
-      });
+  .then(() => {
+    passport.authenticate("local")(req, res, function () {
+      res.render("auth_index", { username: username,pageTitle,
+        metaRobots,
+        metaKeywords,
+        ogDescription,
+        canonicalLink,isBlogPage: false, });
+      getUserIdFromUsername(username);
+    });
+  })
+  .catch((error) => {
+    console.error(error);
+    res.status(500).send("An error occurred during user registration.");
+  });
+
   } catch (error) {
     console.error("Error while registering:", error);
     res.status(500).json({ error: "Error while registering" });
@@ -355,6 +364,45 @@ app.post('/verify-otp', (req, res) => {
   } else {
     res.status(400).json({ message: 'Invalid OTP. Please try again!' });
   }
+});
+app.post('/apply-as-instructor', async (req, res) => {
+  // Extract form data from req.body
+  const {
+    firstName,
+    lastName,
+    city,
+    country,
+    graduationDegree,
+    specialization,
+    lastDegree,
+    medicalCollege,
+    interestIn,
+    email,
+    mobile,
+  } = req.body;
+
+  // Create a new instructor application
+  const newApplication = new InstructorApplication({
+    firstName,
+    lastName,
+    city,
+    country,
+    graduationDegree,
+    specialization,
+    lastDegree,
+    medicalCollege,
+    interestIn,
+    email,
+    mobile,
+  });
+
+  try {
+    await newApplication.save();
+    res.status(200).json({ message: 'Application submitted successfully' });
+} catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error saving application' });
+}
 });
 
 

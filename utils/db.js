@@ -73,9 +73,25 @@ const UserSessionSchema = new mongoose.Schema({
   ipAddress: { type: String, required: true },
   userAgent: { type: String, required: true }, // Add this line
 });
+const instructorApplicationSchema = new mongoose.Schema({
+  firstName: String,
+  lastName: String,
+  city: String,
+  country: String,
+  graduationDegree: String,
+  specialization: String,
+  lastDegree: String,
+  medicalCollege: String,
+  interestIn: String,
+  email: String,
+  mobile: Number,
+  // Add other fields as needed
+});
+
+const InstructorApplication = mongoose.model('InstructorApplication', instructorApplicationSchema);
 
 const UserSession = mongoose.model('UserSession', UserSessionSchema);
 const Session = mongoose.model('Session', sessionSchema);
 const Request = mongoose.model('Request', requestSchema);
 
-module.exports = { mongoose, User, File, Request, Course, Session,UserSession };
+module.exports = { mongoose, User, File, Request, Course, Session,UserSession,InstructorApplication };

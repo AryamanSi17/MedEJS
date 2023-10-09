@@ -1,4 +1,10 @@
-<%- include('header'); -%>
+<% if (isUserLoggedIn) { %>
+    <!-- Include auth_header -->
+    <%- include('auth_header') %>
+        <% } else { %>
+            <!-- Include regular header -->
+            <%- include('header') %>
+                <% } %>
 
     <!-- Start breadcrumb Area -->
     <div class="rbt-breadcrumb-default ptb--100 ptb_md--50 ptb_sm--30 bg-gradient-1">
@@ -6,7 +12,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="breadcrumb-inner text-center">
-                        <h2 class="title">Become a Teacher</h2>
+                        <h2 class="title">Teach at GlobalMed Academy</h2>
                         <ul class="page-list">
                             <li class="rbt-breadcrumb-item"><a href="/">Home</a></li>
                             <li>
@@ -14,6 +20,14 @@
                             </li>
                             <li class="rbt-breadcrumb-item active">Become a Teacher</li>
                         </ul>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-12 text-left">
+                                    <p>At Global Med Academy, we believe in the power of hybrid education to connect Doctors from around the world. Our online teaching method allows experienced doctors with exceptional achievements to share their knowledge with a whole class through interactive and engaging online sessions. As an instructor, you will be able to educate and inspire a diverse group of learners, fostering a collaborative and dynamic learning environment. Join us in shaping the future of medical education and make a lasting impact on the lives of aspiring doctors</p>
+                                </div>
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -24,45 +38,23 @@
     <div class="rbt-become-area bg-color-white rbt-section-gap">
         <div class="container">
             <div class="row row row--30">
-
-                <!-- <div class="col-lg-12 mt_md--40 mt_sm--40 order-2 order-lg-1">
-                    <div class="advance-tab-button">
-                        <ul class="nav nav-tabs tab-button-style-2" id="myTab-4" role="tablist">
-                            <li role="presentation">
-                                <a href="#" class="tab-button" id="home-tab-4" data-bs-toggle="tab" data-bs-target="#home-4" role="tab" aria-controls="home-4" aria-selected="false">
-                                    <span class="title">Become an Intructor.</span>
-                                </a>
-                            </li>
-                            <li role="presentation">
-                                <a href="#" class="tab-button active" id="profile-tab-4" data-bs-toggle="tab" data-bs-target="#profile-4" role="tab" aria-controls="profile-4" aria-selected="true">
-                                    <span class="title">Intructor Rules.</span>
-                                </a>
-                            </li>
-                            <li role="presentation">
-                                <a href="#" class="tab-button" id="contact-tab-4" data-bs-toggle="tab" data-bs-target="#contact-4" role="tab" aria-controls="contact-4" aria-selected="false">
-                                    <span class="title">Start with courses.</span>
-                                </a>
-                            </li>
-                        </ul>
+                
+                <div class="col-lg-6">
+                    <div class="addmission-guide-content pl--50 pl_sm--0 pl_md--0 pl_lg--0">
+                        <h3 class="title">Be a mentor at <br> GlobalMed Academy</h3>
+                        <p>At Global Med Academy, we understand the importance of personalized learning and mentorship in the medical field. That's why we are seeking doctors with outstanding achievements who are passionate about guiding and supporting individual learners</p>
+                        <p>As a mentor, you will have the opportunity to provide one-on-one learning and mentorship to aspiring doctors, helping them navigate their educational journey and develop the necessary skills and knowledge</p>
+                        <h5>Join us in making a difference in the lives of future medical professionals and become a trusted mentor at Global Med Academy</h5>
                     </div>
-                    <div class="tab-content advance-tab-content-style-2">
-                        <div class="tab-pane fade" id="home-4" role="tabpanel" aria-labelledby="home-tab-4">
-                            <div class="content">
-                                <p>Educational technology ipsum dolor sit amet consectetur, adipisicing elit. Tempora sequi doloremque dicta quia unde odio nam minus reiciendis ullam aliquam, dolorum ab quisquam cum numquam nemo iure cumque iste. Accusamus necessitatibus.</p>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade active show" id="profile-4" role="tabpanel" aria-labelledby="profile-tab-4">
-                            <div class="content">
-                                <p>Physical education ipsum dolor sit amet consectetur, adipisicing elit. Tempora sequi doloremque dicta quia unde odio nam minus reiciendis ullam aliquam, dolorum ab quisquam cum numquam nemo iure cumque iste. Accusamus necessitatibus.</p>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="contact-4" role="tabpanel" aria-labelledby="contact-tab-4">
-                            <div class="content">
-                                <p>Experiencing music ipsum dolor sit amet consectetur, adipisicing elit. Tempora sequi doloremque dicta quia unde odio nam minus reiciendis ullam aliquam, dolorum ab quisquam cum numquam nemo iure cumque iste. Accusamus necessitatibus.</p>
-                            </div>
-                        </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="">
+                        <img class="w-100 rbt-radius" src="assets/images/others/video-04.jpg" alt="Video Images">
+                        <!-- <a class="rbt-btn btn-white rounded-player popup-video position-to-top" href="https://www.youtube.com/watch?v=nA1Aqp0sPQo">
+                            <span><i class="feather-play"></i></span>
+                        </a> -->
                     </div>
-                </div> -->
+                </div>
             </div>
 
             <div class="row pt--60 g-5">
@@ -75,88 +67,97 @@
 
                 <div class="col-lg-8">
                     <div class="rbt-contact-form contact-form-style-1 max-width-auto">
-                        <div class="section-title text-start">
-                            <span class="subtitle bg-primary-opacity">Teacher Registration</span>
-                        </div>
-                        <!-- <h3 class="title">Instructor Registration</h3> -->
                         <hr class="mb--30">
 
-                        <form action="#" class="row row--15">
-                            <div class="col-lg-6">
-                                <div class="form-group">
-                                    <input name="con_name" type="text">
-                                    <label>First Name</label>
-                                    <span class="focus-border"></span>
+                        <form action="/apply-as-instructor" class="row row--15" method="post" id="formforteacher">
+                            <div id="billing-form">
+                                <h4 class="checkout-title">Registration</h4>
+    
+                                <div class="row">
+    
+                                    <div class="col-md-6 col-12 mb--20">
+                                        <label>First Name</label>
+                                        <input type="text" placeholder="First Name">
+                                    </div>
+    
+                                    <div class="col-md-6 col-12 mb--20">
+                                        <label>Last Name</label>
+                                        <input type="text" placeholder="Last Name">
+                                    </div>
+    
+                                    <div class="col-md-6 col-12 mb--20">
+                                        <label>City</label>
+                                        <input type="text" placeholder="City">
+                                    </div>
+    
+                                    <div class="col-md-6 col-12 mb--20">
+                                        <label aria-placeholder="India">Country</label>
+                                        <input type="text" id="country" placeholder="India" value="India" readonly style="background-color: #f0f0f0;">
+                                    </div>
+                                    <div class="col-md-6 col-12 mb--20">
+                                        <label>Graduation Degree</label>
+                                        <div class="rbt-modern-select bg-transparent height-45">
+                                            <select class="w-100">
+                                                <option>MBBS</option>
+                                                <option>DBS</option>
+                                                <option>BAMS</option>
+                                                <option>BUMS</option>
+                                                <option>Others</option>
+                                            </select>
+                                        </div>
+                                    </div>
+    
+                                    <div class="col-md-6 col-12 mb--20">
+                                        <label>Specialization</label>
+                                        <input type="text" placeholder="Specialization">
+                                    </div>
+                                    <div class="col-md-6 col-12 mb--20">
+                                        <label>Last Degree</label>
+                                        <div class="rbt-modern-select bg-transparent height-45">
+                                            <select class="w-100">
+                                                <option>MD</option>
+                                                <option>DM</option>
+                                                <option>Others</option>
+                                            </select>
+                                        </div>
+                                    </div>
+    
+                                    <div class="col-md-6 col-12 mb--20">
+                                        <label>Medical College</label>
+                                        <input type="text" placeholder="Medical College">
+                                    </div>
+    
+                                    <div class="col-md-6 col-12 mb--20">
+                                        <label>Interest in</label>
+                                        <div class="rbt-modern-select bg-transparent height-45">
+                                            <select class="w-100">
+                                                <option>Instructor</option>
+                                                <option>Mentor</option>
+                                                <option>Both</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12 mb--20">
+                                        <label>Email</label>
+                                        <input type="email" placeholder="Email">
+                                    </div>
+                                    <div class="col-md-6 col-12 mb--20">
+                                        <label>Mobile</label>
+                                        <input type="number" placeholder="Mob.No.">
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div class="col-lg-6">
-                                <div class="form-group">
-                                    <input name="con_lastname" type="text">
-                                    <label>Last Name</label>
-                                    <span class="focus-border"></span>
+                                <div class="col-lg-12">
+                                    <div class="form-submit-group">
+                                        <button type="submit" class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
+                                            <span class="icon-reverse-wrapper">
+                                                <span class="btn-text">Submit</span>
+                                            <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                                            <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                                            </span>
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div class="col-lg-6">
-                                <div class="form-group">
-                                    <input name="con_username" type="text">
-                                    <label>User name</label>
-                                    <span class="focus-border"></span>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-6">
-                                <div class="form-group">
-                                    <input name="con_phone" type="text">
-                                    <label>Phone Number</label>
-                                    <span class="focus-border"></span>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-12">
-                                <div class="form-group">
-                                    <input name="con_email" type="email">
-                                    <label>Email</label>
-                                    <span class="focus-border"></span>
-                                </div>
-                            </div>
-
-
-                            <div class="col-lg-6">
-                                <div class="form-group">
-                                    <input name="con_password" type="password">
-                                    <label>Password</label>
-                                    <span class="focus-border"></span>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-6">
-                                <div class="form-group">
-                                    <input name="con_passwordconfirm" type="password">
-                                    <label>Password Confirmation</label>
-                                    <span class="focus-border"></span>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-12">
-                                <div class="form-group">
-                                    <textarea></textarea>
-                                    <label>Bio</label>
-                                    <span class="focus-border"></span>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-12">
-                                <div class="form-submit-group">
-                                    <button type="submit" class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
-                                        <span class="icon-reverse-wrapper">
-                                            <span class="btn-text">Become a Instructor</span>
-                                        <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                        <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                        </span>
-                                    </button>
-                                </div>
+    
                             </div>
                         </form>
                     </div>
@@ -243,4 +244,26 @@
         </div>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $("#formforteacher").submit(function(e){
+            e.preventDefault(); // Prevents the default form submission action
+    
+            $.ajax({
+                type: "POST",
+                url: "/apply-as-instructor",
+                data: $(this).serialize(),
+                success: function(response){
+                    alert(response.message); // Popup message
+                    window.location.href = "/"; // Redirect to home page
+                },
+                error: function(error){
+                    alert("An error occurred: " + error.responseText);
+                }
+            });
+        });
+    });
+    </script>
+    
     <%- include('footer'); -%>
