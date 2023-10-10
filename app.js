@@ -43,7 +43,9 @@ const app = express();
 app.use(cookieSession({
   name: 'session',
   keys: ['medEjs is way to success'], // Replace with your secret key
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  // secure: process.env.NODE_ENV === 'production',
+  maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  // httpOnly:true
 }));
 forestAdmin.mountOnExpress(app).start();
 // Use the middleware globally for all routes
@@ -113,17 +115,17 @@ app.get("/auth/google",
   })
 );
 
-app.get("/auth/google/callback",
-  (req, res, next) => {
-    console.log("Google callback triggered");
-    next();
-  },
-  passport.authenticate('google', { failureRedirect: '/login' }),
-  function (req, res) {
-    console.log("User authenticated, rendering view");
-    res.render('auth_index');
-  }
-);
+app.get('/auth/google/callback', (req, res, next) => {
+  passport.authenticate('google', (err, user, info) => {
+    if (err) { return next(err); }
+    if (!user) { return res.redirect('/login'); }
+    req.logIn(user, (err) => {
+      if (err) { return next(err); }
+      return res.redirect('/');
+    });
+  })(req, res, next);
+});
+
 
 app.get('/logout', async (req, res) => {
   try {
