@@ -63,7 +63,7 @@ app.set('trust proxy', true);
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: "https://globalmedacademy.com/auth/google/test",
+  callbackURL: "https://globalmedacademy.com/auth/google/callback",
   userProfileURL: "https://www.googleapis.com/oauth2/v2/userinfo"
 },
   async (accessToken, refreshToken, profile, done) => {
@@ -113,13 +113,18 @@ app.get("/auth/google",
   })
 );
 
-app.get("/auth/google/test",
+app.get("/auth/google/callback",
+  (req, res, next) => {
+    console.log("Google callback triggered");
+    next();
+  },
   passport.authenticate('google', { failureRedirect: '/login' }),
   function (req, res) {
-    // Successful authentication, redirect home.
+    console.log("User authenticated, rendering view");
     res.render('auth_index');
   }
 );
+
 app.get('/logout', async (req, res) => {
   try {
     // Clear the authToken cookie
