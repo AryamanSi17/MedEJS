@@ -114,17 +114,46 @@ app.get("/auth/google",
     scope: ['profile', 'email']
   })
 );
-
 app.get('/auth/google/callback', (req, res, next) => {
-  passport.authenticate('google', (err, user, info) => {
+  passport.authenticate('google', async (err, user, info) => {
     if (err) { return next(err); }
     if (!user) { return res.redirect('/login'); }
-    req.logIn(user, (err) => {
-      if (err) { return next(err); }
-      return res.redirect('/');
-    });
+
+    try {
+      req.logIn(user, async (err) => {
+        if (err) { return next(err); }
+
+        const token = jwt.sign({ userId: user._id }, JWT_SECRET);
+        res.cookie('authToken', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+
+        if (user.isNewUser) {
+          const username = user.email;  
+          const password = generatePassword();
+          const fullname = user.displayName;
+
+          // Sending the password via email
+          sendEmail({
+            to: [username],  // Sending to the user's email
+            subject: "Your Moodle Password",
+            text: `Hello, your Moodle password is: ${password}. Please change it after your first login.`
+          });
+
+          await createUserInMoodle(username, password, fullname, '.', username);
+          getUserIdFromUsername(username);
+        }
+
+        res.render("auth_index", {
+          username: user.displayName,
+          // Add other required fields
+        });
+      });
+    } catch (error) {
+      console.error("Error after Google authentication:", error);
+      res.status(500).send("An error occurred after Google authentication.");
+    }
   })(req, res, next);
 });
+
 
 
 app.get('/logout', async (req, res) => {
