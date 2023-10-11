@@ -115,6 +115,13 @@ app.get("/auth/google",
   })
 );
 app.get('/auth/google/callback', (req, res, next) => {
+  // Declare meta information
+  const pageTitle = 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy';
+  const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+  const metaKeywords = 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ';
+  const ogDescription = 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals';
+  const canonicalLink = 'https://globalmedacademy.com/';
+
   passport.authenticate('google', async (err, user, info) => {
     if (err) { return next(err); }
     if (!user) { return res.redirect('/login'); }
@@ -131,9 +138,8 @@ app.get('/auth/google/callback', (req, res, next) => {
           const password = generatePassword();
           const fullname = user.displayName;
 
-          // Sending the password via email
-          sendEmail({
-            to: [username],  // Sending to the user's email
+          await sendEmail({
+            to: [username],
             subject: "Your Moodle Password",
             text: `Hello, your Moodle password is: ${password}. Please change it after your first login.`
           });
@@ -142,9 +148,15 @@ app.get('/auth/google/callback', (req, res, next) => {
           getUserIdFromUsername(username);
         }
 
+        // Render the page with meta information
         res.render("auth_index", {
           username: user.displayName,
-          // Add other required fields
+          pageTitle,
+          metaRobots,
+          metaKeywords,
+          ogDescription,
+          canonicalLink,
+          isBlogPage: false,
         });
       });
     } catch (error) {
