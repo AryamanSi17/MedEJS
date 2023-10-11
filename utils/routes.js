@@ -307,17 +307,32 @@ function checkEmailVerified(req, res, next) {
     });
     app.get("/blog/:blogTitle", function(req, res) {
       const blogTitle = req.params.blogTitle;
-      // You can use the blogTitle to fetch the corresponding blog details from the database if needed.
-      
-      // Example rendering for the "elevate-your-expertise-in-diabetes-care-join-our-fellowship-to-lead-the-fight-against-diabetes-mellitus" blog.
-      if(blogTitle === "elevate-your-expertise-in-diabetes-care-join-our-fellowship-to-lead-the-fight-against-diabetes-mellitus") {
-          const pageTitle = 'Elevate Your Expertise in Diabetes Care: Join Our Fellowship to Lead the Fight Against Diabetes Mellitus';
-          const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
-          const metaKeywords = 'Fellowship in diabetology, fellowship in diabetes, fellowship in diabetes mellitus, diabetes fellowship online, diabetes fellowship courses, fellowship in diabetology online';
-          const ogDescription = 'Blogs';
-          const canonicalLink = 'https://globalmedacademy.com/blog/elevate-your-expertise-in-diabetes-care-join-our-fellowship-to-lead-the-fight-against-diabetes-mellitus';
-          const username = req.session.username || null;
-          res.render('blog-details', { 
+      let pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, renderView;
+      const username = req.session.username || null;
+  
+      // Existing blog about Diabetes Mellitus
+      if (blogTitle === "elevate-your-expertise-in-diabetes-care-join-our-fellowship-to-lead-the-fight-against-diabetes-mellitus") {
+          pageTitle = 'Elevate Your Expertise in Diabetes Care: Join Our Fellowship to Lead the Fight Against Diabetes Mellitus';
+          metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+          metaKeywords = 'Fellowship in diabetology, fellowship in diabetes, fellowship in diabetes mellitus, diabetes fellowship online, diabetes fellowship courses, fellowship in diabetology online';
+          ogDescription = 'Blogs';
+          canonicalLink = 'https://globalmedacademy.com/blog/elevate-your-expertise-in-diabetes-care-join-our-fellowship-to-lead-the-fight-against-diabetes-mellitus';
+          renderView = 'blog-details';
+      }
+      // New blog about Internal Medicine
+      else if (blogTitle === "pursuing-excellence-a-comprehensive-overview-of-a-fellowship-in-internal-medicine") {
+          pageTitle = 'Pursuing Excellence: A Comprehensive Overview of a Fellowship in Internal Medicine';
+          metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+          metaKeywords = 'Fellowship in Internal Medicine, Fellowship in General Practice, General Practice, Internal Medicine';
+          ogDescription = 'Explore the benefits and intricacies of pursuing a Fellowship in Internal Medicine/ General Practice.';
+          canonicalLink = 'https://globalmedacademy.com/blog/pursuing-excellence-a-comprehensive-overview-of-a-fellowship-in-internal-medicine';
+          renderView = 'blog-details-2';
+      }
+  
+      // Check to ensure we have pageTitle (and by extension, the other meta data),
+      // which ensures the blogTitle provided in the URL is valid.
+      if (pageTitle) {
+          res.render(renderView, {
               pageTitle, 
               metaRobots, 
               metaKeywords, 
@@ -325,11 +340,14 @@ function checkEmailVerified(req, res, next) {
               canonicalLink, 
               isUserLoggedIn: req.isUserLoggedIn, 
               username: username,
-              isBlogPage: true // Pass the additional variable here
+              isBlogPage: true
           });
+      } else {
+          // Optionally handle the case where a blog of the provided title doesn't exist. E.g.:
+          res.status(404).send("Blog not found!");
       }
-      // Handle other blogs similarly, and don’t forget to pass isBlogDetailsPage: false or omit it.
   });
+  
   
   
     app.get("/loginn",function(req,res){
