@@ -37,6 +37,7 @@ const isAuthenticated = require('./utils/isAuthenticatedMiddleware');
 const getUniqueEnrollmentNumber = require('./utils/enrollmentNumber');
 const forestAdmin = require('./utils/forestAdmin');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const flash=require('connect-flash');
 let loggedIn = true;
 // const enrollUserInCourse = require('./utils/enrollUser.js')
 const app = express();
@@ -59,8 +60,15 @@ app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cookieParser());
+app.use(flash());
 app.use(checkUserLoggedIn);
 app.set('trust proxy', true);
+app.use((req, res, next) => {
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.error = req.flash('error');
+  next();
+});
 
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
@@ -733,6 +741,25 @@ app.get('/success', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+//testing flash popup
+
+
+app.get('/test',function(req,res){
+res.render('form',{messages:req.flash()});
+})
+app.post('/test/submit', function(req, res) {
+  let message = "";
+  if (req.body.username.toLowerCase() === 'aryaman') {
+      message = 'Welcome Aryaman!';
+  } else {
+      message = 'User not recognised';
+  }
+  req.flash('message', message);
+  return res.redirect('/test');
+});
+
+
+
 
 // app.use(express.json());
 app.get('/cancel', (req, res) => {
