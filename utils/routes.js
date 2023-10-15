@@ -328,6 +328,14 @@ function checkEmailVerified(req, res, next) {
           canonicalLink = 'https://globalmedacademy.com/blog/pursuing-excellence-a-comprehensive-overview-of-a-fellowship-in-internal-medicine';
           renderView = 'blog-details-2';
       }
+      else if (blogTitle === "advanced-professional-certificate-in-diabetes-mellitus-enhancing-expertise-in-diabetes-management") {
+        pageTitle = 'Advanced Professional Certificate in Diabetes Mellitus: Enhancing Expertise in Diabetes Management';
+        metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+        metaKeywords = 'Diabetes Mellitus, Diabetes Management, Advanced Certificate, Diabetes Mellitus Expertise';
+        ogDescription = 'Enhance your expertise in diabetes management with our Advanced Professional Certificate in Diabetes Mellitus.';
+        canonicalLink = 'https://globalmedacademy.com/blog/advanced-professional-certificate-in-diabetes-mellitus-enhancing-expertise-in-diabetes-management';
+        renderView = 'blog-details-3'; // Create a new view for this blog post
+    }
   
       // Check to ensure we have pageTitle (and by extension, the other meta data),
       // which ensures the blogTitle provided in the URL is valid.
