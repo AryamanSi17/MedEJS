@@ -28897,6 +28897,16 @@ input::-webkit-inner-spin-button {
 .upload-btn:hover {
   background-color: #0056b3; /* Darker blue on hover */
 }
-/* ... other styles ... */
+#copyButton {
+  background: none;
+  border: none;
+  color: white; /* To match the color of the text */
+  cursor: pointer;
+  font-size: 1rem;
+  vertical-align: middle;
+}
 
-/* Remove the hover and checked styles for .checkmark */
+#copyButton:hover {
+  opacity: 0.7;
+}
+

@@ -95,7 +95,7 @@ function checkEmailVerified(req, res, next) {
       const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
       const metaKeywords = '';
       const ogDescription = '';
-      const canonicalLink = 'https://globalmedacademy.com/become-teacher';
+      const canonicalLink = 'https://globalmedacademy.com/refer-and-earn';
       const username = req.session.username || null;
       if (req.isUserLoggedIn) {
         try {

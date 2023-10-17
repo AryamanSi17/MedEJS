@@ -583,6 +583,7 @@ app.get('/user', async function (req, res) {
       isUserLoggedIn: req.isUserLoggedIn,
       username: user.username,
       fullname: user.fullname,
+      enrollmentNumber:user.enrollmentNumber,
       coursesPurchased,
       documentsUploaded,
       hasPurchasedCourses,
