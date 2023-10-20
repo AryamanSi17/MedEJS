@@ -70,14 +70,6 @@ function setRoutes(app) {
 
   });
 
-  app.get("/course-details", function (req, res) {
-    if (req.user) {
-      res.render('course-details', { loggedIn: true });
-    } else {
-      res.render('course-details', { loggedIn: false });
-    }
-  });
-
   app.get("/auth_index", function (req, res) {
     res.render("auth_index");
   });
@@ -299,12 +291,15 @@ function setRoutes(app) {
     });
   })
   app.get("/404", function (req, res) {
-    const pageTitle = 'Professional,Advanced, Fellowship courses';
+    const pageTitle = 'Course launching soon !';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'mall courses view, view all courses, course listings, online course catalog, course directory, course offerings, course categories, course search, explore courses, browse courses onlineedical instructor, medical teacher, apply for medical instructor';
     const ogDescription = '';
     res.render('404', { pageTitle, metaRobots, metaKeywords, ogDescription })
-  })
+  });
+  app.get("/course-details*", function (req, res) {
+    res.redirect("/404");
+});
   app.get("/auth_email", function (req, res) {
     const pageTitle = 'Authorize your Email';
     const metaRobots = '';
