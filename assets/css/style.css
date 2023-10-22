@@ -19508,7 +19508,6 @@ span.transparent-button:hover i {
 }
 
 .rbt-contact-form.contact-form-style-1 {
-  padding: 50px;
   position: relative;
   z-index: 1;
   max-width: 490px;
@@ -28873,7 +28872,7 @@ input::-webkit-inner-spin-button {
   font-size: 20px;
   margin-top: 20px;
   padding: 15px;
-  background-color: #b2e9ff; /* Light orange background */
+  background-color: #ffd9ed; /* Light orange background */
   border: 1px solid #c2dbf3; /* Orange border */
   border-radius: 5px; /* Rounded corners */
   text-align: center; /* Centered text */
