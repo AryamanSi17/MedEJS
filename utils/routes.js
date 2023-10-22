@@ -297,9 +297,9 @@ function setRoutes(app) {
     const ogDescription = '';
     res.render('404', { pageTitle, metaRobots, metaKeywords, ogDescription })
   });
-  app.get("/course-details*", function (req, res) {
-    res.redirect("/404");
-});
+//   app.get("/course-details*", function (req, res) {
+//     res.redirect("/404");
+// });
   app.get("/auth_email", function (req, res) {
     const pageTitle = 'Authorize your Email';
     const metaRobots = '';
