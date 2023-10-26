@@ -1,4 +1,21 @@
 <%- include("header");-%>
+<% if (locals.loginMessage) { %>
+    <script>
+        window.onload = function() {
+            document.getElementById('popupMessage').innerText = "<%= locals.loginMessage %>";
+            document.getElementById('popup').style.display = 'block';
+
+            // Hide the popup after 1.5 seconds
+            setTimeout(function() {
+                document.getElementById('popup').style.display = 'none';
+            }, 1500);
+        }
+    </script>
+<% } %>
+
+<!-- ... rest of your login.ejs code -->
+
+
 <style>
   #popup {
     display: none;

@@ -1,17 +1,23 @@
 const { Course, User } = require("./db");
 const { JWT_SECRET } = require('./config');
 const mongoose = require('mongoose');
-const isAuthenticated = require('./authMiddleware');
+const isAuthenticated = require('./isAuthenticatedMiddleware');
 const checkUploadedDocuments = require('./checkUploadedFiles');
 const checkUserLoggedIn = require('./authMiddleware');
 function setRoutes(app) {
+  app.use((req, res, next) => {
+    if (req.headers.host === 'globalmedacademy.com') {
+      return res.redirect(301, `https://www.globalmedacademy.com${req.originalUrl}`);
+    }
+    next();
+  });
 
   app.get("/", checkUserLoggedIn, function (req, res) {
     const pageTitle = 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ';
     const ogDescription = 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals';
-    const canonicalLink = 'https://globalmedacademy.com/';
+    const canonicalLink = 'https://www.globalmedacademy.com/';
     // const username = req.session.username || null;
     // Check if the user is logged in using the isUserLoggedIn property set by the middleware
     if (req.isUserLoggedIn) {
@@ -404,8 +410,20 @@ function setRoutes(app) {
     const metaKeywords = '';
     const ogDescription = '';
     const canonicalLink = 'https://globalmedacademy.com/loginn';
-    res.render('loginn', { pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isBlogPage: false });
+    const loginMessage = req.flash('loginMessage');
+
+    res.render('loginn', {
+      pageTitle,
+      metaRobots,
+      metaKeywords,
+      ogDescription,
+      canonicalLink,
+      isBlogPage: false,
+      loginMessage: loginMessage[0]
+    });
   });
+
+
   app.get("/register", isAuthenticated, function (req, res) {
     // const email=req.body.email
     const pageTitle = 'Registration!';

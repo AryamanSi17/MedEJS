@@ -6,8 +6,8 @@ function isAuthenticated(req, res, next) {
   const token = req.cookies && req.cookies['authToken'];
   
   if (!token) {
-    return res.redirect('/loginn'); // Redirect to login if no token is provided
-  }
+    return res.redirect('/loginn?promptLogin=true');
+}
   
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
@@ -15,7 +15,7 @@ function isAuthenticated(req, res, next) {
     next(); // Call the next middleware or route handler
   } catch (error) {
     console.error('Invalid token:', error);
-    res.redirect('/loginn'); // Redirect to login if the token is invalid
+    res.redirect('/loginn?promptLogin=true'); // Redirect to login with a query parameter
   }
 }
 
