@@ -22493,8 +22493,8 @@ img.mfp-img {
 }
 
 .alignwide {
-  margin-left: -100px;
-  margin-right: -100px;
+  margin-left: 2px;
+  margin-right: 12px;
   max-width: 1400px;
   width: auto;
 }
