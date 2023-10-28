@@ -659,6 +659,64 @@ app.get('/buy-now/:courseID', async (req, res) => {
     res.status(500).send('Error creating checkout session');
   }
 });
+app.get('/send-payment-link/:courseID', async (req, res) => {
+  const courseID = req.params.courseID;
+  const course = courses.find(c => c.courseID === courseID);
+
+  if (!course) {
+      return res.status(404).send('Course not found');
+  }
+
+  const line_items = [{
+      price_data: {
+          currency: course.currency,
+          product_data: {
+              name: course.name,
+          },
+          unit_amount: course.price,
+      },
+      quantity: 1,
+  }];
+
+  try {
+      const success_url = `http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}&courseID=${courseID}`;
+      const cancel_url = 'http://localhost:3000/cancel';
+
+      const session = await stripe.checkout.sessions.create({
+          payment_method_types: ['card'],
+          line_items: line_items,
+          mode: 'payment',
+          success_url: success_url,
+          cancel_url: cancel_url,
+      });
+
+      // Extract the JWT token from the cookie to get the user's email
+      const token = req.cookies.authToken;
+      if (!token) {
+          return res.status(401).send('Unauthorized: No token provided');
+      }
+
+      const decoded = jwt.verify(token, JWT_SECRET);
+      const user = await User.findById(decoded.userId);
+      if (!user) {
+          return res.status(404).send('User not found');
+      }
+
+      // Send the payment link to the user's email
+      sendEmail({
+        to: [user.username],
+        subject: 'Your Payment Link',
+        text: `Click here to make your payment: ${session.url}`
+    });
+    
+
+      res.send('Payment link sent to your email! You may close this page .');
+
+  } catch (error) {
+      console.error(error);
+      res.status(500).send('Error creating checkout session');
+  }
+});
 
 app.post('/webhook', bodyParser.raw({ type: 'application/json' }), async (req, res) => {
   const sig = req.headers['stripe-signature'];

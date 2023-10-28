@@ -436,7 +436,7 @@ function setRoutes(app) {
   });
 
 
-  app.get("/register", isAuthenticated, function (req, res) {
+  app.get("/register", function (req, res) {
     // const email=req.body.email
     const pageTitle = 'Registration!';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
