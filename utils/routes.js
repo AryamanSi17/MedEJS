@@ -316,13 +316,14 @@ function setRoutes(app) {
     const canonicalLink = 'https://www.globalmedacademy.com/faqs';
     res.render('404', { pageTitle, metaRobots, metaKeywords, ogDescription })
   });
-  app.get("/verify-certificate", function (req, res) {
+  app.get("/verify-certificate",function (req, res) {
     const pageTitle = 'Verify-certificate!';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'mall courses view, view all courses, course listings, online course catalog, course directory, course offerings, course categories, course search, explore courses, browse courses onlineedical instructor, medical teacher, apply for medical instructor';
     const ogDescription = '';
     const canonicalLink = 'https://www.globalmedacademy.com/verify-certificate';
-    res.render('verify-certificate', { pageTitle, metaRobots, metaKeywords, ogDescription, isUserLoggedIn: req.isUserLoggedIn, isBlogPage: false, canonicalLink })
+    const username = req.session.username || null
+    res.render('verify-certificate', { pageTitle, metaRobots, metaKeywords, ogDescription, isUserLoggedIn: req.isUserLoggedIn, isBlogPage: false, canonicalLink ,username: username})
   });
   app.get("/auth_email", function (req, res) {
     const pageTitle = 'Authorize your Email';

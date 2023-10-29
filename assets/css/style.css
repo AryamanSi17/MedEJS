@@ -14143,6 +14143,9 @@ span.transparent-button {
   font-size: 14px;
   font-weight: 500;
 }
+a.transparent-button{
+  font-weight:bolder;
+}
 a.transparent-button i,
 button.transparent-button i,
 span.transparent-button i {
@@ -14816,6 +14819,9 @@ span.transparent-button:hover i {
 }
 .rbt-card .rbt-card-body .rbt-card-title {
   font-size: 26px;
+}
+.rbt-card-title{
+  font-weight: normal;
 }
 @media only screen and (min-width: 992px) and (max-width: 1199px) {
   .rbt-card .rbt-card-body .rbt-card-title {
