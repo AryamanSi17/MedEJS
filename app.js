@@ -40,7 +40,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const rawBodyParser = bodyParser.raw({ type: '*/*' });
 const flash=require('connect-flash');
 let loggedIn = true;
-const enrollUser = require('./utils/enrollUser.js')
+const { enrollUserInCourse } = require('./utils/enrollUser.js')
 const app = express();
 app.use(cookieSession({
   name: 'session',
@@ -53,76 +53,8 @@ forestAdmin.mountOnExpress(app).start();
 // Use the middleware globally for all routes
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
-
-app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-  const sig = req.headers['stripe-signature'];
-  const body = JSON.stringify(req.body, null, 2);
-  let event;
-  try {
-    event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_SIGNING_SECRET);
-  } catch (err) {
-    console.error('Error constructing event:', err);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
-
-    // Log the successful payment for security or auditing purposes
-    console.log('Payment Successful:', session.id);
-
-    // Extract the JWT token from the cookie
-    const token = req.cookies.authToken;
-    if (!token) {
-        console.error('No JWT token provided');
-        return res.status(401).send('Unauthorized: No token provided');
-    }
-
-    let userId;
-    try {
-        // Verify and decode the token to get the user's ID
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        userId = decoded.userId;
-    } catch (error) {
-        console.error('Failed to decode JWT:', error);
-        return res.status(401).send('Unauthorized: Invalid token');
-    }
-
-    // Fetch the user's email from the database
-    const user = await User.findById(userId);
-    if (!user) {
-        console.error('User not found:', userId);
-        return res.status(404).send('User not found');
-    }
-    const userEmail = user.username; // Assuming you store the email in the 'username' field
-
-    // Enroll the user in the Moodle course with category number D1
-    await enrollUserInCourse(userId, 'D1');
-
-    // Send an email notification to the admin
-    sendEmail({
-        to: ['sinhasanjeevkumar08@gmail.com'],
-        subject: 'New Course Purchase Notification',
-        text: `User with email ${userEmail} has purchased the course.`
-    });
-
-    // Send a payment receipt to the user
-    sendEmail({
-        to: [userEmail],
-        subject: 'Your Payment Receipt',
-        text: `Thank you for purchasing the course. Your payment was successful!`
-    });
-
-} else {
-    // Handle other event types as necessary
-    console.log('Received event:', event.type);
-}
-
-// Always respond with 200 OK to acknowledge receipt of the event
-res.json({ received: true });
-});
+app.use('/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
-// Serve static files from the 'public' directory
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
@@ -578,32 +510,32 @@ app.post("/refer-and-earn", async (req, res) => {
 // ... other code ...
 
 
-const enrollUserInCourse = async (userId, courseid) => {
-  const formData = new FormData();
-  formData.append('moodlewsrestformat', 'json');
-  formData.append('wsfunction', 'enrol_manual_enrol_users');
-  formData.append('wstoken', "3fecec7d7227a4369b758e917800db5d");
-  formData.append('enrolments[0][roleid]', 5);
-  formData.append('enrolments[0][userid]', userId);
-  formData.append('enrolments[0][courseid]', courseid); // Fixed variable reference
+// const enrollUserInCourse = async (userId, courseid) => {
+//   const formData = new FormData();
+//   formData.append('moodlewsrestformat', 'json');
+//   formData.append('wsfunction', 'enrol_manual_enrol_users');
+//   formData.append('wstoken', "3fecec7d7227a4369b758e917800db5d");
+//   formData.append('enrolments[0][roleid]', 5);
+//   formData.append('enrolments[0][userid]', userId);
+//   formData.append('enrolments[0][courseid]', courseid); // Fixed variable reference
 
-  try {
-    const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
-      headers: formData.getHeaders()
-    });
+//   try {
+//     const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
+//       headers: formData.getHeaders()
+//     });
 
-    if (response.status === 200) {
-      console.log('User enrolled in the course successfully.');
-      console.log(response.data);
-    } else {
-      console.log('Failed to enroll user in the course.');
-      console.log(response.data);
-    }
-  } catch (error) {
-    console.log(error);
-    throw new Error('Failed to enroll user in the course.');
-  }
-};
+//     if (response.status === 200) {
+//       console.log('User enrolled in the course successfully.');
+//       console.log(response.data);
+//     } else {
+//       console.log('Failed to enroll user in the course.');
+//       console.log(response.data);
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     throw new Error('Failed to enroll user in the course.');
+//   }
+// };
 
 app.get('/user', async function (req, res) {
   const pageTitle = 'User Profile';
@@ -694,7 +626,7 @@ app.post('/submitRequestForMore', async (req, res) => {
 app.get('/buy-now/:courseID', async (req, res) => {
   const courseID = req.params.courseID;
   const course = courses.find(c => c.courseID === courseID);
-
+  
   if (!course) {
     return res.status(404).send('Course not found');
   }
@@ -711,6 +643,7 @@ app.get('/buy-now/:courseID', async (req, res) => {
   }];
 
   try {
+    
     const success_url = `http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}&courseID=${courseID}`;
     const cancel_url = 'http://localhost:3000/cancel';
 
@@ -786,7 +719,41 @@ app.get('/send-payment-link/:courseID', async (req, res) => {
       res.status(500).send('Error creating checkout session');
   }
 });
+// Endpoint for handling Stripe webhook events
+app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_SIGNING_SECRET);
+  } catch (err) {
+    if (err instanceof stripe.errors.StripeSignatureVerificationError) {
+      // Invalid signature
+      console.error('Invalid signature:', err);
+      return res.status(400).send('Invalid signature');
+    } else if (err instanceof SyntaxError) {
+      // Invalid payload
+      console.error('Invalid payload:', err);
+      return res.status(400).send('Invalid payload');
+    } else {
+      console.error('Error constructing event:', err);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+  }
 
+  // Handle the event
+  switch (event.type) {
+    case 'payment_intent.succeeded':
+      const paymentIntent = event.data.object;
+      console.log('Payment Successful:', paymentIntent.id);
+      break;
+    // ... handle other event types ...
+    default:
+      console.log("Unhandled event type:", event.type);
+  }
+
+  // Always respond with 200 OK to acknowledge receipt of the event
+  res.json({ received: true });
+});
 
 
 app.get('/success', async (req, res) => {
@@ -835,6 +802,16 @@ app.get('/success', async (req, res) => {
       return res.status(404).send('User not found');
     }
 
+    // Enroll the user in the Moodle course with category number D1
+    await enrollUserInCourse(user.username, '12');
+
+    // Send a payment receipt to the user
+    sendEmail({
+        to: [user.username],
+        subject: 'Your Payment Receipt',
+        text: `Thank you for purchasing the course. Your payment was successful!`
+    });
+
     // Redirect to the user page or another appropriate page with a success message
     res.redirect('/user?message=Payment is successful!');
   } catch (error) {
@@ -842,6 +819,9 @@ app.get('/success', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
+
+
 //testing flash popup
 
 
