@@ -37,9 +37,10 @@ const isAuthenticated = require('./utils/isAuthenticatedMiddleware');
 const getUniqueEnrollmentNumber = require('./utils/enrollmentNumber');
 const forestAdmin = require('./utils/forestAdmin');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const rawBodyParser = bodyParser.raw({ type: '*/*' });
 const flash=require('connect-flash');
 let loggedIn = true;
-// const enrollUserInCourse = require('./utils/enrollUser.js')
+const enrollUser = require('./utils/enrollUser.js')
 const app = express();
 app.use(cookieSession({
   name: 'session',
@@ -52,6 +53,74 @@ forestAdmin.mountOnExpress(app).start();
 // Use the middleware globally for all routes
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
+
+app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  const body = JSON.stringify(req.body, null, 2);
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_SIGNING_SECRET);
+  } catch (err) {
+    console.error('Error constructing event:', err);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+
+    // Log the successful payment for security or auditing purposes
+    console.log('Payment Successful:', session.id);
+
+    // Extract the JWT token from the cookie
+    const token = req.cookies.authToken;
+    if (!token) {
+        console.error('No JWT token provided');
+        return res.status(401).send('Unauthorized: No token provided');
+    }
+
+    let userId;
+    try {
+        // Verify and decode the token to get the user's ID
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        userId = decoded.userId;
+    } catch (error) {
+        console.error('Failed to decode JWT:', error);
+        return res.status(401).send('Unauthorized: Invalid token');
+    }
+
+    // Fetch the user's email from the database
+    const user = await User.findById(userId);
+    if (!user) {
+        console.error('User not found:', userId);
+        return res.status(404).send('User not found');
+    }
+    const userEmail = user.username; // Assuming you store the email in the 'username' field
+
+    // Enroll the user in the Moodle course with category number D1
+    await enrollUserInCourse(userId, 'D1');
+
+    // Send an email notification to the admin
+    sendEmail({
+        to: ['sinhasanjeevkumar08@gmail.com'],
+        subject: 'New Course Purchase Notification',
+        text: `User with email ${userEmail} has purchased the course.`
+    });
+
+    // Send a payment receipt to the user
+    sendEmail({
+        to: [userEmail],
+        subject: 'Your Payment Receipt',
+        text: `Thank you for purchasing the course. Your payment was successful!`
+    });
+
+} else {
+    // Handle other event types as necessary
+    console.log('Received event:', event.type);
+}
+
+// Always respond with 200 OK to acknowledge receipt of the event
+res.json({ received: true });
+});
 app.use(express.json());
 // Serve static files from the 'public' directory
 app.use(express.urlencoded({ extended: true }));
@@ -718,33 +787,6 @@ app.get('/send-payment-link/:courseID', async (req, res) => {
   }
 });
 
-app.post('/webhook', bodyParser.raw({ type: 'application/json' }), async (req, res) => {
-  const sig = req.headers['stripe-signature'];
-
-  let event;
-  try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_SIGNING_SECRET);
-  } catch (err) {
-    console.error('Error constructing event:', err);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
-
-    // Log the successful payment for security or auditing purposes
-    console.log('Payment Successful:', session.id);
-
-    // Optionally, perform any other security-related tasks or verifications here
-
-  } else {
-    // Handle other event types as necessary
-    console.log('Received event:', event.type);
-  }
-
-  // Always respond with 200 OK to acknowledge receipt of the event
-  res.json({ received: true });
-});
 
 
 app.get('/success', async (req, res) => {
