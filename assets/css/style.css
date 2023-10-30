@@ -16929,6 +16929,9 @@ span.transparent-button:hover i {
 .rbt-accordion-color-white .rbt-accordion-style .card .card-body a {
   color: var(--color-white-off);
 }
+.card-body-faqpage{
+  
+}
 .rbt-accordion-color-white .rbt-accordion-style.rbt-accordion-02 .card .card-header {
   border-bottom: 2px solid var(--color-border-2);
 }
