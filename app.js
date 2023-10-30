@@ -814,7 +814,7 @@ app.get('/success', async (req, res) => {
 
     // Send a new enrollment message to the admin
     sendEmail({
-      to: 'sinhasanjeevkumar08@gmail.com',
+      to: 'onlinemedcourses@gmail.com',
       subject: 'New User Enrollment',
       text: `A new user has enrolled in the course. \n\nUser Email: ${user.username}\nCourse: ${courseName}\nPayment Status: Successful`
     });
