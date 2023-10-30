@@ -809,7 +809,14 @@ app.get('/success', async (req, res) => {
     sendEmail({
         to: [user.username],
         subject: 'Your Payment Receipt',
-        text: `Thank you for purchasing the course. Your payment was successful!`
+        text: `Thank you for purchasing the course. Your payment was successful! Here is your receipt: ${session.receipt_url}`
+    });
+
+    // Send a new enrollment message to the admin
+    sendEmail({
+      to: 'sinhasanjeevkumar08@gmail.com',
+      subject: 'New User Enrollment',
+      text: `A new user has enrolled in the course. \n\nUser Email: ${user.username}\nCourse: ${courseName}\nPayment Status: Successful`
     });
 
     // Redirect to the user page or another appropriate page with a success message
@@ -960,7 +967,7 @@ app.post('/upload-documents', upload.fields([
     if (req.files.panCard) uploadedFiles.push({ ...req.files.panCard[0], title: 'Pan Card' });
     if (req.files.medicalCertificate) uploadedFiles.push({ ...req.files.medicalCertificate[0], title: 'Medical Certificate' });
     if (req.files.mciCertificate) uploadedFiles.push({ ...req.files.mciCertificate[0], title: 'MCI Certificate' });
-    if (req.files.passportPhoto) uploadedFiles.push({ ...req.files.passportPhoto[0], title: 'Passport Size Photo' }); // Added new field
+    if (req.files.passportPhoto) uploadedFiles.push({ ...req.files.passportPhoto[0], title: 'Passport Size Photo' });
 
     const userUpdate = {
       $push: { uploadedFiles: { $each: uploadedFiles } },
@@ -971,11 +978,21 @@ app.post('/upload-documents', upload.fields([
     // Find the user by ID and update the uploadedFiles array
     const user = await User.findByIdAndUpdate(userId, userUpdate, { new: true });
 
-
     if (!user) {
       console.error('User not found:', userId);
       return res.status(404).send('User not found');
     }
+
+    // Send an email to the user after successfully uploading documents
+    const userEmail = user.username; // Assuming the email is stored as username in the database
+    const emailSubject = 'Thank You for Uploading Documents';
+    const emailText = `Dear ${user.name || 'User'},\n\nThank you for uploading your documents. We will enroll you in the Moodle course within 24 hours after verifying the documents you have submitted.\n\nBest Regards,\nGlobal Med Academy`;
+
+    sendEmail({
+      to: userEmail,
+      subject: emailSubject,
+      text: emailText
+    });
 
     // Redirect the user to the /user route after uploading the documents
     res.redirect('/user');

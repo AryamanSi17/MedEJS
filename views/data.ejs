@@ -1,181 +1,151 @@
 <% if (isUserLoggedIn) { %>
-    <!-- Include auth_header -->
     <%- include('auth_header') %>
-  <% } else { %>
-    <!-- Include regular header -->
+<% } else { %>
     <%- include('header') %>
-  <% } %>  
-                    <title>Document Submission</title>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                        <div class="slider-area rbt-banner-10 height-750 bg_image bg_image--10">
-                            <div class="container">
-                                <div class="row justify-content-center">
-                                    <div class="col-lg-6">
-                                        <h1>Before proceeding...</h1>
-                                        <div class="rbt-contact-form contact-form-style-1 max-width-auto">
-                                            <form action="/upload-documents" method="post"
-                                                enctype="multipart/form-data">
-                                                <!-- Hidden input for courseID -->
-                                                <input type="hidden" name="courseID" value="<%= courseID %>">
+<% } %>
 
-                                                <div class="file-upload-group">
-                                                    <h5>Aadhar Card <label for="aadharCard"
-                                                            class="upload-icon-label"><span class="upload-icon"><i
-                                                                    class="fas fa-upload"></i></span></label></h5>
-                                                    <input type="file" name="aadharCard" accept="image/*" multiple
-                                                        id="aadharCard" class="file-input" />
-                                                </div>
+<div class="slider-area rbt-banner-10 height-750 bg_image bg_image--10">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <br>
+                <br>
+                <h1 class="text-center">Before proceeding...</h1>
+                <p class="text-center mb-4">Please upload the necessary documents to continue.</p>
+                <div class="rbt-contact-form contact-form-style-1 max-width-auto">
+                    <form action="/upload-documents" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="courseID" value="<%= courseID %>">
 
-                                                <div class="file-upload-group">
-                                                    <h5>Pan Card <label for="panCard" class="upload-icon-label"><span
-                                                                class="upload-icon"><i
-                                                                    class="fas fa-upload"></i></span></label></h5>
-                                                    <input type="file" name="panCard" accept="image/*" required
-                                                        id="panCard" class="file-input" />
-                                                </div>
-                                                <div class="file-upload-group">
-                                                    <h5>Medical Certificate <label for="medicalCertificate" class="upload-icon-label"><span class="upload-icon"><i class="fas fa-upload"></i></span></label></h5>
-                                                    <input type="file" name="medicalCertificate" accept="image/*" required id="medicalCertificate" class="file-input"/>
-                                                </div>
-                                                <div class="file-upload-group">
-                                                    <h5>Passport Size Photo <label for="passportPhoto" class="upload-icon-label"><span class="upload-icon"><i class="fas fa-upload"></i></span></label></h5>
-                                                    <input type="file" name="passportPhoto" accept="image/*" required id="passportPhoto" class="file-input"/>
-                                                </div>
-                                                
-                                                <div class="file-upload-group">
-                                                    <h5>MCI Certificate <label for="mciCertificate" class="upload-icon-label"><span class="upload-icon"><i class="fas fa-upload"></i></span></label></h5>
-                                                    <input type="file" name="mciCertificate" accept="image/*" required id="mciCertificate" class="file-input"/>
-                                                </div>
-                                                <!-- MCI Number -->
-<div class="file-upload-group">
-    <h5>MCI Number</h5>
-    <input type="text" name="mciNumber" required class="text-input" />
-</div>
-
-<!-- Address -->
-<div class="file-upload-group">
-    <h5>Address</h5>
-    <textarea name="address" required class="text-input"></textarea>
-</div>
-
-<!-- ID Number for Aadhar Card -->
-<div class="file-upload-group">
-    <h5>ID Number</h5>
-    <input type="text" name="idNumber" required class="text-input" />
-</div>
-
-<!-- Copy of Degree -->
-<div class="file-upload-group">
-    <h5>Copy of Degree <label for="degree" class="upload-icon-label"><span class="upload-icon"><i class="fas fa-upload"></i></span></label></h5>
-    <input type="file" name="degree" accept="image/*" required id="degree" class="file-input" />
-</div>
-
-                                                
-
-                                                <input type="submit" value="Submit Documents"
-                                                    class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
-                                            </form>
-                                        </div>
-                                    </div>
+                        <div class="row">
+                            <% ['aadharCard', 'panCard', 'medicalCertificate', 'passportPhoto', 'mciCertificate', 'degree'].forEach(function(doc, index) { %>
+                                <div class="col-md-6 mb-3">
+                                    <label for="<%= doc %>" class="form-label d-block" style="font-size: 1.2em;">
+                                        <%= doc.replace(/([A-Z])/g, ' $1').trim().replace(/\b\w/g, l => l.toUpperCase()) %> 
+                                        <span class="upload-icon-label">
+                                            <i class="fas fa-upload"></i>
+                                        </span>
+                                    </label>
+                                    <input type="file" name="<%= doc %>" accept="image/*" required id="<%= doc %>" class="form-control" />
                                 </div>
+                                <% if (index % 2 !== 0) { %>
+                                    <div class="w-100"></div>
+                                <% } %>
+                            <% }); %>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="mciNumber" class="form-label" style="font-size: 1.2em;">MCI Number</label>
+                                <input type="text" name="mciNumber" required class="form-control" />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="idNumber" class="form-label" style="font-size: 1.2em;">ID Number</label>
+                                <input type="text" name="idNumber" required class="form-control" />
                             </div>
                         </div>
-                    </body>
-                    <br>
-                    <br>
 
-                    <br>
-                    <br>
-                    <br>
-
-                    <div class="container-fluid">
-                        <div class="row g-3">
-                            <div class="col-lg-2 col-md-4 col-sm-6 col-6">
-                                <div class="instagram-grid">
-                                    <a>
-                                        <img src="assets/images/instagram/instagram-01.jpg" alt="instagram">
-                                        <span class="user-info">
-                                            <span class="icon"><i class="icon-instagram"></i></span>
-
-                                        </span>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-lg-2 col-md-4 col-sm-6 col-6">
-                                <div class="instagram-grid">
-                                    <a>
-                                        <img src="assets/images/instagram/instagram-02.jpg" alt="instagram">
-                                        <span class="user-info">
-                                            <span class="icon"><i class="icon-instagram"></i></span>
-
-                                        </span>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-lg-2 col-md-4 col-sm-6 col-6">
-                                <div class="instagram-grid">
-                                    <a>
-                                        <img src="assets/images/instagram/instagram-03.jpg" alt="instagram">
-                                        <span class="user-info">
-                                            <span class="icon"><i class="icon-instagram"></i></span>
-
-                                        </span>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-lg-2 col-md-4 col-sm-6 col-6">
-                                <div class="instagram-grid">
-                                    <a>
-                                        <img src="assets/images/instagram/instagram-04.jpg" alt="instagram">
-                                        <span class="user-info">
-                                            <span class="icon"><i class="icon-instagram"></i></span>
-                                        </span>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-lg-2 col-md-4 col-sm-6 col-6">
-                                <div class="instagram-grid">
-                                    <a>
-                                        <img src="assets/images/instagram/instagram-05.jpg" alt="instagram">
-                                        <span class="user-info">
-                                            <span class="icon"><i class="icon-instagram"></i></span>
-
-                                        </span>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-lg-2 col-md-4 col-sm-6 col-6">
-                                <div class="instagram-grid">
-                                    <a>
-                                        <img src="assets/images/instagram/instagram-06.jpg" alt="instagram">
-                                        <span class="user-info">
-                                            <span class="icon"><i class="icon-instagram"></i></span>
-
-                                        </span>
-                                    </a>
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label" style="font-size: 1.2em;">Address</label>
+                            <textarea name="address" required class="form-control"></textarea>
                         </div>
-                    </div>
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function () {
-                            document.querySelectorAll('.file-input').forEach(function (input) {
-                                input.addEventListener('change', function () {
-                                    const iconSpan = input.parentElement.querySelector('.upload-icon');
-                                    if (input.files.length > 0) {
-                                        iconSpan.innerHTML = '<i class="fas fa-check"></i>';
-                                    } else {
-                                        iconSpan.innerHTML = '<i class="fas fa-upload"></i>';
-                                    }
-                                });
-                            });
-                        });
-                    </script>
 
+                        <div class="text-center">
+                            <button type="submit" class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">Submit Documents</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row g-3">
+        <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+            <div class="instagram-grid">
+                <a>
+                    <img src="assets/images/instagram/instagram-01.jpg" alt="instagram">
+                    <span class="user-info">
+                        <span class="icon"><i class="icon-instagram"></i></span>
 
+                    </span>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+            <div class="instagram-grid">
+                <a>
+                    <img src="assets/images/instagram/instagram-02.jpg" alt="instagram">
+                    <span class="user-info">
+                        <span class="icon"><i class="icon-instagram"></i></span>
 
-                    <%- include('footer') %>
+                    </span>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+            <div class="instagram-grid">
+                <a>
+                    <img src="assets/images/instagram/instagram-03.jpg" alt="instagram">
+                    <span class="user-info">
+                        <span class="icon"><i class="icon-instagram"></i></span>
+
+                    </span>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+            <div class="instagram-grid">
+                <a>
+                    <img src="assets/images/instagram/instagram-04.jpg" alt="instagram">
+                    <span class="user-info">
+                        <span class="icon"><i class="icon-instagram"></i></span>
+                    </span>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+            <div class="instagram-grid">
+                <a>
+                    <img src="assets/images/instagram/instagram-05.jpg" alt="instagram">
+                    <span class="user-info">
+                        <span class="icon"><i class="icon-instagram"></i></span>
+
+                    </span>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+            <div class="instagram-grid">
+                <a>
+                    <img src="assets/images/instagram/instagram-06.jpg" alt="instagram">
+                    <span class="user-info">
+                        <span class="icon"><i class="icon-instagram"></i></span>
+
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <!-- Instagram Grid Section -->
+    <!-- ... -->
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.file-input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                const iconSpan = input.parentElement.querySelector('.upload-icon');
+                if (input.files.length > 0) {
+                    iconSpan.innerHTML = '<i class="fas fa-check"></i>';
+                } else {
+                    iconSpan.innerHTML = '<i class="fas fa-upload"></i>';
+                }
+            });
+        });
+    });
+</script>
+
+<%- include('footer') %>
