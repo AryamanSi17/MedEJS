@@ -646,14 +646,26 @@ app.get('/buy-now/:courseID', async (req, res) => {
     
     const success_url = `http://www.globalmedacademy.com/success?session_id={CHECKOUT_SESSION_ID}&courseID=${courseID}`;
     const cancel_url = 'http://www.globalmedacademy.com/cancel';
+   
+    const token = req.cookies.authToken;
+      if (!token) {
+          return res.status(401).send('Unauthorized: No token provided');
+      }
+
+      const decoded = jwt.verify(token, JWT_SECRET);
+      const user = await User.findById(decoded.userId);
+      if (!user) {
+          return res.status(404).send('User not found');
+      }
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
+      customer_email: user.username,
       line_items: line_items,
       mode: 'payment',
       success_url: success_url,
       cancel_url: cancel_url,
-    });
+  });
 
     res.json({ id: session.id });
   } catch (error) {
@@ -681,16 +693,8 @@ app.get('/send-payment-link/:courseID', async (req, res) => {
   }];
 
   try {
-      const success_url = `http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}&courseID=${courseID}`;
-      const cancel_url = 'http://localhost:3000/cancel';
-
-      const session = await stripe.checkout.sessions.create({
-          payment_method_types: ['card'],
-          line_items: line_items,
-          mode: 'payment',
-          success_url: success_url,
-          cancel_url: cancel_url,
-      });
+      const success_url = `http://www.globalmedacademy.com/success?session_id={CHECKOUT_SESSION_ID}&courseID=${courseID}`;
+      const cancel_url = 'http://www.globalmedacademy.com/cancel';
 
       // Extract the JWT token from the cookie to get the user's email
       const token = req.cookies.authToken;
@@ -703,7 +707,15 @@ app.get('/send-payment-link/:courseID', async (req, res) => {
       if (!user) {
           return res.status(404).send('User not found');
       }
-
+       
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        customer_email: user.username,
+        line_items: line_items,
+        mode: 'payment',
+        success_url: success_url,
+        cancel_url: cancel_url,
+    });
       // Send the payment link to the user's email
       sendEmail({
         to: [user.username],
