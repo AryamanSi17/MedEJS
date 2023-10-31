@@ -14739,6 +14739,9 @@ span.transparent-button:hover i {
   position: relative;
   height: 100%;
 }
+ .user-page.rbt-card {
+height: auto;
+}
 @media only screen and (min-width: 992px) and (max-width: 1199px) {
   .rbt-card {
     padding: 20px;

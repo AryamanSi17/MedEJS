@@ -155,54 +155,42 @@
                                 </div>
                                 <div class="col-lg-12 mt--30">
                                     <div class="profile-content rbt-shadow-box">
-                                        <h4 class="rbt-title-style-3">Course(s) Purchased</h4>
+                                        <!-- <h4 class="rbt-title-style-3">Course(s) Purchased</h4> -->
                                         <div class="row g-5">
                                             <div class="col-lg-8">
-                                                <p class="mt--10 mb--20">Your purchased courses will be displayed over
-                                                    here .....</p>
+                                                <!-- <p class="mt--10 mb--20">Your purchased courses will be displayed over
+                                                    here .....</p> -->
                                                 <ul class="rbt-information-list mt--15">
-                                                    <% if (coursesPurchased && coursesPurchased.length> 0) { %>
+                                                    <% if (coursesPurchased && coursesPurchased.length > 0) { %>
                                                         <h3>Courses Purchased:</h3>
                                                         <ul>
                                                             <% coursesPurchased.forEach(function(course) { %>
                                                                 <% if (documentsUploaded) { %>
                                                                     <!-- Render the active link if documents are uploaded -->
-                                                                    <li><a
-                                                                            href="https://moodle.upskill.globalmedacademy.com/login/index.php?username=<%= username %>">
-                                                                            <%= course %>
-                                                                        </a></li>
-                                                                    <% } else { %>
-                                                                        <!-- Render the locked link if documents are not uploaded -->
-                                                                        <li>
-                                                                            <span class="locked-course">
-                                                                                <%= course %> <i class="lock-icon"
-                                                                                        title="Please upload documents before proceeding.">&#x1F512;</i>
-                                                                            </span>
-                                                                        </li>
-                                                                        <% } %>
-                                                                            <% }); %>
+                                                                    <li><a href="https://moodle.upskill.globalmedacademy.com/login/index.php?username=<%= username %>">
+                                                                        <%= course %>
+                                                                    </a></li>
+                                                                <% } else { %>
+                                                                    <!-- Render the locked link if documents are not uploaded -->
+                                                                    <li>
+                                                                        <span class="locked-course">
+                                                                            <%= course %> <i class="lock-icon" title="Please upload documents before proceeding.">&#x1F512;</i>
+                                                                        </span>
+                                                                    </li>
+                                                                <% } %>
+                                                            <% }); %>
                                                         </ul>
-                                                        <% } else { %>
-                                                            <p>You haven't purchased any courses yet.</p>
-                                                            <% } %>
-
-                                                                <% if (hasPurchasedCourses) { %>
-                                                                    <% if (documentsUploaded) { %>
-                                                                        <!-- Render the Moodle link -->
-                                                                        <a href="https://moodle.upskill.globalmedacademy.com/login/index.php?username=<%= username %>"
-                                                                            class="btn btn-success">Access Moodle</a>
-                                                                        <% } else { %>
-                                                                            <!-- Display the message in a larger font and provide a link to upload documents -->
-                                                                            <div class="document-upload-alert">
-                                                                                <p class="alert-text">Document uploading
-                                                                                    pending</p>
-                                                                                <a href="/upload-documents"
-                                                                                    class="btn btn-primary upload-btn">Upload
-                                                                                    Documents</a>
-                                                                            </div>
-                                                                            <% } %>
-                                                                                <% } %>
-
+                                                    <% } else { %>
+                                                        <div class="no-courses-message">
+                                                            <h3>Unlock Your Potential!</h3>
+                                                            <p>It looks like you haven't embarked on your learning journey yet. Explore our courses and take the first step towards mastering new skills!</p>
+                                                            <!-- Display the courses here -->
+                                                            <div class="courses-to-buy">
+                                                                <!-- Include the courses HTML here -->
+                                                            </div>
+                                                        </div>
+                                                    <% } %>
+                                                    
 
 
 
@@ -213,7 +201,7 @@
                                                     <span class="rbt-badge-2 w-100 text-center badge-full-height">
                                                         <span class="image"><img
                                                                 src="assets/images/icons/card-icon-1.png"
-                                                                alt="Best Seller Icon"></span> Bestseller
+                                                                alt="Best Seller Icon"></span> Bestsellers
                                                     </span>
                                                 </div>
                                             </div>
@@ -222,6 +210,129 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="rbt-section-overlayping-top rbt-section-gapBottom">
+                        <div class="container">
+                            <!-- Start Card Area -->
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="tab-content" id="rbt-myTabContent">
+                                        <div class="tab-pane fade show active" id="all" role="tabpanel"
+                                            aria-labelledby="all-tab">
+                                            <div class="rbt-course-grid-column">
+
+                                                <!-- Start Single Course  -->
+                                                <div class="course-grid-3">
+                                                    <div class="rbt-card user-page variation-01 rbt-hover">
+                                                        <div class="rbt-card-img">
+                                                            <a
+                                                                href="/course-details-professional-certificate-in-diabetes-management">
+                                                                <<img src="assets/images/course/pcdma_userprofile.jpg"
+                                                                    alt="Professional Certificate in diabetes management">
+                                                            </a>
+                                                        </div>
+                                                        <div class="rbt-card-body">
+
+
+                                                            <h4 class="rbt-card-title"><a
+                                                                    href="/course-details-professional-certificate-in-diabetes-management">Professional
+                                                                    Certificate in Diabetes Management</a>
+                                                            </h4>
+
+
+                                                            <p class="rbt-card-text">Here will be details.</p>
+                                                            <div class="rbt-card-bottom">
+                                                                <div class="rbt-price">
+                                                                    <span class="current-price">Rs 30,000</span>
+                                                                    <span class="off-price">Rs 35,000</span>
+                                                                </div>
+                                                                <a class="rbt-btn-link"
+                                                                    href="/checkout/64b977cffa47d3d1072b49b9">Buy Now<i
+                                                                        class="feather-arrow-right"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- End Single Course  -->
+
+                                                 <!-- Start Single Course  -->
+                                                 <div class="course-grid-3">
+                                                    <div class="rbt-card user-page variation-01 rbt-hover">
+                                                        <div class="rbt-card-img">
+                                                            <a
+                                                                href="/course-details-advanced-professional-certificate-in-diabetes-management">
+                                                                <<img src="assets/images/course/apcd_userprofile.jpg"
+                                                                    alt="Advanced Professional Certificate in diabetes management">
+                                                            </a>
+                                                        </div>
+                                                        <div class="rbt-card-body">
+
+
+                                                            <h4 class="rbt-card-title"><a
+                                                                    href="/course-details-advanced-professional-certificate-in-diabetes-management">Advanced Professional
+                                                                    Certificate in Diabetes Management</a>
+                                                            </h4>
+
+
+                                                            <p class="rbt-card-text">Here will be details.</p>
+                                                            <div class="rbt-card-bottom">
+                                                                <div class="rbt-price">
+                                                                    <span class="current-price">Rs 65,000</span>
+                                                                    <span class="off-price">Rs 72,000</span>
+                                                                </div>
+                                                                <a class="rbt-btn-link"
+                                                                    href="/checkout/64b977cffa47d3d1072b49b7">Buy Now<i
+                                                                        class="feather-arrow-right"></i></a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- End Single Course  -->
+
+                                               <!-- Start Single Course  -->
+                                               <div class="course-grid-3">
+                                                <div class="rbt-card user-page variation-01 rbt-hover">
+                                                    <div class="rbt-card-img">
+                                                        <a
+                                                            href="/course-details-fellowship-in-diabetes-management">
+                                                            <<img src="assets/images/course/fdm_userprofile.jpg"
+                                                                alt="Fellowship Certificate in diabetes management">
+                                                        </a>
+                                                    </div>
+                                                    <div class="rbt-card-body">
+
+
+                                                        <h4 class="rbt-card-title"><a
+                                                                href="/course-details-fellowship-in-diabetes-management">Fellowship in Diabetes Management</a>
+                                                        </h4>
+
+
+                                                        <p class="rbt-card-text">Here will be details.</p>
+                                                        <div class="rbt-card-bottom">
+                                                            <div class="rbt-price">
+                                                                <span class="current-price">Rs 1,35,000</span>
+                                                                <span class="off-price">Rs 1,10,000</span>
+                                                            </div>
+                                                            <a class="rbt-btn-link"
+                                                                href="/checkout/64b977cffa47d3d1072b49b8">Buy Now<i
+                                                                    class="feather-arrow-right"></i></a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- End Single Course  -->
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rbt-btn-wrapper mb--20 mr--50 ml--68">
+                        <a class="rbt-btn btn-md btn-gradient hover-icon-reverse justify-content-center text-center" href="/course-masonry">
+                            <span>All Courses</span>
+                        </a>
                     </div>
                     <div class="container-fluid">
                         <div class="row g-3">
@@ -297,6 +408,7 @@
                             <hr class="rbt-separator m-0">
                         </div>
                     </div>
+
                     <script>
                         document.getElementById('copyButton').addEventListener('click', function () {
                             var range = document.createRange();

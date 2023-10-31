@@ -1,7 +1,61 @@
-    <%-include ('header'); -%>
+<%-include ('header'); -%>
     <br>
     <br>
+<style>
+    /* The Modal (background) */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7);
+}
 
+/* Modal Content */
+.modal-content {
+    background-color: #ffffff;
+    margin: auto;
+    padding: 30px;
+    border: none;
+    width: 30%;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+}
+
+/* The Close Button */
+.close {
+    color: #333;
+    float: right;
+    font-size: 24px;
+    font-weight: bold;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close:hover,
+.close:focus {
+    color: #ff5252;
+}
+
+.modal-content i.fas {
+    display: block;
+    margin: 0 auto 20px auto;
+    text-align: center;
+}
+
+</style>
     <div class="rbt-newsletter-area bg-gradient-6 ptb--50">
         <div class="rbt-elements-area bg-color-white rbt-section-gap">
             <div class="container">
@@ -22,14 +76,16 @@
                                     <span class="focus-border"></span>
                                 </div>
                                 <div class="form-submit-group">
-                                    <button type="button" onclick="sendOTP()" class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
+                                    <button type="button" onclick="sendOTP()"
+                                        class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
                                         <span class="icon-reverse-wrapper">
                                             <span class="btn-text">Send Verification Code</span>
                                             <span class="btn-icon"><i class="feather-arrow-right"></i></span>
                                             <span class="btn-icon"><i class="feather-arrow-right"></i></span>
                                         </span>
                                     </button>
-                                    <button type="button" onclick="verifyOTP()" style="display: none" id="verifyButton" class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
+                                    <button type="button" onclick="verifyOTP()" style="display: none" id="verifyButton"
+                                        class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
                                         <span class="icon-reverse-wrapper">
                                             <span class="btn-text">Verify Email</span>
                                             <span class="btn-icon"><i class="feather-arrow-right"></i></span>
@@ -38,14 +94,16 @@
                                     </button>
                                 </div>
                             </form>
-                            <div id="loadingSpinner" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(255,255,255,0.8); z-index:9999;">
+                            <div id="loadingSpinner"
+                                style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(255,255,255,0.8); z-index:9999;">
                                 <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
-                                <img src="../assets/animations/loadingGif.gif" alt="Loading...">
+                                    <img src="../assets/animations/loadingGif.gif" alt="Loading...">
                                 </div>
-                            </div>                        
+                            </div>
                             <div id="successMessage" style="display: none">
                                 <h4>OTP Sent Successfully!</h4>
-                                <p>An OTP has been sent to <span id="email"></span>. Please check your email and enter the code below to verify.</p>
+                                <p>An OTP has been sent to <span id="email"></span>. Please check your email and enter
+                                    the code below to verify.</p>
                             </div>
                             <div id="errorMessage" style="display: none">
                                 <h4>Invalid OTP. Please try again!</h4>
@@ -61,29 +119,55 @@
             </div>
             <div class="center-div">
                 <div class="form-group">
-                  <a href="/auth/google" onclick="submitGoogleForm()" style="color: rgb(0, 29, 108)" class="btn btn-google">
-                    <img src="../assets/images/icons/google.png" alt="Google Icon" class="google-icon"> Signup with Google
-                  </a>
-                  <span class="focus-border"></span>
+                    <a href="/auth/google" onclick="submitGoogleForm()" style="color: rgb(0, 29, 108)"
+                        class="btn btn-google">
+                        <img src="../assets/images/icons/google.png" alt="Google Icon" class="google-icon"> Signup with
+                        Google
+                    </a>
+                    <span class="focus-border"></span>
                 </div>
-              </div>
+            </div>
         </div>
     </div>
     <br>
     <br>
     <br>
+    <div id="customModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p id="customModalMessage">Some text in the Modal..</p>
+        </div>
+    </div>
 
     <script>
         const emailInput = document.querySelector('input[name="email"]');
         const hiddenEmailInput = document.querySelector('input[name="hidden_email"]');
+        const modal = document.getElementById("customModal");
+        const closeModalButton = document.getElementsByClassName("close")[0];
     
-        emailInput.addEventListener('input', function() {
+        emailInput.addEventListener('input', function () {
             hiddenEmailInput.value = emailInput.value;
         });
     
+        closeModalButton.onclick = function () {
+            modal.style.display = "none";
+        }
+    
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    
+        function displayCustomModalMessage(message) {
+            var messageParagraph = document.getElementById("customModalMessage");
+            messageParagraph.textContent = message;
+            modal.style.display = "block";
+        }
+    
         function sendOTP() {
             const email = document.querySelector('input[name="email"]').value;
-            
+    
             // Show the loading spinner
             document.querySelector('#loadingSpinner').style.display = 'block';
     
@@ -94,26 +178,34 @@
                 },
                 body: JSON.stringify({ email }),
             })
-            .then(response => response.json())
-            .then(data => {
-                // Hide the loading spinner
-                document.querySelector('#loadingSpinner').style.display = 'none';
-                
-                
-                if (data.message === 'OTP sent successfully') {
-                    document.querySelector('button[onclick="sendOTP()"]').style.display = 'none';
-                    document.querySelector('#successMessage').style.display = 'block';
-                    document.querySelector('#successMessage #email').textContent = email;
-                    document.querySelector('#verifyButton').style.display = 'block';
-                } else {
-                    document.querySelector('#errorMessage').style.display = 'block';
-                }
-            })
-            .catch(error => {
-                // Hide the loading spinner in case of an error
-                document.querySelector('#loadingSpinner').style.display = 'none';
-                console.error('There was an error sending the OTP:', error);
-            });
+                .then(response => {
+                    // Hide the loading spinner
+                    document.querySelector('#loadingSpinner').style.display = 'none';
+    
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        // Handle non-200 responses
+                        return response.json().then(data => {
+                            throw new Error(data.message);
+                        });
+                    }
+                })
+                .then(data => {
+                    if (data.message === 'OTP sent successfully') {
+                        document.querySelector('button[onclick="sendOTP()"]').style.display = 'none';
+                        document.querySelector('#successMessage').style.display = 'block';
+                        document.querySelector('#successMessage #email').textContent = email;
+                        document.querySelector('#verifyButton').style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    if (error.message === 'Email already registered') {
+                        displayCustomModalMessage("The email you entered is already registered. Please use a different email or log in.");
+                    } else {
+                        console.error('There was an error:', error);
+                    }
+                });
         }
     
         function verifyOTP() {
@@ -127,32 +219,33 @@
                 },
                 body: JSON.stringify({ email, otp }),
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message === 'OTP verified successfully') {
-                    // Redirect or update the user interface as needed
-                    localStorage.setItem('email', email);
-                    localStorage.setItem('emailVerified', 'true');
-                    window.location.href = '/register';
-                } else {
-                    document.querySelector('#errorMessage').style.display = 'block';
-                }
-            })
-            .catch(error => console.error('There was an error verifying the OTP:', error));
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === 'OTP verified successfully') {
+                        // Redirect or update the user interface as needed
+                        localStorage.setItem('email', email);
+                        localStorage.setItem('emailVerified', 'true');
+                        window.location.href = '/register';
+                    } else {
+                        document.querySelector('#errorMessage').style.display = 'block';
+                    }
+                })
+                .catch(error => console.error('There was an error verifying the OTP:', error));
         }
-        function submitGoogleForm() {
-    // Create a hidden form element
-    const form = document.createElement('form');
-    form.method = 'get';
-    form.action = '/auth/google';
-    form.style.display = 'none';
-
-    // Append the form to the document's body
-    document.body.appendChild(form);
-
-    // Submit the form
-    form.submit();
-  }
-    </script>
-<%- include('footer'); -%>
     
+        function submitGoogleForm() {
+            // Create a hidden form element
+            const form = document.createElement('form');
+            form.method = 'get';
+            form.action = '/auth/google';
+            form.style.display = 'none';
+    
+            // Append the form to the document's body
+            document.body.appendChild(form);
+    
+            // Submit the form
+            form.submit();
+        }
+    </script>
+    
+    <%- include('footer'); -%>

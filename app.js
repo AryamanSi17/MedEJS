@@ -396,28 +396,40 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-app.post('/send-otp', (req, res) => {
+app.post('/send-otp', async (req, res) => {
   const email = req.body.email;
-  const otp = Math.floor(100000 + Math.random() * 900000);
-  otps[email] = otp;
 
-  const mailOptions = {
-    from: 'info@globalmedacademy.com',
-    to: email,
-    subject: 'Your Verification Code',
-    text: `Your verification code is ${otp}`
-  };
+  try {
+    // Check if email is already registered
+    const user = await User.findOne({ username: email }); // Changed from email to username
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log(error);
-      res.status(500).json({ message: 'Failed to send OTP' });
-    } else {
-      console.log('Email sent: ' + info.response);
-      res.status(200).json({ message: 'OTP sent successfully' });
+    if (user) {
+      // Email is already registered
+      return res.status(400).json({ message: 'Email already registered' });
     }
-  });
+
+    // Email is not registered, proceed with sending OTP
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    otps[email] = otp;
+
+    const mailOptions = {
+      from: 'info@globalmedacademy.com',
+      to: email,
+      subject: 'Your Verification Code',
+      text: `Your verification code is ${otp}`
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent: ' + info.response);
+    res.status(200).json({ message: 'OTP sent successfully' });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error processing request' });
+  }
 });
+
+
 
 app.post('/verify-otp', (req, res) => {
   const email = req.body.email;
