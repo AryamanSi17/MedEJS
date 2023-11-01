@@ -7,6 +7,7 @@ const passportLocalMongoose = require("passport-local-mongoose");
 const passport = require("passport");
 const cookieSession = require('cookie-session')
 const { mongoose, User, Course, Request, Session, UserSession, InstructorApplication } = require("./utils/db"); // Import from db.js
+const db = require('./utils/db');
 const nodemailer = require('nodemailer');
 const mongodb = require("mongodb");
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -637,8 +638,8 @@ app.post('/submitRequestForMore', async (req, res) => {
 //  lolo
 app.get('/buy-now/:courseID', async (req, res) => {
   const courseID = req.params.courseID;
-  const course = courses.find(c => c.courseID === courseID);
-  
+  // const course = courses.find(c => c.courseID === courseID);
+  const course = await db.Course.findOne({ courseID: courseID });
   if (!course) {
     return res.status(404).send('Course not found');
   }
@@ -656,7 +657,7 @@ app.get('/buy-now/:courseID', async (req, res) => {
 
   try {
     
-    const success_url = `http://www.globalmedacademy.com/success?session_id={CHECKOUT_SESSION_ID}&courseID=${courseID}`;
+    const success_url = `http://globalmedacademy/success?session_id={CHECKOUT_SESSION_ID}&courseID=${courseID}`;
     const cancel_url = 'http://www.globalmedacademy.com/cancel';
    
     const token = req.cookies.authToken;
@@ -734,8 +735,6 @@ app.get('/send-payment-link/:courseID', async (req, res) => {
         subject: 'Your Payment Link',
         text: `Click here to make your payment: ${session.url}`
     });
-    
-
       res.send('Payment link sent to your email! You may close this page .');
 
   } catch (error) {
@@ -813,10 +812,12 @@ app.get('/success', async (req, res) => {
     }
 
     // Find the course and the user, then add the course to the user's purchased courses
-    const course = await Course.findById(courseID);
+    const course = await Course.findOne({ courseID: courseID });
+
     if (!course) return res.status(404).send('Course not found');
 
-    const courseName = course.title;
+    const courseName = course.name;
+
     const user = await User.findByIdAndUpdate(userId, {
       $addToSet: { coursesPurchased: courseName }
     }, { new: true });

@@ -195,7 +195,22 @@
                                                                 </div>
                                                             </div>
                                                             <% } %>
-
+                                                            <% if (hasPurchasedCourses) { %>
+                                                                <% if (documentsUploaded) { %>
+                                                                    <!-- Render the Moodle link -->
+                                                                    <a href="https://moodle.upskill.globalmedacademy.com/login/index.php?username=<%= username %>"
+                                                                        class="btn btn-success">Access Moodle</a>
+                                                                    <% } else { %>
+                                                                        <!-- Display the message in a larger font and provide a link to upload documents -->
+                                                                        <div class="document-upload-alert">
+                                                                            <p class="alert-text">Document uploading
+                                                                                pending</p>
+                                                                            <a href="/upload-documents"
+                                                                                class="btn btn-primary upload-btn">Upload
+                                                                                Documents</a>
+                                                                        </div>
+                                                                        <% } %>
+                                                                            <% } %>
 
 
 
