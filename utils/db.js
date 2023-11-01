@@ -6,9 +6,11 @@ const { Schema } = mongoose;
 mongoose.connect(process.env.MONGODB_URI);
 
 const courseSchema = new mongoose.Schema({
-  title: String,
-  price: String,
-  // Add other fields as needed
+  courseID: String,
+  name: String,
+  realPrice: Number,
+  discountedPrice: Number,
+  currency: String
 });
 
 const Course = mongoose.model('Course', courseSchema);

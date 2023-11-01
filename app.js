@@ -74,7 +74,7 @@ app.use((req, res, next) => {
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: "https://globalmedacademy.com/auth/google/callback",
+  callbackURL: "https://localhost:3000/auth/google/callback",
   userProfileURL: "https://www.googleapis.com/oauth2/v2/userinfo"
 },
   async (accessToken, refreshToken, profile, done) => {
@@ -649,7 +649,7 @@ app.get('/buy-now/:courseID', async (req, res) => {
       product_data: {
         name: course.name,
       },
-      unit_amount: course.price,
+      unit_amount: course.discountedPrice,
     },
     quantity: 1,
   }];
@@ -699,7 +699,7 @@ app.get('/send-payment-link/:courseID', async (req, res) => {
           product_data: {
               name: course.name,
           },
-          unit_amount: course.price,
+          unit_amount: course.discountedPrice,
       },
       quantity: 1,
   }];
