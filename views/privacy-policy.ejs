@@ -1,4 +1,8 @@
-<%-include('header')-%>
+<% if (isUserLoggedIn) { %>
+    <%- include('auth_header') %>
+<% } else { %>
+    <%- include('header') %>
+<% } %>
 
 <div class="rbt-overlay-page-wrapper">
 

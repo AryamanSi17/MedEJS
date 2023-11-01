@@ -18,10 +18,11 @@ function setRoutes(app) {
     const metaKeywords = 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ';
     const ogDescription = 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals';
     const canonicalLink = 'https://www.globalmedacademy.com/';
-    // const username = req.session.username || null;
-    // Check if the user is logged in using the isUserLoggedIn property set by the middleware
+
     if (req.isUserLoggedIn) {
-      // Retrieve username from the session
+      // Split the full name and take the first part (first name)
+      const firstName = req.user.fullname.split(' ')[0];
+
       // Render the authenticated view and pass necessary variables
       res.render('index', {
         pageTitle,
@@ -30,9 +31,9 @@ function setRoutes(app) {
         ogDescription,
         canonicalLink,
         username: req.user.username,
-        fullname: req.isUserLoggedIn ? req.user.fullname : null,
+        firstname: firstName, // Pass the first name instead of the full name
         isBlogPage: false,
-        isUserLoggedIn: true // Pass the username to the view
+        isUserLoggedIn: true
       });
     } else {
       // Render the non-authenticated view and pass necessary variables
@@ -47,6 +48,7 @@ function setRoutes(app) {
       });
     }
   });
+
   function checkEmailVerified(req, res, next) {
     // Check if the user is on the auth_email page and hasn't authorized their email
     if (req.path === '/auth_email' && !req.session.emailVerified) {
@@ -69,9 +71,13 @@ function setRoutes(app) {
     const ogDescription = '';
     const canonicalLink = 'https://www.globalmedacademy.com/course-masonry';
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
     res.render('course-masonry', {
       pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false
+      username: username, isBlogPage: false, firstname: firstname
     });
 
   });
@@ -87,9 +93,13 @@ function setRoutes(app) {
     const ogDescription = 'Medical Academic Instructor - Apply for medical teacher and shine your career with us.';
     const canonicalLink = 'https://www.globalmedacademy.com/become-teacher';
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
     res.render('becometeacher', {
       pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false
+      username: username, isBlogPage: false, firstname: firstname
     });
   });
   app.get("/refer-and-earn", isAuthenticated, function (req, res) {
@@ -99,6 +109,10 @@ function setRoutes(app) {
     const ogDescription = '';
     const canonicalLink = 'https://www.globalmedacademy.com/refer-and-earn';
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
     if (req.isUserLoggedIn) {
       try {
         res.render('refer-and-earn', {
@@ -109,7 +123,8 @@ function setRoutes(app) {
           canonicalLink,
           isUserLoggedIn: req.isUserLoggedIn,
           username: username,
-          isBlogPage: false
+          isBlogPage: false,
+          firstname: firstname
         });
       } catch (error) {
         console.error('Error in checkout route:', error);
@@ -127,9 +142,13 @@ function setRoutes(app) {
     const ogDescription = 'If you have any queries, read our privacy policy and terms and conditions carefully.';
     const canonicalLink = 'https://www.globalmedacademy.com/privacy-policy';
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
     res.render('privacy-policy', {
       pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false
+      username: username, isBlogPage: false, firstname: firstname
     });
   });
   // app.get('/paymentForm',function(req,res){
@@ -149,9 +168,13 @@ function setRoutes(app) {
     const ogDescription = 'Before inquiring about our courses then read our T&C. If you have any queries terms and conditions carefully.';
     const canonicalLink = 'https://www.globalmedacademy.com/terms-conditions';
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
     res.render('terms-conditions', {
       pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false
+      username: username, isBlogPage: false, firstname: firstname
     });
   });
   app.get("/admission-guide", function (req, res) {
@@ -161,9 +184,13 @@ function setRoutes(app) {
     const ogDescription = '';
     const canonicalLink = 'https://www.globalmedacademy.com/admission-guide';
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
     res.render('admission-guide', {
       pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false
+      username: username, isBlogPage: false, firstname: firstname
     });
   });
 
@@ -174,9 +201,13 @@ function setRoutes(app) {
     const ogDescription = 'Internal medicine fellowship help you to become a board-certified subspecialist. Join our fellowship programs and learn more with CPD standards certified course.';
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-fellowship-in-internal-medicine';
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
     res.render('course-details-fellowship-in-internal-medicine', {
       pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false
+      username: username, isBlogPage: false, firstname: firstname
     });
   });
   app.get("/course-details-fellowship-in-diabetes-management", function (req, res) {
@@ -186,9 +217,13 @@ function setRoutes(app) {
     const ogDescription = 'Fellowship in Diabetes Mellitus involves training on comprehensive management of Diabetes Mellitus. Boost your career goal by gaining expertise in diabetology.';
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-fellowship-in-diabetes-management';
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
     res.render('course-details-fellowship-in-diabetes-management', {
       pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false
+      username: username, isBlogPage: false, firstname: firstname
     });
   });
   app.get("/course-details-fellowship-in-critical-care", function (req, res) {
@@ -198,9 +233,13 @@ function setRoutes(app) {
     const ogDescription = 'Fellowship in Critical Care Medicine Programs - Gain expertise with fellowship critical care medicine. Fellowship act as suppliment for students after the medical degree.';
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-fellowship-in-critical-care';
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
     res.render('course-details-fellowship-in-critical-care', {
       pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false
+      username: username, isBlogPage: false, firstname: firstname
     });
   });
   app.get("/course-details-advanced-professional-certificate-in-critical-care", function (req, res) {
@@ -210,9 +249,13 @@ function setRoutes(app) {
     const ogDescription = 'Advanced Certificate in Critical Care Medicine is designed to provide healthcare professionals with advanced knowledge and skills in the field of critical care.';
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-advanced-professional-certificate-in-critical-care';
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
     res.render('course-details-advanced-professional-certificate-in-critical-care', {
       pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false
+      username: username, isBlogPage: false, firstname: firstname
     });
   });
   app.get("/course-details-professional-certificate-in-diabetes-management", function (req, res) {
@@ -222,9 +265,13 @@ function setRoutes(app) {
     const ogDescription = 'Professional Diabetes Certificate Course - Join online diabetes certificate course & equips healthcare professionals with the necessary skills and knowledge';
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-professional-certificate-in-diabetes-management';
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
     res.render('course-details-professional-certificate-in-diabetes-management', {
       pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false
+      username: username, isBlogPage: false, firstname: firstname
     });
   });
   app.get("/course-details-advanced-professional-certificate-in-diabetes-management", function (req, res) {
@@ -234,9 +281,13 @@ function setRoutes(app) {
     const ogDescription = 'Advanced Certificate in Diabetes Mellitus is designed by leading diabetologists to cover the clinical features, screening & diagnosis etc to help you.';
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-advanced-professional-certificate-in-diabetes-management';
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
     res.render('course-details-advanced-professional-certificate-in-diabetes-management', {
       pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false
+      username: username, isBlogPage: false, firstname: firstname
     });
   });
   app.get("/course-details-professional-certificate-in-general-practice", function (req, res) {
@@ -246,9 +297,13 @@ function setRoutes(app) {
     const ogDescription = 'Advanced Certificate in Diabetes Mellitus is designed by leading diabetologists to cover the clinical features, screening & diagnosis etc to help you.';
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-advanced-professional-certificate-in-general-practice';
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
     res.render('course-details-professional-certificate-in-general-practice', {
       pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false
+      username: username, isBlogPage: false, firstname: firstname
     });
   });
   app.get("/course-details-fellowship-in-general-practice", function (req, res) {
@@ -258,9 +313,13 @@ function setRoutes(app) {
     const ogDescription = 'Advanced Certificate in Diabetes Mellitus is designed by leading diabetologists to cover the clinical features, screening & diagnosis etc to help youFellowship in General Practice to meet the pressing demand for specialized medical training in India intricate healthcare landscape.';
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-advanced-professional-certificate-in-diabetes-management';
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
     res.render('course-details-fellowship-in-general-practice', {
       pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false
+      username: username, isBlogPage: false, firstname: firstname
     });
   });
   app.get("/course-details-advanced-professional-certificate-in-general-practice", function (req, res) {
@@ -270,9 +329,13 @@ function setRoutes(app) {
     const ogDescription = 'Advanced Certificate in Diabetes Mellitus is designed by leading diabetologists to cover the clinical features, screening & diagnosis etc to help you.';
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-advanced-professional-certificate-in-general-practice';
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
     res.render('course-details-advanced-professional-certificate-in-general-practice', {
       pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false
+      username: username, isBlogPage: false, firstname: firstname
     });
   });
   app.get("/course-details-professional-certificate-in-critical-care", function (req, res) {
@@ -282,9 +345,13 @@ function setRoutes(app) {
     const ogDescription = 'Professional Certificate Course in Critical Care Medicine is proposed to impart structured critical care training to MBBS doctors to improve patient management skills.';
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-professional-certificate-in-critical-care';
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
     res.render('course-details-professional-certificate-in-critical-care', {
       pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false
+      username: username, isBlogPage: false, firstname: firstname
     });
   });
   app.get("/course-details-obsgynae", function (req, res) {
@@ -297,6 +364,10 @@ function setRoutes(app) {
     const ogDescription = 'GlobalMedAcademy (GMA) is a cutting-edge Medical Ed-tech organization that provides specialized courses for medical graduates through hybrid learning approach.';
     const canonicalLink = 'https://www.globalmedacademy.com/about-us';
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
     res.render('about-us', {
       pageTitle,
       metaRobots,
@@ -305,7 +376,8 @@ function setRoutes(app) {
       canonicalLink,
       isUserLoggedIn: req.isUserLoggedIn,
       username: username,
-      isBlogPage: false
+      isBlogPage: false,
+      firstname: firstname
     });
   })
   app.get("/404", function (req, res) {
@@ -316,14 +388,18 @@ function setRoutes(app) {
     const canonicalLink = 'https://www.globalmedacademy.com/faqs';
     res.render('404', { pageTitle, metaRobots, metaKeywords, ogDescription })
   });
-  app.get("/verify-certificate",function (req, res) {
+  app.get("/verify-certificate", function (req, res) {
     const pageTitle = 'Verify-certificate!';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'mall courses view, view all courses, course listings, online course catalog, course directory, course offerings, course categories, course search, explore courses, browse courses onlineedical instructor, medical teacher, apply for medical instructor';
     const ogDescription = '';
     const canonicalLink = 'https://www.globalmedacademy.com/verify-certificate';
     const username = req.session.username || null
-    res.render('verify-certificate', { pageTitle, metaRobots, metaKeywords, ogDescription, isUserLoggedIn: req.isUserLoggedIn, isBlogPage: false, canonicalLink ,username: username})
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
+    res.render('verify-certificate', { pageTitle, metaRobots, metaKeywords, ogDescription, isUserLoggedIn: req.isUserLoggedIn, isBlogPage: false, canonicalLink, username: username, firstname: firstname })
   });
   app.get("/auth_email", function (req, res) {
     const pageTitle = 'Authorize your Email';
@@ -340,9 +416,13 @@ function setRoutes(app) {
     const ogDescription = 'Ask your question regarding our fellowship and certificate programs from our experts.';
     const canonicalLink = 'https://www.globalmedacademy.com/faqs';
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn) {
+      firstname = req.session.username ? req.session.username.split(' ')[0] : null;
+    }
     res.render('faqs', {
       isUserLoggedIn: req.isUserLoggedIn, pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink,
-      username: username, isBlogPage: false
+      username: username, isBlogPage: false, firstname: firstname
     });
   });
   app.get("/blogs", function (req, res) {
@@ -352,15 +432,23 @@ function setRoutes(app) {
     const ogDescription = 'Blogs';
     const canonicalLink = 'https://www.globalmedacademy.com/blogs';
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
     res.render('blogs', {
       pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false
+      username: username, isBlogPage: false, firstname: firstname
     });
   });
   app.get("/blog/:blogTitle", function (req, res) {
     const blogTitle = req.params.blogTitle;
     let pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, renderView;
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
 
     // Existing blog about Diabetes Mellitus
     if (blogTitle === "elevate-your-expertise-in-diabetes-care-join-our-fellowship-to-lead-the-fight-against-diabetes-mellitus") {
@@ -407,7 +495,8 @@ function setRoutes(app) {
         canonicalLink,
         isUserLoggedIn: req.isUserLoggedIn,
         username: username,
-        isBlogPage: true
+        isBlogPage: true,
+        firstname: firstname
       });
     } else {
       // Optionally handle the case where a blog of the provided title doesn't exist. E.g.:
@@ -454,6 +543,10 @@ function setRoutes(app) {
     const ogDescription = 'Checkout page for GlobalMedAcademy courses.';
     const canonicalLink = 'https://globalmedacademy.com/checkout';
     const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn) {
+      firstname = req.session.username ? req.session.username.split(' ')[0] : null;
+    }
 
     if (req.isUserLoggedIn) {
       try {
@@ -466,7 +559,8 @@ function setRoutes(app) {
           isUserLoggedIn: req.isUserLoggedIn,
           username: username,
           courseID: courseID,
-          isBlogPage: false
+          isBlogPage: false,
+          firstname: firstname
         });
       } catch (error) {
         console.error('Error in checkout route:', error);

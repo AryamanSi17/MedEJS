@@ -239,13 +239,7 @@ app.post("/register", async (req, res) => {
     createUserInMoodle(username, password, fullname, '.', username)
       .then(() => {
         passport.authenticate("local")(req, res, function () {
-          res.render("auth_index", {
-            username: username, pageTitle,
-            metaRobots,
-            metaKeywords,
-            ogDescription,
-            canonicalLink, isBlogPage: false,
-          });
+          res.redirect('/user');
           getUserIdFromUsername(username);
         });
       })
@@ -585,7 +579,8 @@ app.get('/user', async function (req, res) {
 
     // Check if the user has uploaded the required documents
     const documentsUploaded = user.uploadedFiles && user.uploadedFiles.length > 0;
-
+    // Split the full name and take the first part (first name)
+    const firstName = user.fullname.split(' ')[0];
 
     // Render the user page with the course names and other details
     res.render('user_Profile', {
@@ -594,6 +589,7 @@ app.get('/user', async function (req, res) {
       metaKeywords,
       ogDescription,
       canonicalLink,
+      firstname: firstName,
       isUserLoggedIn: req.isUserLoggedIn,
       username: user.username,
       fullname: user.fullname,
@@ -657,7 +653,7 @@ app.get('/buy-now/:courseID', async (req, res) => {
 
   try {
     
-    const success_url = `http://www.globalmedacademy.com/success?session_id={CHECKOUT_SESSION_ID}&courseID=${courseID}`;
+    const success_url = `http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}&courseID=${courseID}`;
     const cancel_url = 'http://www.globalmedacademy.com/cancel';
    
     const token = req.cookies.authToken;
@@ -951,13 +947,18 @@ app.get('/upload-documents', isAuthenticated, (req, res) => {
   const canonicalLink = 'https://globalmedacademy.com/upload-documents';
   const courseID = req.query.courseID || '';
   const username = req.session.username || null;
+  let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
   res.render('data', {
     courseID, isUserLoggedIn: req.isUserLoggedIn,
     username: username, pageTitle,
     metaRobots,
     metaKeywords,
     ogDescription,
-    canonicalLink, isBlogPage: false
+    canonicalLink, isBlogPage: false,
+    firstname:firstname
   });
 });
 
