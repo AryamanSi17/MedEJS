@@ -195,22 +195,22 @@
                                                                 </div>
                                                             </div>
                                                             <% } %>
-                                                            <% if (hasPurchasedCourses) { %>
-                                                                <% if (documentsUploaded) { %>
-                                                                    <!-- Render the Moodle link -->
-                                                                    <a href="https://moodle.upskill.globalmedacademy.com/login/index.php?username=<%= username %>"
-                                                                        class="btn btn-success">Access Moodle</a>
-                                                                    <% } else { %>
-                                                                        <!-- Display the message in a larger font and provide a link to upload documents -->
-                                                                        <div class="document-upload-alert">
-                                                                            <p class="alert-text">Document uploading
-                                                                                pending</p>
-                                                                            <a href="/upload-documents"
-                                                                                class="btn btn-primary upload-btn">Upload
-                                                                                Documents</a>
-                                                                        </div>
-                                                                        <% } %>
+                                                                <% if (hasPurchasedCourses) { %>
+                                                                    <% if (documentsUploaded) { %>
+                                                                        <!-- Render the Moodle link -->
+                                                                        <a href="https://moodle.upskill.globalmedacademy.com/login/index.php?username=<%= username %>"
+                                                                            class="btn btn-success">Access Moodle</a>
+                                                                        <% } else { %>
+                                                                            <!-- Display the message in a larger font and provide a link to upload documents -->
+                                                                            <div class="document-upload-alert">
+                                                                                <p class="alert-text">Document uploading
+                                                                                    pending</p>
+                                                                                <a href="/upload-documents"
+                                                                                    class="btn btn-primary upload-btn">Upload
+                                                                                    Documents</a>
+                                                                            </div>
                                                                             <% } %>
+                                                                                <% } %>
 
 
 
@@ -257,13 +257,13 @@
                                                             <div class="rbt-card-body">
 
 
-                                                                <h4 class="rbt-card-title"><a
+                                                                <h4 class="rbt-card-title-user-page"><a
                                                                         href="/course-details-professional-certificate-in-diabetes-management">Professional
-                                                                        Certificate in Diabetes Management</a>
+                                                                        Certificate <br>in Diabetes Management</a>
                                                                 </h4>
 
-
                                                                 <p class="rbt-card-text">Here will be details.</p>
+
                                                                 <div class="rbt-card-bottom">
                                                                     <div class="rbt-price">
                                                                         <span class="current-price">Rs 30,000</span>
@@ -292,10 +292,10 @@
                                                             <div class="rbt-card-body">
 
 
-                                                                <h4 class="rbt-card-title"><a
+                                                                <h4 class="rbt-card-title-user-page"><a
                                                                         href="/course-details-advanced-professional-certificate-in-diabetes-management">Advanced
-                                                                        Professional
-                                                                        Certificate in Diabetes Management</a>
+                                                                        Professional Certificate in Diabetes
+                                                                        Management</a>
                                                                 </h4>
 
 
@@ -327,12 +327,12 @@
                                                             <div class="rbt-card-body">
 
 
-                                                                <h4 class="rbt-card-title"><a
+                                                                <h4 class="rbt-card-title-user-page"><a
                                                                         href="/course-details-fellowship-in-diabetes-management">Fellowship
                                                                         in Diabetes Management</a>
                                                                 </h4>
 
-
+                                                                <br>
                                                                 <p class="rbt-card-text">Here will be details.</p>
                                                                 <div class="rbt-card-bottom">
                                                                     <div class="rbt-price">

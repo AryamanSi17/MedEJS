@@ -14741,6 +14741,7 @@ span.transparent-button:hover i {
 }
  .user-page.rbt-card {
 height: auto;
+padding: 17px;
 }
 @media only screen and (min-width: 992px) and (max-width: 1199px) {
   .rbt-card {
@@ -14822,6 +14823,9 @@ height: auto;
 }
 .rbt-card .rbt-card-body .rbt-card-title {
   font-size: 26px;
+}
+.rbt-card-title-user-page{
+  font-size: 20px;
 }
 .rbt-card-title-blogs{
   font-weight: normal;
