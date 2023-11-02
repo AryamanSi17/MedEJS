@@ -653,7 +653,7 @@ app.get('/buy-now/:courseID', async (req, res) => {
 
   try {
     
-    const success_url = `http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}&courseID=${courseID}`;
+    const success_url = `http://www.globalmedacademy.com/success?session_id={CHECKOUT_SESSION_ID}&courseID=${courseID}`;
     const cancel_url = 'http://www.globalmedacademy.com/cancel';
    
     const token = req.cookies.authToken;
