@@ -110,30 +110,34 @@ function setRoutes(app) {
     const canonicalLink = 'https://www.globalmedacademy.com/refer-and-earn';
     const username = req.session.username || null;
     let firstname = null;
+
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
-      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+        firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
     }
+
     if (req.isUserLoggedIn) {
-      try {
-        res.render('refer-and-earn', {
-          pageTitle,
-          metaRobots,
-          metaKeywords,
-          ogDescription,
-          canonicalLink,
-          isUserLoggedIn: req.isUserLoggedIn,
-          username: username,
-          isBlogPage: false,
-          firstname: firstname
-        });
-      } catch (error) {
-        console.error('Error in checkout route:', error);
-        res.status(500).send('Internal Server Error');
-      }
+        try {
+            res.render('refer-and-earn', {
+                pageTitle,
+                metaRobots,
+                metaKeywords,
+                ogDescription,
+                canonicalLink,
+                isUserLoggedIn: req.isUserLoggedIn,
+                username: username,
+                isBlogPage: false,
+                firstname: firstname
+            });
+        } catch (error) {
+            console.error('Error in refer-and-earn route:', error);
+            res.status(500).send('Internal Server Error');
+        }
     } else {
-      res.redirect('/loginn');
+        req.flash('loginMessage', 'Please log in to refer others and earn rewards.');
+        res.redirect('/loginn');
     }
-  });
+});
+
 
   app.get("/privacy-policy", function (req, res) {
     const pageTitle = 'Privacy Policy - GlobalMedAcademy';
@@ -513,7 +517,8 @@ function setRoutes(app) {
     const ogDescription = '';
     const canonicalLink = 'https://www.globalmedacademy.com/loginn';
     const loginMessage = req.flash('loginMessage');
-
+    const messages = req.flash('loginMessage');
+    const promptLogin = req.query.promptLogin;
     res.render('loginn', {
       pageTitle,
       metaRobots,
@@ -521,7 +526,10 @@ function setRoutes(app) {
       ogDescription,
       canonicalLink,
       isBlogPage: false,
-      loginMessage: loginMessage[0]
+      loginMessage: loginMessage[0],
+      messages: messages,
+      promptLogin: promptLogin 
+      
     });
   });
 

@@ -1,211 +1,213 @@
 <%- include("header");-%>
-<% if (locals.loginMessage) { %>
-    <script>
-        window.onload = function() {
-            document.getElementById('popupMessage').innerText = "<%= locals.loginMessage %>";
-            document.getElementById('popup').style.display = 'block';
+    <% if (locals.loginMessage) { %>
+        <script>
+            window.onload = function () {
+                document.getElementById('popupMessage').innerText = "<%= locals.loginMessage %>";
+                document.getElementById('popup').style.display = 'block';
 
-            // Hide the popup after 1.5 seconds
-            setTimeout(function() {
-                document.getElementById('popup').style.display = 'none';
-            }, 1500);
-        }
-    </script>
-<% } %>
+                // Hide the popup after 1.5 seconds
+                setTimeout(function () {
+                    document.getElementById('popup').style.display = 'none';
+                }, 1500);
+            }
+        </script>
+        <% } %>
 
-<!-- ... rest of your login.ejs code -->
+            <!-- ... rest of your login.ejs code -->
 
 
-<style>
-  #popup {
-    display: none;
-    position: fixed;
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    padding: 20px;
-    border: 1px solid #ccc;
-    z-index: 1000;
-    width: 300px;
-    text-align: center;
-    box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
-}
+            <style>
+                #popup {
+                    display: none;
+                    position: fixed;
+                    top: 20%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background-color: white;
+                    padding: 20px;
+                    border: 1px solid #ccc;
+                    z-index: 1000;
+                    width: 300px;
+                    text-align: center;
+                    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+                }
 
-#popupMessage {
-    color: #d9534f;
-    margin-bottom: 20px;
-}
+                #popupMessage {
+                    color: #d9534f;
+                    margin-bottom: 20px;
+                }
 
-button {
-    background-color: #d9534f;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-}
+                button {
+                    background-color: #d9534f;
+                    color: white;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 16px;
+                }
 
-button:hover {
-    background-color: #c9302c;
-}
+                button:hover {
+                    background-color: #c9302c;
+                }
+            </style>
+            <!-- Start breadcrumb Area -->
+            <div class="rbt-breadcrumb-default ptb--45 ptb_md--50 ptb_sm--30 bg-gradient-1">
+            </div>
 
-</style>
-<!-- Start breadcrumb Area -->
-<div class="rbt-breadcrumb-default ptb--45 ptb_md--50 ptb_sm--30 bg-gradient-1">
-</div>
-
-<div class="row gy-5 row--30">
-    <div class="col-lg-6">
-        <div class="rbt-contact-form contact-form-style-1 max-width-auto">
-            <h3 class="title">Login</h3>
-            <form id="loginForm" class="max-width-auto">
-                <div class="form-group">
-                    <input name="username" type="email" required />
-                    <label> email *</label>
-                    <span class="focus-border"></span>
+            <div class="row gy-5 row--30">
+                <div class="col-lg-6">
+                    <div class="rbt-contact-form contact-form-style-1 max-width-auto">
+                        <h3 class="title">
+                            <%= promptLogin==='true' ? 'Please login to refer and earn' : 'Login' %>
+                        </h3>
+                        <form id="loginForm" class="max-width-auto">
+                            <div class="form-group">
+                                <input name="username" type="email" required />
+                                <label> email *</label>
+                                <span class="focus-border"></span>
+                            </div>
+                            <div class="form-group">
+                                <input name="password" type="password" required>
+                                <label>Password *</label>
+                                <span class="focus-border"></span>
+                            </div>
+                            <div>Or</div>
+                            <div class="form-group">
+                                <a href="/auth/google" role="button" style="color:blueviolet" class="btn btn-google">
+                                    <img src="../assets/images/icons/google.png" alt="Google Icon" class="google-icon">
+                                    Signin with Google</a>
+                                <span class="focus-border"></span>
+                            </div>
+                            <div class="form-submit-group">
+                                <button type="submit" class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
+                                    <span class="icon-reverse-wrapper">
+                                        <span class="btn-text">Log In</span>
+                                        <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                                        <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                                    </span>
+                                </button>
+                                <div id="errorMessage" style="color: red; margin-top: 10px;"></div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <input name="password" type="password" required>
-                    <label>Password *</label>
-                    <span class="focus-border"></span>
-                </div>
-                <div>Or</div>
-                <div class="form-group">
-                    <a href="/auth/google" role="button" style="color:blueviolet" class="btn btn-google">
-                        <img src="../assets/images/icons/google.png" alt="Google Icon" class="google-icon"> Signin with Google</a>
-                    <span class="focus-border"></span>
-                </div>
-                <div class="form-submit-group">
-                    <button type="submit" class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
-                        <span class="icon-reverse-wrapper">
-                            <span class="btn-text">Log In</span>
-                            <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                            <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                        </span>
-                    </button>
-                    <div id="errorMessage" style="color: red; margin-top: 10px;"></div>
-                </div>
-            </form>
-        </div>
-    </div>
-    <!-- <div class="col-lg-6">
+                <!-- <div class="col-lg-6">
         <div class="image-container">
             <img src="/assets//images/bg/bg-image-15.jpg" alt="Description of Image">
         </div>
     </div> -->
-</div>
-
-<div class="container-fluid">
-    <div class="row g-3">
-        <div class="col-lg-2 col-md-4 col-sm-6 col-6">
-            <div class="instagram-grid">
-                <a>
-                    <img src="assets/images/instagram/instagram-01.jpg" alt="instagram">
-                    <span class="user-info">
-                    <span class="icon"><i class="icon-instagram"></i></span>
-
-                    </span>
-                </a>
             </div>
-        </div>
-        <div class="col-lg-2 col-md-4 col-sm-6 col-6">
-            <div class="instagram-grid">
-                <a>
-                    <img src="assets/images/instagram/instagram-02.jpg" alt="instagram">
-                    <span class="user-info">
-                    <span class="icon"><i class="icon-instagram"></i></span>
-                    
-                    </span>
-                </a>
-            </div>
-        </div>
-        <div class="col-lg-2 col-md-4 col-sm-6 col-6">
-            <div class="instagram-grid">
-                <a>
-                    <img src="assets/images/instagram/instagram-03.jpg" alt="instagram">
-                    <span class="user-info">
-                    <span class="icon"><i class="icon-instagram"></i></span>
-                   
-                    </span>
-                </a>
-            </div>
-        </div>
-        <div class="col-lg-2 col-md-4 col-sm-6 col-6">
-            <div class="instagram-grid">
-                <a>
-                    <img src="assets/images/instagram/instagram-04.jpg" alt="instagram">
-                    <span class="user-info">
-                    <span class="icon"><i class="icon-instagram"></i></span>
-                    </span>
-                </a>
-            </div>
-        </div>
-        <div class="col-lg-2 col-md-4 col-sm-6 col-6">
-            <div class="instagram-grid">
-                <a>
-                    <img src="assets/images/instagram/instagram-05.jpg" alt="instagram">
-                    <span class="user-info">
-                    <span class="icon"><i class="icon-instagram"></i></span>
-                    
-                    </span>
-                </a>
-            </div>
-        </div>
-        <div class="col-lg-2 col-md-4 col-sm-6 col-6">
-            <div class="instagram-grid">
-                <a>
-                    <img src="assets/images/instagram/instagram-06.jpg" alt="instagram">
-                    <span class="user-info">
-                    <span class="icon"><i class="icon-instagram"></i></span>
-                   
-                    </span>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Popup Message -->
-<div id="popup" style="display:none; position:fixed; top:20%; left:50%; transform:translate(-50%, -50%); background-color:white; padding:20px; border:1px solid black; z-index:1000;">
-    <p id="popupMessage" style="color:red;"></p>
-    <button onclick="document.getElementById('popup').style.display='none'">Close</button>
-</div>
 
-<%- include("footer"); -%>
+            <div class="container-fluid">
+                <div class="row g-3">
+                    <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+                        <div class="instagram-grid">
+                            <a>
+                                <img src="assets/images/instagram/instagram-01.jpg" alt="instagram">
+                                <span class="user-info">
+                                    <span class="icon"><i class="icon-instagram"></i></span>
 
-<!-- JavaScript for handling form submission -->
-<script>
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-  e.preventDefault();
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+                        <div class="instagram-grid">
+                            <a>
+                                <img src="assets/images/instagram/instagram-02.jpg" alt="instagram">
+                                <span class="user-info">
+                                    <span class="icon"><i class="icon-instagram"></i></span>
 
-  const username = document.querySelector('input[name="username"]').value;
-  const password = document.querySelector('input[name="password"]').value;
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+                        <div class="instagram-grid">
+                            <a>
+                                <img src="assets/images/instagram/instagram-03.jpg" alt="instagram">
+                                <span class="user-info">
+                                    <span class="icon"><i class="icon-instagram"></i></span>
 
-  fetch('/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ username, password })
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      // Redirect to the home page
-      window.location.href = '/';
-    } else {
-      // Display error message in the popup
-      document.getElementById('popupMessage').innerText = data.message;
-      document.getElementById('popup').style.display = 'block';
-    }
-  })
-  .catch(error => {
-    console.error('Fetch error: ', error);
-    // Display a generic error message in the popup
-    document.getElementById('popupMessage').innerText = "Error during login. Please try again.";
-    document.getElementById('popup').style.display = 'block';
-  });
-});
-  </script>
-  
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+                        <div class="instagram-grid">
+                            <a>
+                                <img src="assets/images/instagram/instagram-04.jpg" alt="instagram">
+                                <span class="user-info">
+                                    <span class="icon"><i class="icon-instagram"></i></span>
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+                        <div class="instagram-grid">
+                            <a>
+                                <img src="assets/images/instagram/instagram-05.jpg" alt="instagram">
+                                <span class="user-info">
+                                    <span class="icon"><i class="icon-instagram"></i></span>
+
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6 col-6">
+                        <div class="instagram-grid">
+                            <a>
+                                <img src="assets/images/instagram/instagram-06.jpg" alt="instagram">
+                                <span class="user-info">
+                                    <span class="icon"><i class="icon-instagram"></i></span>
+
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Popup Message -->
+            <div id="popup"
+                style="display:none; position:fixed; top:20%; left:50%; transform:translate(-50%, -50%); background-color:white; padding:20px; border:1px solid black; z-index:1000;">
+                <p id="popupMessage" style="color:red;"></p>
+                <button onclick="document.getElementById('popup').style.display='none'">Close</button>
+            </div>
+
+            <%- include("footer"); -%>
+
+                <!-- JavaScript for handling form submission -->
+                <script>
+                    document.getElementById('loginForm').addEventListener('submit', function (e) {
+                        e.preventDefault();
+
+                        const username = document.querySelector('input[name="username"]').value;
+                        const password = document.querySelector('input[name="password"]').value;
+
+                        fetch('/login', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ username, password })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    // Redirect to the home page
+                                    window.location.href = '/';
+                                } else {
+                                    // Display error message in the popup
+                                    document.getElementById('popupMessage').innerText = data.message;
+                                    document.getElementById('popup').style.display = 'block';
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Fetch error: ', error);
+                                // Display a generic error message in the popup
+                                document.getElementById('popupMessage').innerText = "Error during login. Please try again.";
+                                document.getElementById('popup').style.display = 'block';
+                            });
+                    });
+                </script>
