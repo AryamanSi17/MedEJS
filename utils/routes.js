@@ -295,7 +295,7 @@ function setRoutes(app) {
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'diabetes management, diabetes certificate course, certificate course in diabetology, certificate in diabetes, diabetes certificate course online, certificate course in diabetes management, advanced certificate course in diabetes, certificate in diabetes management, certificate in diabetes mellitus, certificate in diabetology, advanced certificate in diabetes mellitus, advanced diabetes management, certificate course in diabetes mellitus, diabetes certificate program online';
     const ogDescription = 'Advanced Certificate in Diabetes Mellitus is designed by leading diabetologists to cover the clinical features, screening & diagnosis etc to help you.';
-    const canonicalLink = 'https://www.globalmedacademy.com/course-details-advanced-professional-certificate-in-general-practice';
+    const canonicalLink = 'https://www.globalmedacademy.com/course-details-professional-certificate-in-general-practice';
     const username = req.session.username || null;
     let firstname = null;
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
@@ -310,8 +310,8 @@ function setRoutes(app) {
     const pageTitle = 'Fellowship in General Practice, Online Course, After MBBS';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'fellowship in general practice, online fellowship in general practice';
-    const ogDescription = 'Advanced Certificate in Diabetes Mellitus is designed by leading diabetologists to cover the clinical features, screening & diagnosis etc to help youFellowship in General Practice to meet the pressing demand for specialized medical training in India intricate healthcare landscape.';
-    const canonicalLink = 'https://www.globalmedacademy.com/course-details-advanced-professional-certificate-in-diabetes-management';
+    const ogDescription = "Fellowship in General Practice to meet the pressing demand for specialized medical training in India's intricate healthcare landscape";
+    const canonicalLink = 'https://www.globalmedacademy.com/course-details-fellowship-in-general-practice';
     const username = req.session.username || null;
     let firstname = null;
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
