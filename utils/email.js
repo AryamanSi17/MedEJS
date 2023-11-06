@@ -9,12 +9,13 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-function sendEmail({ to = [], subject = '', text = '' }) {
+function sendEmail({ to = [], subject = '', text = '', html = '' }) { 
     const mailOptions = {
         from: 'info@globalmedacademy.com',
         to: to,  // Now it accepts dynamic recipients
         subject: subject,
-        text: text
+        text: text,
+        html: html 
     };
 
     transporter.sendMail(mailOptions, function(error, info) {

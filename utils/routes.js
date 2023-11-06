@@ -532,8 +532,53 @@ function setRoutes(app) {
       
     });
   });
-
-
+  app.get("/forgot-password", function (req, res) {
+    const pageTitle = 'Reset your password';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = '';
+    const ogDescription = '';
+    const canonicalLink = 'https://www.globalmedacademy.com/forgot-password';
+    res.render('forgot_password', {
+      pageTitle,
+      metaRobots,
+      metaKeywords,
+      ogDescription,
+      canonicalLink,
+      isBlogPage: false,
+    });
+  });
+// GET route to render the password reset form
+app.get('/reset-password/:token', async (req, res) => {
+  const pageTitle = 'Reset your password';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = '';
+    const ogDescription = '';
+    const canonicalLink = 'https://www.globalmedacademy.com/forgot-password';
+  const { token } = req.params;
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    console.log('Token decoded:', decoded);
+    const user = await User.findOne({
+      _id: decoded._id,
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+    if (!user) {
+      console.log('No user found or token expired for user ID:', decoded._id);
+      return res.status(400).send('Password reset token is invalid or has expired.');
+    }
+    // Render the reset password form
+    res.render('reset_password', { token, pageTitle,
+      metaRobots,
+      metaKeywords,
+      ogDescription,
+      canonicalLink,
+      isBlogPage: false, });
+  } catch (error) {
+    console.error('Error verifying token:', error);
+    return res.status(400).send('Invalid token.');
+  }
+});
   app.get("/register", function (req, res) {
     // const email=req.body.email
     const pageTitle = 'Registration!';

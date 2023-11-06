@@ -46,6 +46,8 @@ const UserSchema = new Schema({
           recommendedCourse: String,
       },
   ],
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
 });
 
 // UserSchema.plugin(passportLocalMongoose, {

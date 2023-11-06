@@ -912,6 +912,104 @@ app.get('/cancel', (req, res) => {
   `);
 });
 
+// Your forgot password endpoint
+app.post('/forgot-password', async (req, res) => {
+  const { username } = req.body;
+  try {
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(400).send('User with given email does not exist.');
+    }
+
+    const token = jwt.sign({ _id: user._id },JWT_SECRET, { expiresIn: '1h' });
+
+    await User.updateOne({ _id: user._id }, {
+      resetPasswordToken: token,
+      resetPasswordExpires: Date.now() + 3600000 // 1 hour
+    });
+
+    const resetLink = `${req.headers.origin}/reset-password/${token}`;
+    const emailBody = `<p>Please use the following link to reset your password:</p><p><a href="${resetLink}">${resetLink}</a></p>`;
+
+    // Send email
+    sendEmail({
+      to: user.username,
+      subject: 'Password Reset Link',
+      text: `Please use the following link to reset your password: ${resetLink}`,
+      html: emailBody
+    });
+
+    res.send('Password reset link has been sent to your email address.');
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error on forgot password.');
+  }
+});
+
+// GET route to render the password reset form
+app.get('/reset-password/:token', async (req, res) => {
+  const pageTitle = 'Reset your password';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = '';
+    const ogDescription = '';
+    const canonicalLink = 'https://www.globalmedacademy.com/forgot-password';
+  const { token } = req.params;
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    console.log('Token decoded:', decoded);
+    const user = await User.findOne({
+      _id: decoded._id,
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+    if (!user) {
+      console.log('No user found or token expired for user ID:', decoded._id);
+      return res.status(400).send('Password reset token is invalid or has expired.');
+    }
+    // Render the reset password form
+    res.render('reset_password', { token, pageTitle,
+      metaRobots,
+      metaKeywords,
+      ogDescription,
+      canonicalLink,
+      isBlogPage: false, });
+  } catch (error) {
+    console.error('Error verifying token:', error);
+    return res.status(400).send('Invalid token.');
+  }
+});
+
+// POST route to handle password reset form submission
+app.post('/reset-password/:token', async (req, res) => {
+  const { password } = req.body;
+  const { token } = req.params;
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findOne({
+      _id: decoded._id,
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).send('Password reset token is invalid or has expired.');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    await User.updateOne({ _id: user._id }, {
+      password: hashedPassword,
+      resetPasswordToken: null,
+      resetPasswordExpires: null
+    });
+
+    res.send('Your password has been updated.');
+  } catch (error) {
+    res.status(500).send('Error resetting password.');
+  }
+});
+
 
 
 
