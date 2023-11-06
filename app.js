@@ -979,12 +979,13 @@ app.get('/reset-password/:token', async (req, res) => {
   }
 });
 
-// POST route to handle password reset form submission
+// Your POST route to handle password reset form submission
 app.post('/reset-password/:token', async (req, res) => {
   const { password } = req.body;
   const { token } = req.params;
 
   try {
+    // Verify JWT token and get user
     const decoded = jwt.verify(token, JWT_SECRET);
     const user = await User.findOne({
       _id: decoded._id,
@@ -993,22 +994,51 @@ app.post('/reset-password/:token', async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).send('Password reset token is invalid or has expired.');
+      console.log('Password reset token is invalid or has expired.');
+      // Redirect with error message
+      return res.redirect(`/reset-password/${token}?message=${encodeURIComponent('Password reset token is invalid or has expired.')}`);
     }
 
+    // Hash new password for local application
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    // Update password in local application
     await User.updateOne({ _id: user._id }, {
       password: hashedPassword,
       resetPasswordToken: null,
       resetPasswordExpires: null
     });
 
-    res.send('Your password has been updated.');
+    console.log(`Local password updated for user: ${user.username}`);
+
+    // Now update the password in Moodle
+    try {
+      const moodleResponse = await updateMoodlePassword(user.username, password);
+      console.log('Moodle response:', moodleResponse);
+      // Check if the Moodle response indicates success
+      if (moodleResponse && moodleResponse.exception) {
+        console.error('Moodle password update failed with exception:', moodleResponse);
+        // Redirect with Moodle error message
+        return res.redirect(`/reset-password/${token}?message=${encodeURIComponent('Your local password has been updated, but there was an error updating your Moodle password.')}`);
+      } else {
+        console.log(`Moodle password updated for user: ${user.username}`);
+        // Redirect to login route after successful password reset with success message
+        return res.redirect(`/loginn?message=${encodeURIComponent('Your password has been successfully reset.')}`);
+      }
+    } catch (moodleError) {
+      // Handle the case where the Moodle password update fails
+      console.error('Moodle password update failed:', moodleError);
+      // Redirect with Moodle error message
+      return res.redirect(`/reset-password/${token}?message=${encodeURIComponent('Your local password has been updated, but there was an error updating your Moodle password.')}`);
+    }
+
   } catch (error) {
-    res.status(500).send('Error resetting password.');
+    console.error('Error resetting password:', error);
+    // Redirect with generic error message
+    return res.redirect(`/reset-password/${token}?message=${encodeURIComponent('Error resetting password.')}`);
   }
 });
+
 
 
 
@@ -1126,6 +1156,69 @@ app.post('/upload-documents', upload.fields([
     res.status(500).send('Internal Server Error');
   }
 });
+const updateMoodlePassword = async (email, newPassword) => {
+  const moodleUrl = 'https://moodle.upskill.globalmedacademy.com'; // Replace with your Moodle URL
+  const token = process.env.MOODLE_TOKEN; // Replace with your actual token
+  const functionname = 'core_user_update_users';
+
+  // Retrieve Moodle user ID using the function we've just implemented
+  const moodleUserId = await getMoodleUserId(email);
+
+  const users = [{
+    id: moodleUserId,
+    password: newPassword
+  }];
+
+  const postData = {
+    wstoken: token,
+    wsfunction: functionname,
+    moodlewsrestformat: 'json',
+    users: users
+  };
+
+  try {
+    const response = await axios.post(`${moodleUrl}/webservice/rest/server.php`, null, {
+      params: postData
+    });
+
+    // Moodle usually returns an empty object on success for update functions
+    return response.data; // Handle the response data as needed
+  } catch (error) {
+    console.error('Failed to update password in Moodle:', error);
+    // Handle the error accordingly
+    throw error; // It's good practice to rethrow the error if you cannot handle it properly here
+  }
+};
+
+
+const getMoodleUserId = async (email) => {
+  const moodleUrl = 'https://moodle.upskill.globalmedacademy.com'; // Replace with your Moodle URL
+  const token = process.env.MOODLE_TOKEN; // Replace with your actual token
+  const functionname = 'core_user_get_users_by_field';
+
+  try {
+    const response = await axios.post(`${moodleUrl}/webservice/rest/server.php`, null, {
+      params: {
+        wstoken: token,
+        wsfunction: functionname,
+        moodlewsrestformat: 'json',
+        field: 'email',
+        values: [email]
+      }
+    });
+
+    const users = response.data;
+    if (users.length === 0) {
+      throw new Error('No Moodle user found with the given email address.');
+    }
+
+    return users[0].id;
+  } catch (error) {
+    console.error('Failed to retrieve Moodle user ID:', error);
+    throw error;
+  }
+};
+
 
 
 app.listen(3000, function () {
