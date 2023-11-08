@@ -831,7 +831,7 @@ app.get('/success', async (req, res) => {
     sendEmail({
         to: [user.username],
         subject: 'Your Payment Receipt',
-        text: `Thank you for purchasing the course. Your payment was successful! Here is your receipt: ${session.receipt_url}`
+        text: `Thank you for purchasing the course. Your payment was successful! We will send you the receipt!`
     });
 
     // Send a new enrollment message to the admin
@@ -1093,8 +1093,7 @@ app.get('/upload-documents', isAuthenticated, (req, res) => {
 
 
 app.post('/upload-documents', upload.fields([
-  { name: 'aadharCard' },
-  { name: 'panCard' },
+  { name: 'officialIDCard' },
   { name: 'medicalCertificate' },
   { name: 'mciCertificate' },
   { name: 'degree' },
@@ -1118,11 +1117,12 @@ app.post('/upload-documents', upload.fields([
   try {
     // Prepare the uploadedFiles array with the uploaded files information
     const uploadedFiles = [];
-    if (req.files.aadharCard) uploadedFiles.push({ ...req.files.aadharCard[0], title: 'Aadhar Card' });
-    if (req.files.panCard) uploadedFiles.push({ ...req.files.panCard[0], title: 'Pan Card' });
+    if (req.files.officialIDCard) uploadedFiles.push({ ...req.files.officialIDCard[0], title: 'Official ID Card' });
     if (req.files.medicalCertificate) uploadedFiles.push({ ...req.files.medicalCertificate[0], title: 'Medical Certificate' });
     if (req.files.mciCertificate) uploadedFiles.push({ ...req.files.mciCertificate[0], title: 'MCI Certificate' });
+    if (req.files.degree) uploadedFiles.push({ ...req.files.degree[0], title: 'Degree Certificate' });
     if (req.files.passportPhoto) uploadedFiles.push({ ...req.files.passportPhoto[0], title: 'Passport Size Photo' });
+  
 
     const userUpdate = {
       $push: { uploadedFiles: { $each: uploadedFiles } },
@@ -1141,7 +1141,7 @@ app.post('/upload-documents', upload.fields([
     // Send an email to the user after successfully uploading documents
     const userEmail = user.username; // Assuming the email is stored as username in the database
     const emailSubject = 'Thank You for Uploading Documents';
-    const emailText = `Dear ${user.name || 'User'},\n\nThank you for uploading your documents. We will enroll you in the Moodle course within 24 hours after verifying the documents you have submitted.\n\nBest Regards,\nGlobal Med Academy`;
+    const emailText = `Dear Dr. ${user.fullname || 'User'},\n\nThank you for uploading your documents. We will enroll you in the Moodle course within 24 hours after verifying the documents you have submitted.\n\nBest Regards,\nGlobal Med Academy`;
 
     sendEmail({
       to: userEmail,

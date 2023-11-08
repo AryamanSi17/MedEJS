@@ -17,7 +17,7 @@
                         <input type="hidden" name="courseID" value="<%= courseID %>">
 
                         <div class="row">
-                            <% ['aadharCard', 'panCard', 'medicalCertificate', 'passportPhoto', 'mciCertificate', 'degree'].forEach(function(doc, index) { %>
+                            <% ['officialIDCard', 'medicalCertificate', 'passportPhoto', 'mciCertificate', 'degree'].forEach(function(doc, index) { %>
                                 <div class="col-md-6 mb-3">
                                     <label for="<%= doc %>" class="form-label d-block" style="font-size: 1.2em;">
                                         <%= doc === 'mciCertificate' ? 'MCI Certificate' : doc.replace(/([A-Z])/g, ' $1').trim().replace(/\b\w/g, l => l.toUpperCase()) %>
@@ -32,6 +32,8 @@
                                 <% } %>
                             <% }); %>
                         </div>
+                        
+                        
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
