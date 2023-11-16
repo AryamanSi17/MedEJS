@@ -75,8 +75,8 @@ app.use((req, res, next) => {
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: "https://localhost:3000/auth/google/callback",
-  userProfileURL: "https://www.googleapis.com/oauth2/v2/userinfo"
+  callbackURL: "https://globalmedacademy.com/auth/google/callback",
+  userProfileURL: "https://globalmedacademy.com/oauth2/v2/userinfo"
 },
   async (accessToken, refreshToken, profile, done) => {
     try {
