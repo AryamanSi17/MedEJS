@@ -75,19 +75,37 @@ app.use((req, res, next) => {
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: "https://globalmedacademy.com/auth/google/callback",
-  userProfileURL: "https://globalmedacademy.com/oauth2/v2/userinfo"
+  callbackURL: "https://globalmedacademy.com/auth/google/callback"
 },
-  async (accessToken, refreshToken, profile, done) => {
-    try {
-      const user = await findOrCreateUser(profile);
-      return done(null, user);
-    } catch (error) {
-      return done(error, null);
-    }
-  }));
+async (accessToken, refreshToken, profile, done) => {
+  try {
+    const user = await findOrCreateUser(profile);
+    return done(null, user);
+  } catch (error) {
+    return done(error, null);
+  }
+}
+));
+
+async function findOrCreateUser(profile) {
+const existingUser = await User.findOne({ googleId: profile.id });
+
+if (existingUser) {
+  return existingUser;
+} else {
+  const newUser = new User({
+    googleId: profile.id,
+    displayName: profile.displayName,
+    // Add additional fields as in your regular registration process
+    enrollmentNumber: await getUniqueEnrollmentNumber(),
+    // Other fields...
+  });
+
+  newUser.signupMethod = 'google';
+  return newUser.save();
+}
+}
 passport.serializeUser((user, done) => {
-  console.log('Serializing user:', user); // Log the user object
   done(null, user.id);
 });
 
@@ -120,54 +138,36 @@ async function findOrCreateUser(profile) {
 // ends
 
 app.get("/auth/google",
-  passport.authenticate('google', {
-    scope: ['profile', 'email']
-  })
+  passport.authenticate('google', { scope: ['profile', 'email'] })
 );
-app.get('/auth/google/callback', (req, res, next) => {
-  // Declare meta information
-  const pageTitle = 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy';
-  const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
-  const metaKeywords = 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ';
-  const ogDescription = 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals';
-  const canonicalLink = 'https://globalmedacademy.com/';
 
+app.get('/auth/google/callback', (req, res, next) => {
   passport.authenticate('google', async (err, user, info) => {
     if (err) { return next(err); }
     if (!user) { return res.redirect('/login'); }
 
     try {
-      req.logIn(user, async (err) => {
-        if (err) { return next(err); }
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+      res.cookie('authToken', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
 
-        const token = jwt.sign({ userId: user._id }, JWT_SECRET);
-        res.cookie('authToken', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+      if (user.isNewUser) {
+        const username = user.email;  
+        const password = generatePassword(); // Ensure this method exists
+        const fullname = user.displayName;
 
-        if (user.isNewUser) {
-          const username = user.email;  
-          const password = generatePassword();
-          const fullname = user.displayName;
+        await createUserInMoodle(username, password, fullname, '.', username);
+        // Additional logic for new users
+      }
 
-          await sendEmail({
-            to: [username],
-            subject: "Your Moodle Password",
-            text: `Hello, your Moodle password is: ${password}. Please change it after your first login.`
-          });
-
-          await createUserInMoodle(username, password, fullname, '.', username);
-          getUserIdFromUsername(username);
-        }
-
-        // Render the page with meta information
-        res.render("auth_index", {
-          username: user.displayName,
-          pageTitle,
-          metaRobots,
-          metaKeywords,
-          ogDescription,
-          canonicalLink,
-          isBlogPage: false,
-        });
+      // Render the page with meta information
+      res.render("auth_index", {
+        username: user.displayName,
+        pageTitle: 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy',
+        metaRobots: 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large',
+        metaKeywords: 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine',
+        ogDescription: 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals',
+        canonicalLink: 'https://globalmedacademy.com/',
+        isBlogPage: false
       });
     } catch (error) {
       console.error("Error after Google authentication:", error);
