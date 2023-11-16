@@ -175,6 +175,30 @@ app.get('/auth/google/callback', (req, res, next) => {
     }
   })(req, res, next);
 });
+const generatePassword = (length = 10) => {
+  if (length < 8) length = 8; // Ensure minimum length of 8
+
+  const numbers = "0123456789";
+  const lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
+  const upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const symbols = "!@#$%^&*()_+~`|}{[]:;?><,./-=";
+  const allChars = numbers + lowerCaseLetters + upperCaseLetters + symbols;
+
+  let password = "";
+  password += numbers.charAt(Math.floor(Math.random() * numbers.length));
+  password += lowerCaseLetters.charAt(Math.floor(Math.random() * lowerCaseLetters.length));
+  password += upperCaseLetters.charAt(Math.floor(Math.random() * upperCaseLetters.length));
+  password += symbols.charAt(Math.floor(Math.random() * symbols.length));
+
+  for (let i = password.length; i < length; ++i) {
+    password += allChars.charAt(Math.floor(Math.random() * allChars.length));
+  }
+
+  // Shuffle the password to mix up the order of characters
+  password = password.split('').sort(() => 0.5 - Math.random()).join('');
+
+  return password;
+};
 
 
 
