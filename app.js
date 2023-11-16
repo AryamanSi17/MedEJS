@@ -162,6 +162,7 @@ app.get('/auth/google/callback', (req, res, next) => {
       // Render the page with meta information
       res.render("auth_index", {
         username: user.displayName,
+        firstname: user.firstname, 
         pageTitle: 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy',
         metaRobots: 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large',
         metaKeywords: 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine',
