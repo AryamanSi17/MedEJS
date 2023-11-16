@@ -147,7 +147,7 @@ app.get('/auth/google/callback', (req, res, next) => {
     if (!user) { return res.redirect('/login'); }
 
     try {
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+      const token = jwt.sign({ userId: user._id }, JWT_SECRET);
       res.cookie('authToken', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
 
       if (user.isNewUser) {
