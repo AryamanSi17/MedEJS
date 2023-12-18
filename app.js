@@ -569,7 +569,7 @@ app.post("/refer-and-earn", async (req, res) => {
 //   }
 // };
 
-app.get('/user', async function (req, res) {
+app.get('/user',isAuthenticated, async function (req, res) {
   const pageTitle = 'User Profile';
   const metaRobots = '';
   const metaKeywords = '';
