@@ -1243,6 +1243,67 @@ const getMoodleUserId = async (email) => {
     throw error;
   }
 };
+ //AdminPanel
+
+//  async function hashPassword() {
+//   const password = 'GLobalmed1cloud'; // Your plain text password
+//   const saltRounds = 10; // You can adjust the number of rounds
+//   const hashedPassword = await bcrypt.hash(password, saltRounds);
+//   console.log(hashedPassword);
+// }
+
+ const adminUser = {
+  username: 'admin',
+  password: '$2b$10$OL4eqsOXuEENjhg7JoSkn.hj79fV275IIojljwIvMlEW/Yd/ThP/C' // Use bcrypt to hash your actual password
+};
+app.post("/admin-login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    // Check if the username matches and verify the password
+    if (username === adminUser.username && await bcrypt.compare(password, adminUser.password)) {
+      // Generate a JWT token for the admin
+      const adminToken = jwt.sign({ adminId: "admin_unique_id" }, JWT_SECRET, { expiresIn: '1h' });
+
+      // Set the token in an HTTPOnly cookie
+      res.cookie('adminToken', adminToken, { httpOnly: true, maxAge: 3600 * 1000 });
+
+      // Redirect or send a success response
+      res.redirect('/admin-panel');
+    } else {
+      return res.status(401).json({ success: false, message: "Invalid admin credentials" });
+    }
+  } catch (error) {
+    console.error("Error while logging in as admin:", error);
+    return res.status(500).json({ success: false, message: "Error while logging in as admin" });
+  }
+});
+
+const authenticateAdminJWT = (req, res, next) => {
+  const token = req.cookies.adminToken; // Assuming the token is stored in a cookie
+
+  if (!token) {
+    return res.status(401).send('Access denied. No token provided.');
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.admin = decoded; // Add the decoded token to the request
+    next();
+  } catch (ex) {
+    res.status(400).send('Invalid token.');
+  }
+};
+
+app.get('/admin-panel', authenticateAdminJWT, function (req, res) {
+  const pageTitle = 'Admin Panel - GlobalMedAcademy';
+  const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+  const metaKeywords = '';
+  const ogDescription = ''
+  res.render('admin-panel', {
+    pageTitle, metaRobots, metaKeywords, ogDescription
+  });
+});
 
 
 

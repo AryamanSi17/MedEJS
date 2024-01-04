@@ -623,6 +623,15 @@ app.get('/reset-password/:token', async (req, res) => {
       res.redirect('/loginn');
     }
   });
+  app.get("/admin-login", function (req, res) {
+    const pageTitle = 'Admin Panel - GlobalMedAcademy';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = '';
+    const ogDescription = ''
+    res.render('admin-login', {
+      pageTitle, metaRobots, metaKeywords, ogDescription
+    });
+  });
 
   app.get("/becometeacher", (req, res) => {
     res.redirect(301, "/become-teacher");
