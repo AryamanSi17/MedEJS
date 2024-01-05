@@ -1341,7 +1341,8 @@ app.post('/create-user', upload.fields([
   { name: 'passportPhoto' }
 ]), async (req, res) => {
 
-  const { username, password, fullname, email } = req.body;
+   const { username, password, fullname, email, enrollmentNumber } = req.body;
+
 
   try {
       // Hash password
@@ -1384,10 +1385,10 @@ app.post('/create-user', upload.fields([
 
       // Send confirmation email
       sendEmail({
-          to: username,
-          subject: 'Thank you for registering',
-    text: `Dear ${fullname},\n\nYour account has been created successfully.\n\nHere are your account details:\nUsername: ${username}\nPassword: ${password}\n\n\nBest Regards,\nGlobalMed Academy`
-      });
+        to: username,
+        subject: 'Thank you for registering',
+        text: `Dear ${fullname},\n\nYour account has been created successfully.\n\nHere are your account details:\nUsername: ${username}\nPassword: ${password}\nEnrollment Number: ${enrollmentNumber}\n\nBest Regards,\nGlobalMed Academy`
+    });
 
       res.redirect('/admin-panel?userAdded=true');
   } catch (error) {

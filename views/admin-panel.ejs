@@ -103,20 +103,25 @@
                         <p id="non-alphanumeric" class="criteria">Contains a non-alphanumeric character</p>
                     </div>
                 </div>
-                <input type="number" name="enrollmentNumber" placeholder="Enrollment Number">
+               
                 <input type="text" name="phone" placeholder="Phone">
                 <select name="course" id="course" required>
                     <option value="">Select a Course</option>
-                    <option value="Professional Certificate in Diabetes Management">Professional Certificate in Diabetes Management</option>
-                    <option value="Advance Certificate in Diabetes Management">Advance Certificate in Diabetes Management</option>
-                    <option value="Fellowship in Diabetes Management">Fellowship in Diabetes Management</option>
-                    <option value="Professional Certificate in Critical Care">Professional Certificate in Critical Care</option>
-                    <option value="Advance Certificate in Critical Care">Advance Certificate in Critical Care</option>
-                    <option value="Fellowship in Critical Care">Fellowship in Critical Care</option>
-                    <option value="Professional Certificate in General Practice">Professional Certificate in General Practice</option>
-                    <option value="Advance Certificate in General Practice">Advance Certificate in General Practice</option>
-                    <option value="Fellowship in General Practice">Fellowship in General Practice</option>
-                </select><br>
+                    <option value="PCDM">Professional Certificate in Diabetes Management</option>
+                    <option value="ACDM">Advance Certificate in Diabetes Management</option>
+                    <option value="FDM">Fellowship in Diabetes Management</option>
+                    <option value="PCC">Professional Certificate in Critical Care</option>
+                    <option value="ACC">Advance Certificate in Critical Care</option>
+                    <option value="FCC">Fellowship in Critical Care</option>
+                    <option value="PCGP">Professional Certificate in General Practice</option>
+                    <option value="ACGP">Advance Certificate in General Practice</option>
+                    <option value="FGP">Fellowship in General Practice</option>
+                </select>
+                <br>
+                <div class="input-group">
+                    <label for="enrollmentNumber">Enrollment Number</label>
+                    <input type="text" id="enrollmentNumber" name="enrollmentNumber" required>
+                </div>
                 <input type="text" name="mciNumber" placeholder="MCI Number">
                 <input type="text" name="address" placeholder="Address">
                 <input type="text" name="idNumber" placeholder="ID Number">
@@ -186,6 +191,42 @@
             // Alternatively, use a more sophisticated modal instead of alert
         }
     };
+    function generateEnrollmentNumber(courseValue) {
+        let prefix;
+        let middleDigits;
+        switch (courseValue) {
+        case 'FCC':
+        case 'FGP':
+        case 'FDM':
+            prefix = 'FCC';
+            middleDigits = '52';
+            break;
+        case 'PCC':
+        case 'PCGP':
+        case 'PCDM':
+            prefix = 'PCC';
+            middleDigits = '13';
+            break;
+        case 'ACC':
+        case 'ACGP':
+        case 'ACDM':
+            prefix = 'ACC';
+            middleDigits = '26';
+            break;
+        // Add other cases as needed
+        default:
+            prefix = '';
+            middleDigits = '';
+    }
+    const randomPart = Math.floor(10 + Math.random() * 90); // Random 2-digit number
+        return prefix + middleDigits + '2402' + '00' + randomPart.toString().padStart(2, '0');
+    }
+
+    document.getElementById('course').addEventListener('change', function() {
+        const selectedCourseValue = this.value;
+        const enrollmentNumber = generateEnrollmentNumber(selectedCourseValue);
+        document.getElementById('enrollmentNumber').value = enrollmentNumber;
+    });
     </script>
 </body>
 </html>
