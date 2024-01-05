@@ -24,6 +24,7 @@ const jwt = require('jsonwebtoken');
 // const isAuthenticated = require('./utils/authMiddleware');
 const bcrypt = require('bcrypt');
 const JWT_SECRET = "med ejs is way to success";
+const saltRounds = 10;
 const multer = require('multer');
 const checkUserLoggedIn = require('./utils/authMiddleware');
 const cookieParser = require('cookie-parser');
@@ -39,6 +40,16 @@ const getUniqueEnrollmentNumber = require('./utils/enrollmentNumber');
 const forestAdmin = require('./utils/forestAdmin');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const rawBodyParser = bodyParser.raw({ type: '*/*' });
+const AWS = require('aws-sdk');
+const upload = multer({ storage: multer.memoryStorage() });
+// Configure the AWS SDK to use DigitalOcean Spaces
+const spacesEndpoint = new AWS.Endpoint('blr1.digitaloceanspaces.com');
+const s3 = new AWS.S3({
+    endpoint: spacesEndpoint,
+    accessKeyId: 'DO00BCVVAXV92K3TNA36',
+    secretAccessKey: 'rMxLZWJR8cvKLitDS9dFYcjVHzIKcaFsLG0Jy31mGwE'
+});
+
 const flash=require('connect-flash');
 let loggedIn = true;
 const { enrollUserInCourse } = require('./utils/enrollUser.js')
@@ -1090,7 +1101,7 @@ app.post('/reset-password/:token', async (req, res) => {
 
 const url = process.env.MONGODB_URI;
 const storage = new GridFsStorage({ url });
-const upload = multer({ storage });
+
 
 app.get('/upload-documents', isAuthenticated, (req, res) => {
   const pageTitle = 'Upload Documents';
@@ -1130,24 +1141,34 @@ app.post('/upload-documents', upload.fields([
     return res.status(401).send('Unauthorized: No token provided');
   }
 
-  let userId;
+  let userId, userFullName;
   try {
-    // Verify and decode the token to get the user's ID
+    // Verify and decode the token to get the user's ID and full name
     const decoded = jwt.verify(token, JWT_SECRET);
     userId = decoded.userId;
+    userFullName = decoded.fullname; // Assuming fullname is part of the JWT payload
   } catch (error) {
     return res.status(401).send('Unauthorized: Invalid token');
   }
 
   try {
-    // Prepare the uploadedFiles array with the uploaded files information
     const uploadedFiles = [];
-    if (req.files.officialIDCard) uploadedFiles.push({ ...req.files.officialIDCard[0], title: 'Official ID Card' });
-    if (req.files.medicalCertificate) uploadedFiles.push({ ...req.files.medicalCertificate[0], title: 'Medical Certificate' });
-    if (req.files.mciCertificate) uploadedFiles.push({ ...req.files.mciCertificate[0], title: 'MCI Certificate' });
-    if (req.files.degree) uploadedFiles.push({ ...req.files.degree[0], title: 'Degree Certificate' });
-    if (req.files.passportPhoto) uploadedFiles.push({ ...req.files.passportPhoto[0], title: 'Passport Size Photo' });
-  
+    const userFolder = userFullName.replace(/\s+/g, '_'); // Replace spaces with underscores
+
+    for (const [key, value] of Object.entries(req.files)) {
+      const file = value[0];
+
+      // Upload file to DigitalOcean Spaces in the user-specific folder
+      const uploadResult = await s3.upload({
+        Bucket: 'lmsuploadedfilesdata',
+        Key: `${userFolder}/${file.originalname}`, // Storing in a folder named after the user
+        Body: file.buffer,
+        ACL: 'public-read' // or 'private', depending on your needs
+      }).promise();
+
+      // Push the file URL and title to the uploadedFiles array
+      uploadedFiles.push({ url: uploadResult.Location, title: file.originalname });
+    }
 
     const userUpdate = {
       $push: { uploadedFiles: { $each: uploadedFiles } },
@@ -1155,6 +1176,7 @@ app.post('/upload-documents', upload.fields([
       address: req.body.address,
       idNumber: req.body.idNumber,
     };
+
     // Find the user by ID and update the uploadedFiles array
     const user = await User.findByIdAndUpdate(userId, userUpdate, { new: true });
 
@@ -1181,6 +1203,8 @@ app.post('/upload-documents', upload.fields([
     res.status(500).send('Internal Server Error');
   }
 });
+
+
 const updateMoodlePassword = async (email, newPassword) => {
   const moodleUrl = 'https://moodle.upskill.globalmedacademy.com'; // Replace with your Moodle URL
   const token = process.env.MOODLE_TOKEN; // Replace with your actual token
@@ -1283,7 +1307,8 @@ const authenticateAdminJWT = (req, res, next) => {
   const token = req.cookies.adminToken; // Assuming the token is stored in a cookie
 
   if (!token) {
-    return res.status(401).send('Access denied. No token provided.');
+    // Redirect to admin login if no token is provided
+    return res.redirect('/admin-login');
   }
 
   try {
@@ -1291,7 +1316,8 @@ const authenticateAdminJWT = (req, res, next) => {
     req.admin = decoded; // Add the decoded token to the request
     next();
   } catch (ex) {
-    res.status(400).send('Invalid token.');
+    // Redirect to admin login if token is invalid
+    res.redirect('/admin-login');
   }
 };
 
@@ -1304,7 +1330,71 @@ app.get('/admin-panel', authenticateAdminJWT, function (req, res) {
     pageTitle, metaRobots, metaKeywords, ogDescription
   });
 });
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
+
+app.post('/create-user', upload.fields([
+  { name: 'officialIDCard' },
+  { name: 'medicalCertificate' },
+  { name: 'mciCertificate' },
+  { name: 'degree' },
+  { name: 'passportPhoto' }
+]), async (req, res) => {
+
+  const { username, password, fullname, email } = req.body;
+
+  try {
+      // Hash password
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+      // Create user in Moodle
+      await createUserInMoodle(username, hashedPassword, fullname, '.', username);
+
+      // Create user in your database
+      const newUser = new User({
+          username,
+          password: hashedPassword,
+          fullname,
+          email,
+          // ... other user fields from req.body
+      });
+
+      const savedUser = await newUser.save();
+
+     // Handle file uploads
+     const uploadedFiles = [];
+     const userFolder = savedUser._id.toString(); // Use MongoDB ID as folder name
+
+     for (const [key, value] of Object.entries(req.files)) {
+         const file = value[0];
+
+         const uploadResult = await s3.upload({
+             Bucket: 'lmsuploadedfilesdata',
+             Key: `${userFolder}/${file.originalname}`,
+             Body: file.buffer,
+             ACL: 'public-read'
+         }).promise();
+
+         uploadedFiles.push({ url: uploadResult.Location, title: file.originalname });
+     }
+
+      await User.findByIdAndUpdate(savedUser._id, {
+          $push: { uploadedFiles: { $each: uploadedFiles } }
+      }, { new: true });
+
+      // Send confirmation email
+      sendEmail({
+          to: username,
+          subject: 'Thank you for registering',
+    text: `Dear ${fullname},\n\nYour account has been created successfully.\n\nHere are your account details:\nUsername: ${username}\nPassword: ${password}\n\n\nBest Regards,\nGlobalMed Academy`
+      });
+
+      res.redirect('/admin-panel?userAdded=true');
+  } catch (error) {
+      console.error('Error in /create-user route:', error);
+      res.status(500).send("An error occurred during user registration.");
+  }
+});
 
 
 app.listen(3000, function () {

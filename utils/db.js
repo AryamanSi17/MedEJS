@@ -29,10 +29,8 @@ const UserSchema = new Schema({
     coursesPurchased: [String],
     uploadedFiles: [
       {
-        originalname: String,
-        name: String,
-        path: String,
-        size: Number,
+        url: String, // URL of the uploaded file
+        title: String // Title of the file
       },
     ],
     mciNumber: String,
