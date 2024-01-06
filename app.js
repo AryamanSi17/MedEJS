@@ -393,6 +393,26 @@ async function createUserInMoodle(username, password, firstname, lastname, email
     throw new Error('Failed to create user in Moodle.');
   }
 }
+// Function to enroll a user in Moodle
+async function enrollUserInMoodle(userId, courseId, roleId) {
+  const formData = new FormData();
+  formData.append('moodlewsrestformat', 'json');
+  formData.append('wsfunction', 'enrol_manual_enrol_users');
+  formData.append('wstoken', process.env.MOODLE_TOKEN);
+  formData.append('enrolments[0][roleid]', roleId);
+  formData.append('enrolments[0][userid]', userId);
+  formData.append('enrolments[0][courseid]', courseId);
+
+  try {
+      const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
+          headers: formData.getHeaders()
+      });
+      return response.data; // Moodle enrollment response
+  } catch (error) {
+      console.error(error);
+      throw new Error('Failed to enroll user in Moodle course.');
+  }
+}
 const getUserIdFromUsername = async (email) => {
   const formData = new FormData();
   formData.append('moodlewsrestformat', 'json');
@@ -1239,34 +1259,59 @@ const updateMoodlePassword = async (email, newPassword) => {
   }
 };
 
+async function getMoodleUserId(email) {
+  const formData = new FormData();
+  formData.append('moodlewsrestformat', 'json');
+  formData.append('wsfunction', 'core_user_get_users');
+  formData.append('wstoken', process.env.MOODLE_TOKEN); // Ensure your Moodle token is correctly set in your environment
 
-const getMoodleUserId = async (email) => {
-  const moodleUrl = 'https://moodle.upskill.globalmedacademy.com'; // Replace with your Moodle URL
-  const token = process.env.MOODLE_TOKEN; // Replace with your actual token
-  const functionname = 'core_user_get_users_by_field';
+  // Criteria for searching the user
+  formData.append('criteria[0][key]', 'email');
+  formData.append('criteria[0][value]', email);
 
   try {
-    const response = await axios.post(`${moodleUrl}/webservice/rest/server.php`, null, {
-      params: {
-        wstoken: token,
-        wsfunction: functionname,
-        moodlewsrestformat: 'json',
-        field: 'email',
-        values: [email]
+      const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
+          headers: formData.getHeaders()
+      });
+
+      if (response.data && response.data.users && response.data.users.length > 0) {
+          return response.data.users[0].id; // Returns the first user's ID
+      } else {
+          throw new Error('User not found.');
       }
-    });
-
-    const users = response.data;
-    if (users.length === 0) {
-      throw new Error('No Moodle user found with the given email address.');
-    }
-
-    return users[0].id;
   } catch (error) {
-    console.error('Failed to retrieve Moodle user ID:', error);
-    throw error;
+      console.error('Error in getMoodleUserId:', error);
+      throw new Error('Failed to retrieve Moodle user ID.');
   }
-};
+}
+
+// const getMoodleUserId = async (email) => {
+//   const moodleUrl = 'https://moodle.upskill.globalmedacademy.com'; // Replace with your Moodle URL
+//   const token = process.env.MOODLE_TOKEN; // Replace with your actual token
+//   const functionname = 'core_user_get_users_by_field';
+
+//   try {
+//     const response = await axios.post(`${moodleUrl}/webservice/rest/server.php`, null, {
+//       params: {
+//         wstoken: token,
+//         wsfunction: functionname,
+//         moodlewsrestformat: 'json',
+//         field: 'email',
+//         values: [email]
+//       }
+//     });
+
+//     const users = response.data;
+//     if (users.length === 0) {
+//       throw new Error('No Moodle user found with the given email address.');
+//     }
+
+//     return users[0].id;
+//   } catch (error) {
+//     console.error('Failed to retrieve Moodle user ID:', error);
+//     throw error;
+//   }
+// };
  //AdminPanel
 
 //  async function hashPassword() {
@@ -1332,7 +1377,30 @@ app.get('/admin-panel', authenticateAdminJWT, function (req, res) {
 });
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
+async function getCourseIdByName(courseName) {
+  const formData = new FormData();
+  formData.append('moodlewsrestformat', 'json');
+  formData.append('wsfunction', 'core_course_get_courses');
+  formData.append('wstoken', process.env.MOODLE_TOKEN);
 
+  try {
+      const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
+          headers: formData.getHeaders()
+      });
+
+      const courses = response.data;
+      const course = courses.find(c => c.fullname === courseName);
+
+      if (course) {
+          return course.id; // Return the course ID
+      } else {
+          throw new Error('Course not found.');
+      }
+  } catch (error) {
+      console.error('Error getting course ID:', error);
+      throw error;
+  }
+}
 app.post('/create-user', upload.fields([
   { name: 'officialIDCard' },
   { name: 'medicalCertificate' },
@@ -1342,15 +1410,25 @@ app.post('/create-user', upload.fields([
 ]), async (req, res) => {
 
    const { username, password, fullname, email, enrollmentNumber } = req.body;
-
-
+   const courseId = 'FCC2401';
+   const courseName = 'Fellowship in Critical Care Batch-2401';
   try {
       // Hash password
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
       // Create user in Moodle
       await createUserInMoodle(username, hashedPassword, fullname, '.', username);
+       // Get Moodle user ID
+       const moodleUserId = await getMoodleUserId(username);
 
+
+       const courseId = await getCourseIdByName(courseName);
+       const roleId = 5; // Assuming role ID for student
+       await enrollUserInMoodle(moodleUserId, courseId, roleId);
+
+      //  if (!enrollmentResponse.success) {
+      //      throw new Error(enrollmentResponse.message);
+      //  }
       // Create user in your database
       const newUser = new User({
           username,
@@ -1386,8 +1464,19 @@ app.post('/create-user', upload.fields([
       // Send confirmation email
       sendEmail({
         to: username,
-        subject: 'Thank you for registering',
-        text: `Dear ${fullname},\n\nYour account has been created successfully.\n\nHere are your account details:\nUsername: ${username}\nPassword: ${password}\nEnrollment Number: ${enrollmentNumber}\n\nBest Regards,\nGlobalMed Academy`
+        subject: 'Welcome to GlobalMed Academy!',
+        text: `Dear Dr. ${fullname.split(" ")[0]},\n\n` +
+              `Welcome aboard!\n` +
+              `We are excited to share your credentials for the GlobalMed Academy’s Learning Management System (LMS) to support your commitment to upskilling yourself. Our LMS provides you the platform to access self-learning contents and other required information.\n` +
+              `Below are the access credentials and instructions to get you started:\n` +
+              `Website: https://moodle.upskill.globalmedacademy.com/login/index.php\n` +
+              `Username: ${username}\n` +
+              `Password: ${password}\n\n` +
+              `Once logged in, our user-friendly interface will allow you to navigate through different courses and learning materials effortlessly. Feel free to browse the available courses and explore the learning modules and resources specific to your area of interest.\n` +
+              `For User Support:\n` +
+              `We have a dedicated support team available to assist you with any questions or issues you may encounter while using the LMS. Should you require any assistance, please contact 9730020462.\n\n` +
+              `Happy Learning!\n\n` +
+              `GlobalMED Academy.`
     });
 
       res.redirect('/admin-panel?userAdded=true');
