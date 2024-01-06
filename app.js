@@ -1417,7 +1417,7 @@ app.post('/create-user', upload.fields([
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
       // Create user in Moodle
-      await createUserInMoodle(username, hashedPassword, fullname, '.', username);
+      await createUserInMoodle(username, password , fullname, '.', username);
        // Get Moodle user ID
        const moodleUserId = await getMoodleUserId(username);
 
