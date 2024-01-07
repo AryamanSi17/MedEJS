@@ -37,6 +37,7 @@ const UserSchema = new Schema({
     address: String,
     idNumber: String,
     ipAddress: String, 
+    enrollmentNumber: String,
     referrals: [
       {
           friendMobile: String,

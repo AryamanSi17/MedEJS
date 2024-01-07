@@ -45,12 +45,12 @@ const upload = multer({ storage: multer.memoryStorage() });
 // Configure the AWS SDK to use DigitalOcean Spaces
 const spacesEndpoint = new AWS.Endpoint('blr1.digitaloceanspaces.com');
 const s3 = new AWS.S3({
-    endpoint: spacesEndpoint,
-    accessKeyId: 'DO00BCVVAXV92K3TNA36',
-    secretAccessKey: 'rMxLZWJR8cvKLitDS9dFYcjVHzIKcaFsLG0Jy31mGwE'
+  endpoint: spacesEndpoint,
+  accessKeyId: 'DO00BCVVAXV92K3TNA36',
+  secretAccessKey: 'rMxLZWJR8cvKLitDS9dFYcjVHzIKcaFsLG0Jy31mGwE'
 });
 
-const flash=require('connect-flash');
+const flash = require('connect-flash');
 let loggedIn = true;
 const { enrollUserInCourse } = require('./utils/enrollUser.js')
 const app = express();
@@ -88,33 +88,33 @@ passport.use(new GoogleStrategy({
   clientSecret: process.env.CLIENT_SECRET,
   callbackURL: "https://globalmedacademy.com/auth/google/callback"
 },
-async (accessToken, refreshToken, profile, done) => {
-  try {
-    const user = await findOrCreateUser(profile);
-    return done(null, user);
-  } catch (error) {
-    return done(error, null);
+  async (accessToken, refreshToken, profile, done) => {
+    try {
+      const user = await findOrCreateUser(profile);
+      return done(null, user);
+    } catch (error) {
+      return done(error, null);
+    }
   }
-}
 ));
 
 async function findOrCreateUser(profile) {
-const existingUser = await User.findOne({ googleId: profile.id });
+  const existingUser = await User.findOne({ googleId: profile.id });
 
-if (existingUser) {
-  return existingUser;
-} else {
-  const newUser = new User({
-    googleId: profile.id,
-    displayName: profile.displayName,
-    // Add additional fields as in your regular registration process
-    enrollmentNumber: await getUniqueEnrollmentNumber(),
-    // Other fields...
-  });
+  if (existingUser) {
+    return existingUser;
+  } else {
+    const newUser = new User({
+      googleId: profile.id,
+      displayName: profile.displayName,
+      // Add additional fields as in your regular registration process
+      enrollmentNumber: await getUniqueEnrollmentNumber(),
+      // Other fields...
+    });
 
-  newUser.signupMethod = 'google';
-  return newUser.save();
-}
+    newUser.signupMethod = 'google';
+    return newUser.save();
+  }
 }
 passport.serializeUser((user, done) => {
   done(null, user.id);
@@ -162,7 +162,7 @@ app.get('/auth/google/callback', (req, res, next) => {
       res.cookie('authToken', token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
 
       if (user.isNewUser) {
-        const username = user.email;  
+        const username = user.email;
         const password = generatePassword(); // Ensure this method exists
         const fullname = user.displayName;
 
@@ -173,7 +173,7 @@ app.get('/auth/google/callback', (req, res, next) => {
       // Render the page with meta information
       res.render("auth_index", {
         username: user.displayName,
-        firstname: user.firstname, 
+        firstname: user.firstname,
         pageTitle: 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy',
         metaRobots: 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large',
         metaKeywords: 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine',
@@ -257,13 +257,13 @@ app.post("/register", async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const enrollmentNumber = await getUniqueEnrollmentNumber(); // Get unique enrollment number
+    // const enrollmentNumber = await getUniqueEnrollmentNumber(); // Get unique enrollment number
 
     const newUser = new User({
       username,
       fullname,
       password: hashedPassword,
-      enrollmentNumber  // Assign enrollment number
+
     });
 
     await newUser.save();
@@ -404,13 +404,13 @@ async function enrollUserInMoodle(userId, courseId, roleId) {
   formData.append('enrolments[0][courseid]', courseId);
 
   try {
-      const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
-          headers: formData.getHeaders()
-      });
-      return response.data; // Moodle enrollment response
+    const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
+      headers: formData.getHeaders()
+    });
+    return response.data; // Moodle enrollment response
   } catch (error) {
-      console.error(error);
-      throw new Error('Failed to enroll user in Moodle course.');
+    console.error(error);
+    throw new Error('Failed to enroll user in Moodle course.');
   }
 }
 const getUserIdFromUsername = async (email) => {
@@ -542,32 +542,32 @@ app.post('/apply-as-instructor', async (req, res) => {
 
 app.post("/refer-and-earn", async (req, res) => {
   try {
-      const { friendMobile, friendName, recommendedCourse, enrollmentNumber } = req.body;
-      
-      // Validate data as needed
-      
-      // Find the logged-in user using the provided enrollmentNumber
-      const user = await User.findOne({ enrollmentNumber });
-      
-      if (!user) {
-          // Handle case where user is not found
-          return res.status(400).send("User not found");
-      }
-      
-      // Update user data
-      // Example: Add friend's details to a 'referrals' array in user document
-      user.referrals = user.referrals || [];
-      user.referrals.push({ friendMobile, friendName, recommendedCourse });
-      
-      await user.save();
-      
-      // Redirect or render a page as needed
-      res.json({ success: true });
-    } catch (error) {
-        console.error("Error while submitting referral:", error);
-        // Send an error response
-        res.status(500).json({ success: false, error: "Error while submitting referral" });
+    const { friendMobile, friendName, recommendedCourse, enrollmentNumber } = req.body;
+
+    // Validate data as needed
+
+    // Find the logged-in user using the provided enrollmentNumber
+    const user = await User.findOne({ enrollmentNumber });
+
+    if (!user) {
+      // Handle case where user is not found
+      return res.status(400).send("User not found");
     }
+
+    // Update user data
+    // Example: Add friend's details to a 'referrals' array in user document
+    user.referrals = user.referrals || [];
+    user.referrals.push({ friendMobile, friendName, recommendedCourse });
+
+    await user.save();
+
+    // Redirect or render a page as needed
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error while submitting referral:", error);
+    // Send an error response
+    res.status(500).json({ success: false, error: "Error while submitting referral" });
+  }
 });
 
 // ... other code ...
@@ -600,7 +600,7 @@ app.post("/refer-and-earn", async (req, res) => {
 //   }
 // };
 
-app.get('/user',isAuthenticated, async function (req, res) {
+app.get('/user', isAuthenticated, async function (req, res) {
   const pageTitle = 'User Profile';
   const metaRobots = '';
   const metaKeywords = '';
@@ -649,7 +649,7 @@ app.get('/user',isAuthenticated, async function (req, res) {
       isUserLoggedIn: req.isUserLoggedIn,
       username: user.username,
       fullname: user.fullname,
-      enrollmentNumber:user.enrollmentNumber,
+      enrollmentNumber: user.enrollmentNumber,
       coursesPurchased,
       documentsUploaded,
       hasPurchasedCourses,
@@ -708,20 +708,20 @@ app.get('/buy-now/:courseID', async (req, res) => {
   }];
 
   try {
-    
+
     const success_url = `http://www.globalmedacademy.com/success?session_id={CHECKOUT_SESSION_ID}&courseID=${courseID}`;
     const cancel_url = 'http://www.globalmedacademy.com/cancel';
-   
-    const token = req.cookies.authToken;
-      if (!token) {
-          return res.status(401).send('Unauthorized: No token provided');
-      }
 
-      const decoded = jwt.verify(token, JWT_SECRET);
-      const user = await User.findById(decoded.userId);
-      if (!user) {
-          return res.status(404).send('User not found');
-      }
+    const token = req.cookies.authToken;
+    if (!token) {
+      return res.status(401).send('Unauthorized: No token provided');
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -730,7 +730,7 @@ app.get('/buy-now/:courseID', async (req, res) => {
       mode: 'payment',
       success_url: success_url,
       cancel_url: cancel_url,
-  });
+    });
 
     res.json({ id: session.id });
   } catch (error) {
@@ -743,56 +743,56 @@ app.get('/send-payment-link/:courseID', async (req, res) => {
   const course = courses.find(c => c.courseID === courseID);
 
   if (!course) {
-      return res.status(404).send('Course not found');
+    return res.status(404).send('Course not found');
   }
 
   const line_items = [{
-      price_data: {
-          currency: course.currency,
-          product_data: {
-              name: course.name,
-          },
-          unit_amount: course.discountedPrice,
+    price_data: {
+      currency: course.currency,
+      product_data: {
+        name: course.name,
       },
-      quantity: 1,
+      unit_amount: course.discountedPrice,
+    },
+    quantity: 1,
   }];
 
   try {
     const success_url = `http://www.globalmedacademy.com/success?session_id=${CHECKOUT_SESSION_ID}&courseID=${courseID}`;
     const cancel_url = 'http://www.globalmedacademy.com/cancel';
-    
 
-      // Extract the JWT token from the cookie to get the user's email
-      const token = req.cookies.authToken;
-      if (!token) {
-          return res.status(401).send('Unauthorized: No token provided');
-      }
 
-      const decoded = jwt.verify(token, JWT_SECRET);
-      const user = await User.findById(decoded.userId);
-      if (!user) {
-          return res.status(404).send('User not found');
-      }
-       
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        customer_email: user.username,
-        line_items: line_items,
-        mode: 'payment',
-        success_url: success_url,
-        cancel_url: cancel_url,
+    // Extract the JWT token from the cookie to get the user's email
+    const token = req.cookies.authToken;
+    if (!token) {
+      return res.status(401).send('Unauthorized: No token provided');
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      customer_email: user.username,
+      line_items: line_items,
+      mode: 'payment',
+      success_url: success_url,
+      cancel_url: cancel_url,
     });
-      // Send the payment link to the user's email
-      sendEmail({
-        to: [user.username],
-        subject: 'Your Payment Link',
-        text: `Click here to make your payment: ${session.url}`
+    // Send the payment link to the user's email
+    sendEmail({
+      to: [user.username],
+      subject: 'Your Payment Link',
+      text: `Click here to make your payment: ${session.url}`
     });
-      res.send('Payment link sent to your email! You may close this page .');
+    res.send('Payment link sent to your email! You may close this page .');
 
   } catch (error) {
-      console.error(error);
-      res.status(500).send('Error creating checkout session');
+    console.error(error);
+    res.status(500).send('Error creating checkout session');
   }
 });
 // Endpoint for handling Stripe webhook events
@@ -885,9 +885,9 @@ app.get('/success', async (req, res) => {
 
     // Send a payment receipt to the user
     sendEmail({
-        to: [user.username],
-        subject: 'Your Payment Receipt',
-        text: `Thank you for purchasing the course. Your payment was successful! We will send you the receipt!`
+      to: [user.username],
+      subject: 'Your Payment Receipt',
+      text: `Thank you for purchasing the course. Your payment was successful! We will send you the receipt!`
     });
 
     // Send a new enrollment message to the admin
@@ -910,15 +910,15 @@ app.get('/success', async (req, res) => {
 //testing flash popup
 
 
-app.get('/test',function(req,res){
-res.render('form',{messages:req.flash()});
+app.get('/test', function (req, res) {
+  res.render('form', { messages: req.flash() });
 })
-app.post('/test/submit', function(req, res) {
+app.post('/test/submit', function (req, res) {
   let message = "";
   if (req.body.username.toLowerCase() === 'aryaman') {
-      message = 'Welcome Aryaman!';
+    message = 'Welcome Aryaman!';
   } else {
-      message = 'User not recognised';
+    message = 'User not recognised';
   }
   req.flash('message', message);
   return res.redirect('/test');
@@ -977,7 +977,7 @@ app.post('/forgot-password', async (req, res) => {
       return res.status(400).send('User with given email does not exist.');
     }
 
-    const token = jwt.sign({ _id: user._id },JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '1h' });
 
     await User.updateOne({ _id: user._id }, {
       resetPasswordToken: token,
@@ -1005,10 +1005,10 @@ app.post('/forgot-password', async (req, res) => {
 // GET route to render the password reset form
 app.get('/reset-password/:token', async (req, res) => {
   const pageTitle = 'Reset your password';
-    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
-    const metaKeywords = '';
-    const ogDescription = '';
-    const canonicalLink = 'https://www.globalmedacademy.com/forgot-password';
+  const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+  const metaKeywords = '';
+  const ogDescription = '';
+  const canonicalLink = 'https://www.globalmedacademy.com/forgot-password';
   const { token } = req.params;
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
@@ -1023,12 +1023,14 @@ app.get('/reset-password/:token', async (req, res) => {
       return res.status(400).send('Password reset token is invalid or has expired.');
     }
     // Render the reset password form
-    res.render('reset_password', { token, pageTitle,
+    res.render('reset_password', {
+      token, pageTitle,
       metaRobots,
       metaKeywords,
       ogDescription,
       canonicalLink,
-      isBlogPage: false, });
+      isBlogPage: false,
+    });
   } catch (error) {
     console.error('Error verifying token:', error);
     return res.status(400).send('Invalid token.');
@@ -1132,9 +1134,9 @@ app.get('/upload-documents', isAuthenticated, (req, res) => {
   const courseID = req.query.courseID || '';
   const username = req.session.username || null;
   let firstname = null;
-    if (req.isUserLoggedIn && req.user && req.user.fullname) {
-      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
-    }
+  if (req.isUserLoggedIn && req.user && req.user.fullname) {
+    firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+  }
   res.render('data', {
     courseID, isUserLoggedIn: req.isUserLoggedIn,
     username: username, pageTitle,
@@ -1142,7 +1144,7 @@ app.get('/upload-documents', isAuthenticated, (req, res) => {
     metaKeywords,
     ogDescription,
     canonicalLink, isBlogPage: false,
-    firstname:firstname
+    firstname: firstname
   });
 });
 
@@ -1270,18 +1272,18 @@ async function getMoodleUserId(email) {
   formData.append('criteria[0][value]', email);
 
   try {
-      const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
-          headers: formData.getHeaders()
-      });
+    const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
+      headers: formData.getHeaders()
+    });
 
-      if (response.data && response.data.users && response.data.users.length > 0) {
-          return response.data.users[0].id; // Returns the first user's ID
-      } else {
-          throw new Error('User not found.');
-      }
+    if (response.data && response.data.users && response.data.users.length > 0) {
+      return response.data.users[0].id; // Returns the first user's ID
+    } else {
+      throw new Error('User not found.');
+    }
   } catch (error) {
-      console.error('Error in getMoodleUserId:', error);
-      throw new Error('Failed to retrieve Moodle user ID.');
+    console.error('Error in getMoodleUserId:', error);
+    throw new Error('Failed to retrieve Moodle user ID.');
   }
 }
 
@@ -1312,7 +1314,7 @@ async function getMoodleUserId(email) {
 //     throw error;
 //   }
 // };
- //AdminPanel
+//AdminPanel
 
 //  async function hashPassword() {
 //   const password = 'GLobalmed1cloud'; // Your plain text password
@@ -1321,9 +1323,9 @@ async function getMoodleUserId(email) {
 //   console.log(hashedPassword);
 // }
 
- const adminUser = {
+const adminUser = {
   username: 'admin',
-  password: '$2b$10$OL4eqsOXuEENjhg7JoSkn.hj79fV275IIojljwIvMlEW/Yd/ThP/C' // Use bcrypt to hash your actual password
+  password: process.env.ADMIN_PASSWORD// Use bcrypt to hash your actual password
 };
 app.post("/admin-login", async (req, res) => {
   try {
@@ -1366,15 +1368,42 @@ const authenticateAdminJWT = (req, res, next) => {
   }
 };
 
-app.get('/admin-panel', authenticateAdminJWT, function (req, res) {
-  const pageTitle = 'Admin Panel - GlobalMedAcademy';
-  const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
-  const metaKeywords = '';
-  const ogDescription = ''
-  res.render('admin-panel', {
-    pageTitle, metaRobots, metaKeywords, ogDescription
-  });
+app.get('/admin-panel', authenticateAdminJWT, async function (req, res) {
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = 10; // Fixed to 10 users per page
+
+  try {
+    const users = await User.find({})
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
+    const totalUsers = await User.countDocuments();
+    const totalPages = Math.ceil(totalUsers / pageSize);
+
+    res.render('admin-panel', {
+      users,
+      currentPage: page,
+      totalPages,
+      // ... other variables
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).send("Error fetching user data");
+  }
 });
+app.post('/update-user', async function (req, res) {
+  const { userId, field, value } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+    user[field] = value;
+    await user.save();
+    res.json({ message: 'User updated successfully' });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).send("Error updating user data");
+  }
+});
+
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 async function getCourseIdByName(courseName) {
@@ -1384,109 +1413,135 @@ async function getCourseIdByName(courseName) {
   formData.append('wstoken', process.env.MOODLE_TOKEN);
 
   try {
-      const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
-          headers: formData.getHeaders()
-      });
+    const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
+      headers: formData.getHeaders()
+    });
 
-      const courses = response.data;
-      const course = courses.find(c => c.fullname === courseName);
+    const courses = response.data;
+    const course = courses.find(c => c.fullname === courseName);
 
-      if (course) {
-          return course.id; // Return the course ID
-      } else {
-          throw new Error('Course not found.');
-      }
+    if (course) {
+      return course.id; // Return the course ID
+    } else {
+      throw new Error('Course not found.');
+    }
   } catch (error) {
-      console.error('Error getting course ID:', error);
-      throw error;
+    console.error('Error getting course ID:', error);
+    throw error;
   }
 }
 app.post('/create-user', upload.fields([
   { name: 'officialIDCard' },
-  { name: 'medicalCertificate' },
   { name: 'mciCertificate' },
   { name: 'degree' },
   { name: 'passportPhoto' }
 ]), async (req, res) => {
 
-   const { username, password, fullname, email, enrollmentNumber } = req.body;
-   const courseId = 'FCC2401';
-   const courseName = 'Fellowship in Critical Care Batch-2401';
+  const { username, password, fullname, email, enrollmentNumber } = req.body;
+  const courseId = 'FCC2401';
+  const courseName = 'Fellowship in Critical Care Batch-2401';
   try {
-      // Hash password
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-      // Create user in Moodle
-      await createUserInMoodle(username, password , fullname, '.', username);
-       // Get Moodle user ID
-       const moodleUserId = await getMoodleUserId(username);
+    // Create user in Moodle
+    await createUserInMoodle(username, password, fullname, '.', username);
+    // Get Moodle user ID
+    const moodleUserId = await getMoodleUserId(username);
 
 
-       const courseId = await getCourseIdByName(courseName);
-       const roleId = 5; // Assuming role ID for student
-       await enrollUserInMoodle(moodleUserId, courseId, roleId);
+    const courseId = await getCourseIdByName(courseName);
+    const roleId = 5; // Assuming role ID for student
+    await enrollUserInMoodle(moodleUserId, courseId, roleId);
 
-      //  if (!enrollmentResponse.success) {
-      //      throw new Error(enrollmentResponse.message);
-      //  }
-      // Create user in your database
-      const newUser = new User({
-          username,
-          password: hashedPassword,
-          fullname,
-          email,
-          // ... other user fields from req.body
-      });
-
-      const savedUser = await newUser.save();
-
-     // Handle file uploads
-     const uploadedFiles = [];
-     const userFolder = savedUser._id.toString(); // Use MongoDB ID as folder name
-
-     for (const [key, value] of Object.entries(req.files)) {
-         const file = value[0];
-
-         const uploadResult = await s3.upload({
-             Bucket: 'lmsuploadedfilesdata',
-             Key: `${userFolder}/${file.originalname}`,
-             Body: file.buffer,
-             ACL: 'public-read'
-         }).promise();
-
-         uploadedFiles.push({ url: uploadResult.Location, title: file.originalname });
-     }
-
-      await User.findByIdAndUpdate(savedUser._id, {
-          $push: { uploadedFiles: { $each: uploadedFiles } }
-      }, { new: true });
-
-      // Send confirmation email
-      sendEmail({
-        to: username,
-        subject: 'Welcome to GlobalMed Academy!',
-        text: `Dear Dr. ${fullname.split(" ")[0]},\n\n` +
-              `Welcome aboard!\n` +
-              `We are excited to share your credentials for the GlobalMed Academy’s Learning Management System (LMS) to support your commitment to upskilling yourself. Our LMS provides you the platform to access self-learning contents and other required information.\n` +
-              `Below are the access credentials and instructions to get you started:\n` +
-              `Website: https://moodle.upskill.globalmedacademy.com/login/index.php\n` +
-              `Username: ${username}\n` +
-              `Password: ${password}\n\n` +
-              `Once logged in, our user-friendly interface will allow you to navigate through different courses and learning materials effortlessly. Feel free to browse the available courses and explore the learning modules and resources specific to your area of interest.\n` +
-              `For User Support:\n` +
-              `We have a dedicated support team available to assist you with any questions or issues you may encounter while using the LMS. Should you require any assistance, please contact 9730020462.\n\n` +
-              `Happy Learning!\n\n` +
-              `GlobalMED Academy.`
+    //  if (!enrollmentResponse.success) {
+    //      throw new Error(enrollmentResponse.message);
+    //  }
+    // Create user in your database
+    const newUser = new User({
+      username,
+      password: hashedPassword,
+      fullname,
+      email,
+      phone: req.body.phone,
+      course: req.body.course,
+      mciNumber: req.body.mciNumber,
+      address: req.body.address,
+      idNumber: req.body.idNumber,
+      enrollmentNumber,
+      // ... other user fields from req.body
     });
 
-      res.redirect('/admin-panel?userAdded=true');
+    const savedUser = await newUser.save();
+
+    // Handle file uploads
+    const uploadedFiles = [];
+    const userFolder = username; // Use username as folder name
+    // Use MongoDB ID as folder name
+
+    for (const [key, value] of Object.entries(req.files)) {
+      const file = value[0];
+
+      const uploadResult = await s3.upload({
+        Bucket: 'lmsuploadedfilesdata',
+        Key: `${userFolder}/${file.originalname}`,
+        Body: file.buffer,
+        ACL: 'public-read'
+      }).promise();
+
+      uploadedFiles.push({ url: uploadResult.Location, title: file.originalname });
+    }
+
+    await User.findByIdAndUpdate(savedUser._id, {
+      $push: { uploadedFiles: { $each: uploadedFiles } }
+    }, { new: true });
+
+    // Send confirmation email
+    sendEmail({
+      to: username,
+      subject: 'Welcome to GlobalMed Academy!',
+      text: `Dear Dr. ${fullname.split(" ")[0]},\n\n` +
+        `Welcome aboard!\n` +
+        `We are excited to share your credentials for the GlobalMed Academy’s Learning Management System (LMS) to support your commitment to upskilling yourself. Our LMS provides you the platform to access self-learning contents and other required information.\n` +
+        `Below are the access credentials and instructions to get you started:\n` +
+        `Website: https://moodle.upskill.globalmedacademy.com/login/index.php\n` +
+        `Username: ${username}\n` +
+        `Password: ${password}\n\n` +
+        `Once logged in, our user-friendly interface will allow you to navigate through different courses and learning materials effortlessly. Feel free to browse the available courses and explore the learning modules and resources specific to your area of interest.\n` +
+        `For User Support:\n` +
+        `We have a dedicated support team available to assist you with any questions or issues you may encounter while using the LMS. Should you require any assistance, please contact 9730020462.\n\n` +
+        `Happy Learning!\n\n` +
+        `GlobalMED Academy.`
+    });
+
+    res.redirect('/admin-panel?userAdded=true');
   } catch (error) {
-      console.error('Error in /create-user route:', error);
-      res.status(500).send("An error occurred during user registration.");
+    console.error('Error in /create-user route:', error);
+    res.status(500).send("An error occurred during user registration.");
   }
 });
 
-
+app.post('/delete-selected-users', authenticateAdminJWT, async function (req, res) {
+  try {
+    await User.deleteMany({ _id: { $in: req.body.userIds } });
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error deleting users:", error);
+    res.status(500).json({ success: false });
+  }
+});
+app.post('/update-users', async (req, res) => {
+  try {
+      const updates = req.body.updates;
+      for (const update of updates) {
+          await User.findByIdAndUpdate(update.id, { [update.field]: update.value });
+      }
+      res.json({ success: true });
+  } catch (error) {
+      console.error("Error updating users:", error);
+      res.status(500).json({ success: false });
+  }
+});
 app.listen(3000, function () {
   console.log("Server started successfully!");
 });

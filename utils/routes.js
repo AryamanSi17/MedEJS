@@ -750,6 +750,9 @@ app.get('/reset-password/:token', async (req, res) => {
   app.get("/about.html", (req, res) => {
     res.redirect(301, "/about-us")
   });
+  app.get("/admin",(req,res)=>{
+    res.redirect("admin-login")
+  })
   // app.get("*", function(req, res) {
   //   res.redirect(301,"/");
   // });

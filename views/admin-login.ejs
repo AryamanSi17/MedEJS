@@ -4,41 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
-        body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-image: linear-gradient(to right, #89CFF0, #D0A9F5); /* Light blue to purple gradient */
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    color: #fff;
+}
+
+.login-page {
+    display: flex;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.image-column {
+    background: url('path_to_your_image.jpg') no-repeat center center;
+    background-size: cover;
+    width: 300px;
+    border-radius: 10px 0 0 10px;
 }
 
 .login-container {
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.9);
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 300px;
+    border-radius: 0 10px 10px 0;
 }
 
 .login-form h2 {
     text-align: center;
     color: #333;
     margin-bottom: 20px;
+    font-weight: normal;
 }
 
 .input-group {
+    position: relative;
     margin-bottom: 15px;
-    text-align: left;
 }
 
 .input-group label {
     display: block;
     margin-bottom: 5px;
-    color: #666;
+    color: #333;
 }
 
 .input-group input {
@@ -47,6 +63,15 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     box-sizing: border-box;
+    font-size: 14px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 35px;
+    cursor: pointer;
+    color: #666;
 }
 
 .login-button {
@@ -54,7 +79,7 @@
     padding: 10px;
     border: none;
     border-radius: 4px;
-    background-color: #5cb85c;
+    background-color: #003366; /* Dark Blue */
     color: white;
     font-size: 16px;
     cursor: pointer;
@@ -62,25 +87,45 @@
 }
 
 .login-button:hover {
-    background-color: #4cae4c;
+    background-color: #002244; /* Darker Blue */
 }
 
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <form action="/admin-login" method="post" class="login-form">
-            <h2>Admin Login</h2>
-            <div class="input-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit" class="login-button">Login</button>
-        </form>
+    <div class="login-page">
+        <div class="image-column">
+            <!-- Replace with your image path -->
+            <img src="../assets/images/logo/admin.png" alt="Login Image">
+        </div>
+        <div class="login-container">
+            <form action="/admin-login" method="post" class="login-form">
+                <h2>Admin Login</h2>
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                    <span class="toggle-password">Show</span>
+                </div>
+                <button type="submit" class="login-button">Login</button>
+            </form>
+        </div>
     </div>
+    <script>
+        document.querySelector('.toggle-password').addEventListener('click', function () {
+            const passwordInput = document.getElementById('password');
+            const toggleText = this;
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleText.textContent = 'Hide';
+            } else {
+                passwordInput.type = 'password';
+                toggleText.textContent = 'Show';
+            }
+        });
+    </script>
 </body>
 </html>

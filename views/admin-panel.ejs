@@ -1,16 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
     <style>
+        header {
+            background-color: #4e5a67;
+            /* Adjust the color as needed */
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            /* Ensure full width */
+            box-sizing: border-box;
+        }
+
+        #logo {
+            height: 50px;
+            /* Adjust the size as needed */
+            margin-right: 20px;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding: 20px;
             background-color: #f4f4f4;
             color: #333;
         }
+
+        .form-container {
+            display: none;
+            background-color: #fefefe;
+            margin: 2% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.5s;
+        }
+
+        .form-container.active {
+            display: block;
+        }
+
+        .close-form {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-form:hover,
+        .close-form:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -20,9 +69,10 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.4);
+            background-color: rgba(0, 0, 0, 0.4);
             padding-top: 60px;
         }
+
         .modal-content {
             background-color: #fefefe;
             margin: 5% auto;
@@ -30,151 +80,361 @@
             border: 1px solid #888;
             width: 50%;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
+
         .close {
             color: #aaa;
             float: right;
             font-size: 28px;
             font-weight: bold;
         }
+
         .close:hover,
         .close:focus {
             color: black;
             text-decoration: none;
             cursor: pointer;
         }
+
         form {
             display: flex;
             flex-direction: column;
         }
-        input[type="text"], input[type="email"], input[type="password"], input[type="number"], select {
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        select {
             margin-bottom: 10px;
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
         }
+
         button {
             padding: 10px;
-            background-color: #003366; /* Dark Blue */
+            background-color: #003366;
+            /* Dark Blue */
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
+
         button:hover {
-            background-color: #002244; /* Darker Blue */
+            background-color: #002244;
+            /* Darker Blue */
         }
+
         .file-upload-section label {
             margin-top: 10px;
         }
+
         .criteria {
             color: #666;
             font-size: 14px;
             margin: 5px 0;
-        }   
+        }
 
         .fulfilled {
             color: #5cb85c;
         }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: auto;
+            /* Adjusts column width based on content */
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4e5a67;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        /* Specific column width adjustments */
+        th:nth-child(1),
+        td:nth-child(1) {
+            width: 15%;
+        }
+
+        /* Full Name */
+        th:nth-child(2),
+        td:nth-child(2) {
+            width: 20%;
+        }
+
+        /* Email */
+        /* Adjust other columns as needed */
+
+        /* Style for courses and referrals */
+        td>div {
+            margin-bottom: 5px;
+        }
+
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination-arrow {
+            padding: 10px;
+            color: #4e5a67;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .pagination-arrow:hover {
+            text-decoration: underline;
+        }
+
+        .scrollable {
+            max-width: 200px;
+            /* Set a maximum width */
+            overflow-x: auto;
+            /* Enable horizontal scrolling */
+            white-space: nowrap;
+            /* Keep content on a single line */
+        }
+
+        .scrollable div {
+            display: inline-block;
+            /* For course items */
+            margin-right: 10px;
+            /* Space between items */
+        }
+
+        #deleteSelectedBtn {
+            padding: 10px 15px;
+            background-color: #d9534f;
+            /* Red color for delete action */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
+        }
+
+        #deleteSelectedBtn:hover {
+            background-color: #c9302c;
+            /* Darker shade for hover */
+        }
+
+        #deleteSelectedBtn:disabled {
+            background-color: #cccccc;
+            /* Grayed out when disabled */
+            cursor: not-allowed;
+        }
+
+        .edit-icon {
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+
+
+        .static-text {
+            display: inline;
+        }
+
+        .edit-field {
+            display: none;
+        }
     </style>
 </head>
+
 <body>
+    <header>
+        <a href="/"><img src="../assets/images/logo/logo.png" alt="Logo" id="logo"></a>
+        <!-- You can add more header content here if needed -->
+    </header>
     <h1>Admin Panel</h1>
 
     <button id="createUserBtn">Create New User</button>
 
     <!-- The Modal -->
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <form action="/create-user" id="addUserForm" method="post" enctype="multipart/form-data">
-                <input type="text" name="fullname" placeholder="Full Name" required>
-                <input type="email" name="username" placeholder="Email " required>
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required>
-                    <div id="password-criteria">
-                        <p id="length" class="criteria">At least 8 characters</p>
-                        <p id="digit" class="criteria">Contains a digit</p>
-                        <p id="lowercase" class="criteria">Contains a lowercase letter</p>
-                        <p id="uppercase" class="criteria">Contains an uppercase letter</p>
-                        <p id="non-alphanumeric" class="criteria">Contains a non-alphanumeric character</p>
-                    </div>
+    <div id="userForm" class="form-container">
+        <span class="close-form">&times;</span>
+        <form action="/create-user" id="addUserForm" method="post" enctype="multipart/form-data">
+            <input type="text" name="fullname" placeholder="Full Name" required>
+            <input type="email" name="username" placeholder="Email " required>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+                <div id="password-criteria">
+                    <p id="length" class="criteria">At least 8 characters</p>
+                    <p id="digit" class="criteria">Contains a digit</p>
+                    <p id="lowercase" class="criteria">Contains a lowercase letter</p>
+                    <p id="uppercase" class="criteria">Contains an uppercase letter</p>
+                    <p id="non-alphanumeric" class="criteria">Contains a non-alphanumeric character</p>
                 </div>
-               
-                <input type="text" name="phone" placeholder="Phone">
-                <select name="course" id="course" required>
-                    <option value="">Select a Course</option>
-                    <option value="PCDM">Professional Certificate in Diabetes Management</option>
-                    <option value="ACDM">Advance Certificate in Diabetes Management</option>
-                    <option value="FDM">Fellowship in Diabetes Management</option>
-                    <option value="PCC">Professional Certificate in Critical Care</option>
-                    <option value="ACC">Advance Certificate in Critical Care</option>
-                    <option value="FCC">Fellowship in Critical Care</option>
-                    <option value="PCGP">Professional Certificate in General Practice</option>
-                    <option value="ACGP">Advance Certificate in General Practice</option>
-                    <option value="FGP">Fellowship in General Practice</option>
-                </select>
+            </div>
+
+            <input type="text" name="phone" placeholder="Phone">
+            <select name="course" id="course" required>
+                <option value="">Select a Course</option>
+                <option value="PCDM">Professional Certificate in Diabetes Management</option>
+                <option value="ACDM">Advance Certificate in Diabetes Management</option>
+                <option value="FDM">Fellowship in Diabetes Management</option>
+                <option value="PCC">Professional Certificate in Critical Care</option>
+                <option value="ACC">Advance Certificate in Critical Care</option>
+                <option value="FCC">Fellowship in Critical Care</option>
+                <option value="PCGP">Professional Certificate in General Practice</option>
+                <option value="ACGP">Advance Certificate in General Practice</option>
+                <option value="FGP">Fellowship in General Practice</option>
+            </select>
+            <br>
+            <div class="input-group">
+                <label for="enrollmentNumber">Enrollment Number</label>
+                <input type="text" id="enrollmentNumber" name="enrollmentNumber" required>
+            </div>
+            <input type="text" name="mciNumber" placeholder="MCI Number">
+            <input type="text" name="address" placeholder="Address">
+            <input type="text" name="idNumber" placeholder="ID Number">
+            <div class="file-upload-section">
+                <input type="file" name="officialIDCard" accept="image/*" required>
                 <br>
-                <div class="input-group">
-                    <label for="enrollmentNumber">Enrollment Number</label>
-                    <input type="text" id="enrollmentNumber" name="enrollmentNumber" required>
-                </div>
-                <input type="text" name="mciNumber" placeholder="MCI Number">
-                <input type="text" name="address" placeholder="Address">
-                <input type="text" name="idNumber" placeholder="ID Number">
-                <div class="file-upload-section">
-                    <input type="file" name="officialIDCard" accept="image/*" required>
-                    <br>
-                    <label for="officialIDCard">Official ID Card</label>
-<br>
-<br>
-                    <input type="file" name="medicalCertificate" accept="image/*" required>
-                    <br>
-                    <label for="medicalCertificate">Medical Certificate</label>
-                    <br>
-<br>
-    <input type="file" name="mciCertificate" accept="image/*" required>
-    <br>
-    <label for="mciCertificate">MCI Certificate</label>
-    <br>
-<br>
-                    <input type="file" name="degree" accept="image/*" required>
-                    <br>
-                    <label for="degree">Degree</label><br>
-<br>
-                    <input type="file" name="passportPhoto" accept="image/*" required>
-                    <br>
-                    <label for="passportPhoto">Passport Photo</label><br>
-                </div>
+                <label for="officialIDCard">Official ID Card</label>
                 <br>
                 <br>
-                <button type="submit">Add User</button>
-            </form>
-        </div>
+                <input type="file" name="mciCertificate" accept="image/*" required>
+                <br>
+                <label for="mciCertificate">MCI Certificate</label>
+                <br>
+                <br>
+                <input type="file" name="degree" accept="image/*" required>
+                <br>
+                <label for="degree">Degree</label><br>
+                <br>
+                <input type="file" name="passportPhoto" accept="image/*" required>
+                <br>
+                <label for="passportPhoto">Passport Photo</label><br>
+            </div>
+            <br>
+            <br>
+            <button type="submit">Add User</button>
+        </form>
+
     </div>
+    <h2>User List</h2>
+    <button id="deleteSelectedBtn">Delete Selected</button>
+    <table>
+        <thead>
+            <tr>
+                <th>Select</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>MCI Number</th>
+                <th>Courses Purchased</th>
+                <th>Enrollment Number</th>
+                <th>Referrals</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% users.forEach(function(user) { %>
+                <tr>
+                    <td>
+                        <input type="checkbox" class="user-checkbox" value="<%= user._id %>">
+                    </td>
+                    <td>
+                        <span class="edit-icon">✏️</span>
+                        <span class="static-text">
+                            <%= user.fullname %>
+                        </span>
+                        <input type="text" value="<%= user.fullname %>" class="edit-field" data-id="<%= user._id %>"
+                            data-field="fullname" style="display: none;">
+                    </td>
+                    <td>
+                        <%= user.username %>
+                    </td>
+                    <td>
+                        <%= user.phone %>
+                    </td>
+                    <td class="scrollable">
+                        <%= user.address %>
+                    </td>
+                    <td class="scrollable">
+                        <% user.coursesPurchased.forEach(function(course) { %>
+                            <div>
+                                <%= course %>
+                            </div>
+                            <% }); %>
+                    </td>
 
+                    <td>
+                        <%= user.mciNumber %>
+                    </td>
+                    <td>
+                        <%= user.enrollmentNumber%>
+                    </td>
+                    <td>
+                        <% user.referrals.forEach(function(referral) { %>
+                            <div>
+                                <%= referral.friendName %> - <%= referral.recommendedCourse %>
+                            </div>
+                            <% }); %>
+                    </td>
+                </tr>
+                <% }); %>
+        </tbody>
+    </table>
+    <br>
+    <br>
+    <button id="saveChangesBtn">Save Changes</button>
+    <!-- Pagination Navigation -->
+    <div class="pagination">
+        <% if(currentPage> 1) { %>
+            <a href="/admin-panel?page=<%= currentPage - 1 %>" class="pagination-arrow">&laquo; Previous</a>
+            <% } %>
+                <% if(currentPage < totalPages) { %>
+                    <a href="/admin-panel?page=<%= currentPage + 1 %>" class="pagination-arrow">Next &raquo;</a>
+                    <% } %>
+    </div>
     <script>
-        var modal = document.getElementById("myModal");
-        var btn = document.getElementById("createUserBtn");
-        var span = document.getElementsByClassName("close")[0];
+        document.getElementById('createUserBtn').addEventListener('click', function () {
+            document.getElementById('userForm').classList.add('active');
+        });
 
-        btn.onclick = function() {
-            modal.style.display = "block";
-        }
+        document.getElementsByClassName('close-form')[0].addEventListener('click', function () {
+            document.getElementById('userForm').classList.remove('active');
+        });
 
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
-
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-        document.getElementById('password').addEventListener('input', function() {
+        document.getElementById('password').addEventListener('input', function () {
             const password = this.value;
             document.getElementById('length').classList.toggle('fulfilled', password.length >= 8);
             document.getElementById('digit').classList.toggle('fulfilled', /\d/.test(password));
@@ -182,51 +442,135 @@
             document.getElementById('uppercase').classList.toggle('fulfilled', /[A-Z]/.test(password));
             document.getElementById('non-alphanumeric').classList.toggle('fulfilled', /\W|_/.test(password));
         });
-        window.onload = function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const userAdded = urlParams.get('userAdded');
+        window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const userAdded = urlParams.get('userAdded');
 
-        if (userAdded === 'true') {
-            alert('User added successfully');
-            // Alternatively, use a more sophisticated modal instead of alert
+            if (userAdded === 'true') {
+                alert('User added successfully');
+                // Alternatively, use a more sophisticated modal instead of alert
+            }
+        };
+        function generateEnrollmentNumber(courseValue) {
+            let prefix;
+            let middleDigits;
+            switch (courseValue) {
+                case 'FCC':
+                case 'FGP':
+                case 'FDM':
+                    prefix = 'FCC';
+                    middleDigits = '52';
+                    break;
+                case 'PCC':
+                case 'PCGP':
+                case 'PCDM':
+                    prefix = 'PCC';
+                    middleDigits = '13';
+                    break;
+                case 'ACC':
+                case 'ACGP':
+                case 'ACDM':
+                    prefix = 'ACC';
+                    middleDigits = '26';
+                    break;
+                // Add other cases as needed
+                default:
+                    prefix = '';
+                    middleDigits = '';
+            }
+            const randomPart = Math.floor(10 + Math.random() * 90); // Random 2-digit number
+            return prefix + middleDigits + '2402' + '00' + randomPart.toString().padStart(2, '0');
         }
-    };
-    function generateEnrollmentNumber(courseValue) {
-        let prefix;
-        let middleDigits;
-        switch (courseValue) {
-        case 'FCC':
-        case 'FGP':
-        case 'FDM':
-            prefix = 'FCC';
-            middleDigits = '52';
-            break;
-        case 'PCC':
-        case 'PCGP':
-        case 'PCDM':
-            prefix = 'PCC';
-            middleDigits = '13';
-            break;
-        case 'ACC':
-        case 'ACGP':
-        case 'ACDM':
-            prefix = 'ACC';
-            middleDigits = '26';
-            break;
-        // Add other cases as needed
-        default:
-            prefix = '';
-            middleDigits = '';
-    }
-    const randomPart = Math.floor(10 + Math.random() * 90); // Random 2-digit number
-        return prefix + middleDigits + '2402' + '00' + randomPart.toString().padStart(2, '0');
-    }
 
-    document.getElementById('course').addEventListener('change', function() {
-        const selectedCourseValue = this.value;
-        const enrollmentNumber = generateEnrollmentNumber(selectedCourseValue);
-        document.getElementById('enrollmentNumber').value = enrollmentNumber;
+        document.getElementById('course').addEventListener('change', function () {
+            const selectedCourseValue = this.value;
+            const enrollmentNumber = generateEnrollmentNumber(selectedCourseValue);
+            document.getElementById('enrollmentNumber').value = enrollmentNumber;
+        });
+        document.getElementById('course').addEventListener('change', function () {
+            const selectedCourseValue = this.value;
+            const enrollmentNumber = generateEnrollmentNumber(selectedCourseValue);
+            document.getElementById('enrollmentNumber').value = enrollmentNumber;
+        });
+
+        // Enable/disable delete selected button based on checkbox state
+        const userCheckboxes = document.querySelectorAll('.user-checkbox');
+        const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+        deleteSelectedBtn.disabled = true; // Initially disabled
+
+        userCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const anyChecked = Array.from(userCheckboxes).some(cb => cb.checked);
+                deleteSelectedBtn.disabled = !anyChecked;
+            });
+        });
+
+        // Delete selected users
+        deleteSelectedBtn.addEventListener('click', function () {
+            const selectedUsers = Array.from(userCheckboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
+
+            if (selectedUsers.length > 0 && confirm('Are you sure you want to delete the selected users?')) {
+                fetch('/delete-selected-users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userIds: selectedUsers }),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.reload(); // Reload the page to update the user list
+                        } else {
+                            alert('Error deleting users');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+        });
+        document.querySelectorAll('.edit-icon').forEach(function(editIcon) {
+    editIcon.addEventListener('click', function() {
+        const row = this.closest('tr');
+        row.querySelectorAll('.static-text').forEach(el => el.style.display = 'none');
+        row.querySelectorAll('.edit-field').forEach(el => el.style.display = 'inline');
+
+        document.getElementById('saveChangesBtn').disabled = false; // Enable save button
+    });
+});
+
+        document.getElementById('saveChangesBtn').addEventListener('click', function() {
+        const editedFields = document.querySelectorAll('.edit-field');
+        const updates = Array.from(editedFields).map(field => ({
+            id: field.dataset.id,
+            field: field.dataset.field,
+            value: field.value
+        }));
+
+        fetch('/update-users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ updates }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Users updated successfully');
+                window.location.reload();
+            } else {
+                alert('Error updating users');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
     });
     </script>
 </body>
+
 </html>
