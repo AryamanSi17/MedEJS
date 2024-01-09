@@ -273,6 +273,24 @@
         .edit-field {
             display: none;
         }
+
+        #logoutBtn {
+            padding: 5px 10px;
+            background-color: #d9534f;
+            /* Red color for logout action */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-left: auto;
+            /* Pushes the button to the left */
+        }
+
+        #logoutBtn:hover {
+            background-color: #c9302c;
+            /* Darker shade for hover */
+        }
     </style>
 </head>
 
@@ -280,6 +298,7 @@
     <header>
         <a href="/"><img src="../assets/images/logo/logo.png" alt="Logo" id="logo"></a>
         <!-- You can add more header content here if needed -->
+        <button id="logoutBtn" onclick="location.href='/admin-login'">Logout</button>
     </header>
     <h1>Admin Panel</h1>
 
@@ -359,10 +378,11 @@
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Address</th>
-                <th>MCI Number</th>
                 <th>Courses Purchased</th>
                 <th>Enrollment Number</th>
+                <th>MCI Number</th>
                 <th>Referrals</th>
+                
             </tr>
         </thead>
         <tbody>
@@ -389,18 +409,21 @@
                         <%= user.address %>
                     </td>
                     <td class="scrollable">
-                        <% user.coursesPurchased.forEach(function(course) { %>
-                            <div>
-                                <%= course %>
-                            </div>
+                        <% if (user.coursesPurchased && Array.isArray(user.coursesPurchased)) { %>
+                            <% user.coursesPurchased.forEach(function(course) { %>
+                                <div><%= course %></div>
                             <% }); %>
+                        <% } else { %>
+                            <div>No courses available</div>
+                        <% } %>
                     </td>
 
-                    <td>
-                        <%= user.mciNumber %>
-                    </td>
+                  
                     <td>
                         <%= user.enrollmentNumber%>
+                    </td>
+                    <td>
+                        <%= user.mciNumber %>
                     </td>
                     <td>
                         <% user.referrals.forEach(function(referral) { %>
@@ -532,44 +555,47 @@
                     });
             }
         });
-        document.querySelectorAll('.edit-icon').forEach(function(editIcon) {
-    editIcon.addEventListener('click', function() {
-        const row = this.closest('tr');
+        document.querySelectorAll('.edit-icon').forEach(function (editIcon) {
+    editIcon.addEventListener('click', function () {
+        const row = this.closest('tr'); // Get the closest table row
+
+        // Toggle visibility of static text and input fields
         row.querySelectorAll('.static-text').forEach(el => el.style.display = 'none');
         row.querySelectorAll('.edit-field').forEach(el => el.style.display = 'inline');
 
-        document.getElementById('saveChangesBtn').disabled = false; // Enable save button
+        // Enable save button
+        document.getElementById('saveChangesBtn').disabled = false;
     });
 });
 
-        document.getElementById('saveChangesBtn').addEventListener('click', function() {
-        const editedFields = document.querySelectorAll('.edit-field');
-        const updates = Array.from(editedFields).map(field => ({
-            id: field.dataset.id,
-            field: field.dataset.field,
-            value: field.value
-        }));
+        document.getElementById('saveChangesBtn').addEventListener('click', function () {
+            const editedFields = document.querySelectorAll('.edit-field');
+            const updates = Array.from(editedFields).map(field => ({
+                id: field.dataset.id,
+                field: field.dataset.field,
+                value: field.value
+            }));
 
-        fetch('/update-users', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ updates }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Users updated successfully');
-                window.location.reload();
-            } else {
-                alert('Error updating users');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
+            fetch('/update-users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ updates }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Users updated successfully');
+                        window.location.reload();
+                    } else {
+                        alert('Error updating users');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         });
-    });
     </script>
 </body>
 
