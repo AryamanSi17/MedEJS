@@ -1464,7 +1464,7 @@ app.post('/create-user', upload.fields([
       fullname,
       email,
       phone: req.body.phone,
-      course: req.body.course,
+      coursesPurchased: req.body.course,
       mciNumber: req.body.mciNumber,
       address: req.body.address,
       idNumber: req.body.idNumber,
