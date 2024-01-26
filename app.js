@@ -42,6 +42,8 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const rawBodyParser = bodyParser.raw({ type: '*/*' });
 const AWS = require('aws-sdk');
 const upload = multer({ storage: multer.memoryStorage() });
+const qs = require('querystring');
+
 // Configure the AWS SDK to use DigitalOcean Spaces
 const spacesEndpoint = new AWS.Endpoint('blr1.digitaloceanspaces.com');
 const s3 = new AWS.S3({
@@ -49,6 +51,8 @@ const s3 = new AWS.S3({
   accessKeyId: 'DO00BCVVAXV92K3TNA36',
   secretAccessKey: 'rMxLZWJR8cvKLitDS9dFYcjVHzIKcaFsLG0Jy31mGwE'
 });
+const ccavRequestHandler = require('./utils/ccavRequestHandler.js');
+const ccavResponseHandler = require('./utils/ccavResponseHandler.js');
 
 const flash = require('connect-flash');
 let loggedIn = true;
@@ -61,7 +65,7 @@ app.use(cookieSession({
   maxAge: 24 * 60 * 60 * 1000, // 24 hours
   // httpOnly:true
 }));
-forestAdmin.mountOnExpress(app).start();
+// forestAdmin.mountOnExpress(app).start();
 // Use the middleware globally for all routes
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
@@ -688,55 +692,154 @@ app.post('/submitRequestForMore', async (req, res) => {
 });
 
 //  lolo
+// app.get('/buy-now/:courseID', async (req, res) => {
+//   const courseID = req.params.courseID;
+//   // const course = courses.find(c => c.courseID === courseID);
+//   const course = await db.Course.findOne({ courseID: courseID });
+//   if (!course) {
+//     return res.status(404).send('Course not found');
+//   }
+
+//   const line_items = [{
+//     price_data: {
+//       currency: course.currency,
+//       product_data: {
+//         name: course.name,
+//       },
+//       unit_amount: course.discountedPrice,
+//     },
+//     quantity: 1,
+//   }];
+
+//   try {
+
+//     const success_url = `http://www.globalmedacademy.com/success?session_id={CHECKOUT_SESSION_ID}&courseID=${courseID}`;
+//     const cancel_url = 'http://www.globalmedacademy.com/cancel';
+
+//     const token = req.cookies.authToken;
+//     if (!token) {
+//       return res.status(401).send('Unauthorized: No token provided');
+//     }
+
+//     const decoded = jwt.verify(token, JWT_SECRET);
+//     const user = await User.findById(decoded.userId);
+//     if (!user) {
+//       return res.status(404).send('User not found');
+//     }
+
+//     const session = await stripe.checkout.sessions.create({
+//       payment_method_types: ['card'],
+//       customer_email: user.username,
+//       line_items: line_items,
+//       mode: 'payment',
+//       success_url: success_url,
+//       cancel_url: cancel_url,
+//     });
+
+//     res.json({ id: session.id });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send('Error creating checkout session');
+//   }
+// });
 app.get('/buy-now/:courseID', async (req, res) => {
-  const courseID = req.params.courseID;
-  // const course = courses.find(c => c.courseID === courseID);
-  const course = await db.Course.findOne({ courseID: courseID });
-  if (!course) {
-    return res.status(404).send('Course not found');
-  }
+  const course = {
+    name: "Fellowship in Critical Care",
+    price: 120000, // Price in INR
+    courseID: req.params.courseID
+  };
+  const pageTitle = 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy';
+  const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+  const metaKeywords = 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ';
+  const ogDescription = 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals';
+  const canonicalLink = 'https://www.globalmedacademy.com/';
+  // Add your merchantId, redirectUrl, and cancelUrl
+  const merchantId = "2619634";
+  const redirectUrl = "http://localhost:3000/ccavResponseHandler";
+  const cancelUrl = "http://localhost:3000/ccavResponseHandler";
 
-  const line_items = [{
-    price_data: {
-      currency: course.currency,
-      product_data: {
-        name: course.name,
-      },
-      unit_amount: course.discountedPrice,
-    },
-    quantity: 1,
-  }];
+  res.render('dataFrom', { 
+    course: course, 
+    merchantId: merchantId, 
+    redirectUrl: redirectUrl, 
+    cancelUrl: cancelUrl ,
+    pageTitle,metaRobots,metaKeywords,ogDescription,canonicalLink,
+    isBlogPage: false,
+  });
+});
+// ccavRequestHandler.js integration
+app.post('/ccavRequestHandler', function(request, response) {
+  var workingKey = "1E9B36C49F90A45CEDA3827239927264"; // Test working key
+  var accessCode = "AVUX05KH13BU86XUUB"; // Test access code
+  var encRequest = '';
 
-  try {
+  // Convert the request body to a query string format
+  var formattedBody = qs.stringify(request.body);
 
-    const success_url = `http://www.globalmedacademy.com/success?session_id={CHECKOUT_SESSION_ID}&courseID=${courseID}`;
-    const cancel_url = 'http://www.globalmedacademy.com/cancel';
+  // Encrypt the formatted body
+  encRequest = encrypt(formattedBody, workingKey);
 
-    const token = req.cookies.authToken;
-    if (!token) {
-      return res.status(401).send('Unauthorized: No token provided');
-    }
+  // Create the form body
+  var formbody = '<form id="nonseamless" method="post" name="redirect" action="https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction"> <input type="hidden" id="encRequest" name="encRequest" value="' + encRequest + '"><input type="hidden" name="access_code" id="access_code" value="' + accessCode + '"><script language="javascript">document.redirect.submit();</script></form>';
 
-    const decoded = jwt.verify(token, JWT_SECRET);
-    const user = await User.findById(decoded.userId);
-    if (!user) {
-      return res.status(404).send('User not found');
-    }
+  // Send the response
+  response.writeHeader(200, { "Content-Type": "text/html" });
+  response.write(formbody);
+  response.end();
+});
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      customer_email: user.username,
-      line_items: line_items,
-      mode: 'payment',
-      success_url: success_url,
-      cancel_url: cancel_url,
-    });
+function encrypt(plainText, workingKey) {
+	var m = crypto.createHash('md5');
+    	m.update(workingKey);
+   	var key = m.digest();
+      	var iv = '\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f';	
+	var cipher = crypto.createCipheriv('aes-128-cbc', key, iv);
+	var encoded = cipher.update(plainText,'utf8','hex');
+	encoded += cipher.final('hex');
+    	return encoded;
+};
 
-    res.json({ id: session.id });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error creating checkout session');
-  }
+
+function decrypt(encText, workingKey) {
+    	var m = crypto.createHash('md5');
+    	m.update(workingKey)
+    	var key = m.digest();
+	var iv = '\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f';	
+	var decipher = crypto.createDecipheriv('aes-128-cbc', key, iv);
+    	var decoded = decipher.update(encText,'hex','utf8');
+	decoded += decipher.final('utf8');
+    	return decoded;
+};
+
+
+// ccavResponseHandler.js integration
+app.post('/ccavResponseHandler', function(request, response) {
+  var body = '';
+  var ccavEncResponse = '',
+      ccavResponse = '',
+      workingKey = '1E9B36C49F90A45CEDA3827239927264', //Put in the 32-Bit key shared by CCAvenues.
+      ccavPOST = '';
+
+  request.on('data', function(data) {
+      console.log("Data received: ", data.toString());
+      body += data;
+      ccavEncResponse += data;
+      ccavPOST = qs.parse(ccavEncResponse);
+      var encryption = ccavPOST.encResp;
+      ccavResponse = decrypt(encryption, workingKey);
+  });
+
+  request.on('end', function() {
+      var pData = '';
+      pData = '<table border=1 cellspacing=2 cellpadding=2><tr><td>'
+      pData = pData + ccavResponse.replace(/=/gi, '</td><td>')
+      pData = pData.replace(/&/gi, '</td></tr><tr><td>')
+      pData = pData + '</td></tr></table>'
+      htmlcode = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Response Handler</title></head><body><center><font size="4" color="blue"><b>Response Page</b></font><br>' + pData + '</center><br></body></html>';
+      response.writeHeader(200, { "Content-Type": "text/html" });
+      response.write(htmlcode);
+      response.end();
+  });
 });
 app.get('/send-payment-link/:courseID', async (req, res) => {
   const courseID = req.params.courseID;
