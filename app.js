@@ -37,7 +37,6 @@ const { saveEnquiry } = require('./utils/kit19Integration');
 const { createCheckoutSession } = require('./utils/stripepay');
 const isAuthenticated = require('./utils/isAuthenticatedMiddleware');
 const getUniqueEnrollmentNumber = require('./utils/enrollmentNumber');
-const forestAdmin = require('./utils/forestAdmin');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const rawBodyParser = bodyParser.raw({ type: '*/*' });
 const AWS = require('aws-sdk');
