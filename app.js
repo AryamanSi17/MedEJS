@@ -216,8 +216,6 @@ const generatePassword = (length = 10) => {
   return password;
 };
 
-
-
 app.get('/logout', async (req, res) => {
   try {
     // Clear the authToken cookie
@@ -1533,6 +1531,19 @@ async function getCourseIdByName(courseName) {
     throw error;
   }
 }
+// Mapping from course abbreviation to full course name
+const courseNames = {
+  PCDM: "Professional Certificate in Diabetes Management",
+  ACDM: "Advanced Certificate in Diabetes Management",
+  FDM: "Fellowship in Diabetes Management",
+  PCC : "Professional Certificate in Critical Care",
+  ACC : "Advance Certificate in Critical Care",
+  FCC :"Fellowship in Critical Care",
+  PCGP:"Professional Certificate in General Practice",
+  ACGP:"Advance Certificate in General Practice",
+  FGP:"Fellowship in General Practice",
+
+};
 app.post('/create-user', upload.fields([
   { name: 'officialIDCard' },
   { name: 'mciCertificate' },
@@ -1541,8 +1552,8 @@ app.post('/create-user', upload.fields([
 ]), async (req, res) => {
 
   const { username, password, fullname, email, enrollmentNumber } = req.body;
-  const courseId = 'FCC2401';
-  const courseName = 'Fellowship in Critical Care Batch-2401';
+  const selectedCourseAbbr = req.body.course;
+  const courseName = courseNames[selectedCourseAbbr] || 'Default Course Name'; // Use full course name
   try {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -1572,6 +1583,7 @@ app.post('/create-user', upload.fields([
       address: req.body.address,
       idNumber: req.body.idNumber,
       enrollmentNumber,
+      coursesPurchased: [courseName],
       // ... other user fields from req.body
     });
 
