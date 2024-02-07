@@ -1541,7 +1541,9 @@ const courseNames = {
   PCGP:"Professional Certificate in General Practice",
   ACGP:"Advance Certificate in General Practice",
   FGP:"Fellowship in General Practice",
-
+  PCIM:"Professional Certificate in Internal Medicine",
+  ACIM:"Advance Certificate in Internal Medicine",
+  FIM:"Fellowship in Internal Medicine",
 };
 app.post('/create-user', upload.fields([
   { name: 'officialIDCard' },
