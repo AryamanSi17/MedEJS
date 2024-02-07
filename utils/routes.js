@@ -230,6 +230,22 @@ function setRoutes(app) {
       username: username, isBlogPage: false, firstname: firstname
     });
   });
+  app.get("/course-details-fellowship-in-integrated-diabetes-management", function (req, res) {
+    const pageTitle = 'Fellowship in Integrated Diabetes Management, Fellowship Courses Diabetology';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = 'fellowship in integrated diabetes management, fellowships in integrated diabetes management,  diabetes management fellowship online, diabetes fellowship courses, fellowship in diabetology online, diabetology fellowship online, online fellowship in diabetology, diabetes fellowship for family physician, diabetes fellowship for primary care physicians, diabetes fellowship program, online diabetology fellowship, fellowship in diabetes management program';
+    const ogDescription = 'Fellowship in Diabetes Mellitus involves training on comprehensive management of Diabetes Mellitus. Boost your career goal by gaining expertise in diabetology.';
+    const canonicalLink = 'https://www.globalmedacademy.com/course-details-fellowship-in-integrated-diabetes-management';
+    const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
+    res.render('course-details-fellowship-in-integrated-diabetes-management', {
+      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
+      username: username, isBlogPage: false, firstname: firstname
+    });
+  });
   app.get("/course-details-fellowship-in-critical-care", function (req, res) {
     const pageTitle = 'Fellowship in Critical Care, Intensive Care, Internal Medicine Programs';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
