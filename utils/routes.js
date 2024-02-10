@@ -519,6 +519,22 @@ function setRoutes(app) {
       username: username, isBlogPage: false, firstname: firstname
     });
   });
+  app.get("/user-form", function (req, res) {
+    const pageTitle = 'New User Registration';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = '';
+    const ogDescription = '';
+    const canonicalLink = 'https://www.globalmedacademy.com/user-form';
+    const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
+    res.render('user-form', {
+      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
+      username: username, isBlogPage: false, firstname: firstname
+    });
+  });
   app.get("/course-details-obsgynae", function (req, res) {
     res.render("course-details-obsgynae");
   });
