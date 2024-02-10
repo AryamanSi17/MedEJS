@@ -439,6 +439,70 @@ function setRoutes(app) {
       username: username, isBlogPage: false, firstname: firstname
     });
   });
+  app.get("/course-details-breast-imaging", function (req, res) {
+    const pageTitle = 'Breast Imaging';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = '';
+    const ogDescription = '';
+    const canonicalLink = 'https://www.globalmedacademy.com/course-details-breast-imaging';
+    const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
+    res.render('course-details-breast-imaging', {
+      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
+      username: username, isBlogPage: false, firstname: firstname
+    });
+  });
+  app.get("/ayush-course/cancer-careers-in-nursing-elearning-course", function (req, res) {
+    const pageTitle = 'Breast Imaging';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = '';
+    const ogDescription = '';
+    const canonicalLink = 'https://www.globalmedacademy.com/ayush-course/cancer-careers-in-nursing-elearning-course';
+    const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
+    res.render('ayush-course/cancer-careers-in-nursing-elearning-course', {
+      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
+      username: username, isBlogPage: false, firstname: firstname
+    });
+  });
+  app.get("/ayush-course/course-details-cardiovascular-disease-toolkit", function (req, res) {
+    const pageTitle = 'Cardiovascular Disease Toolkit';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = '';
+    const ogDescription = '';
+    const canonicalLink = 'https://www.globalmedacademy.com/ayush-course/course-details-cardiovascular-disease-toolkit';
+    const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
+    res.render('ayush-course/course-details-cardiovascular-disease-toolkit', {
+      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
+      username: username, isBlogPage: false, firstname: firstname
+    });
+  });
+  app.get("/ayush-course/course-details-care-certificate", function (req, res) {
+    const pageTitle = 'Care Certificate';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = '';
+    const ogDescription = '';
+    const canonicalLink = 'https://www.globalmedacademy.com/ayush-course/course-details-care-certificate';
+    const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
+    res.render('ayush-course/course-details-care-certificate', {
+      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
+      username: username, isBlogPage: false, firstname: firstname
+    });
+  });
   app.get("/course-details-obsgynae", function (req, res) {
     res.render("course-details-obsgynae");
   });

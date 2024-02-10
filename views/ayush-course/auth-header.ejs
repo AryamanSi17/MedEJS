@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-T4TRGDK');</script>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <% if (pageTitle) { %>
+        <title><%= pageTitle %></title>
+    <% } %>
+        <meta name="robots" content="index, follow" />
+    <% if (ogDescription) { %>
+        <meta name="description" content="<%= ogDescription %>">
+    <% } %>
+    <% if (metaKeywords) { %>
+        <meta name="keywords" content="<%= metaKeywords %>">
+    <% } %>
+    <link rel="canonical" href="<%= canonicalLink %>">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="p:domain_verify" content="64c9e778b169e6c93b366c71fda82fc3"/>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DC75849QGK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-DC75849QGK');
+    </script>
+    <!-- Favicon -->
+    <% if (isBlogPage) { %>
+        <link rel="shortcut icon" type="image/x-icon" href="/assets/images/favicon.png">
+    <% } else { %>
+        <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon.png">
+    <% } %>
+
+
+    <!-- CSS
+	============================================ -->
+    <% if (isBlogPage) { %>
+        <!-- Absolute Paths for Blog Page -->
+        <link rel="stylesheet" href="/assets/css/vendor/bootstrap.min.css">
+        <!-- ... -->
+        <link rel="stylesheet" href="/assets/css/style.css">
+        <link rel="stylesheet" href="assets/css/plugins/animation.css">
+      <link rel="stylesheet" href="/assets/css/plugins/bootstrap-select.min.css">
+      <link rel="stylesheet" href="/assets/css/plugins/jquery-ui.css">
+      <link rel="stylesheet" href="/assets/css/plugins/magnigy-popup.min.css">
+      <link rel="stylesheet" href="/assets/css/plugins/swiper.css">
+      <link rel="stylesheet" href="/assets/css/plugins/magnify.css">
+      <link rel="stylesheet" href="/assets/css/plugins/odometer.css">
+      <link rel="stylesheet" href="/assets/css/vendor/slick.css">
+      <link rel="stylesheet" href="/assets/css/vendor/slick-theme.css">
+      <link rel="stylesheet" href="/assets/css/plugins/sal.css">
+      <link rel="stylesheet" href="/assets/css/plugins/feather.css">
+      <link rel="stylesheet" href="/assets/css/plugins/fontawesome.min.css">
+      <link rel="stylesheet" href="/assets/css/plugins/euclid-circulara.css">
+      <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "mainEntityOfPage": {
+                "@type": "WebPage",
+                "@id": "https://globalmedacademy.com/blog/elevate-your-expertise-in-diabetes-care-join-our-fellowship-to-lead-the-fight-against-diabetes-mellitus" // Replace with your actual canonical link
+            },
+            "headline": "<%= pageTitle %>",
+            "description": "<%= ogDescription %>",
+            "image": "https://globalmedacademy.com/blog/elevate-your-expertise-in-diabetes-care-join-our-fellowship-to-lead-the-fight-against-diabetes-mellitus/assets/images/blog/blog-bl-01.jpg", // Replace with your actual canonical link
+            "author": {
+                "@type": "Organization",
+                "name": "GlobalMed Academy"
+            },
+            "publisher": {
+                "@type": "Organization",
+                "name": "GlobalMed Academy",
+                "logo": {
+                    "@type": "ImageObject",
+                    "url": "https://globalmedacademy.com/blog/elevate-your-expertise-in-diabetes-care-join-our-fellowship-to-lead-the-fight-against-diabetes-mellitus/assets/images/logo.png" // Replace with your actual canonical link
+                }
+            },
+            "datePublished": "2023-09-30T08:00:00+00:00", // Replace with your actual date published
+            "dateModified": "2023-09-30T08:00:00+00:00"
+        }
+        </script>
+    <% } else { %>
+        <!-- Relative Paths for Other Pages -->
+        <link rel="stylesheet" href="/assets/css/vendor/bootstrap.min.css">
+        <!-- ... -->
+        <link rel="stylesheet" href="/assets/css/style.css">
+        <link rel="stylesheet" href="assets/css/plugins/animation.css">
+      <link rel="stylesheet" href="/assets/css/plugins/bootstrap-select.min.css">
+      <link rel="stylesheet" href="/assets/css/plugins/jquery-ui.css">
+      <link rel="stylesheet" href="/assets/css/plugins/magnigy-popup.min.css">
+      <link rel="stylesheet" href="/assets/css/plugins/swiper.css">
+      <link rel="stylesheet" href="/assets/css/plugins/magnify.css">
+      <link rel="stylesheet" href="/assets/css/plugins/odometer.css">
+      <link rel="stylesheet" href="/assets/css/vendor/slick.css">
+      <link rel="stylesheet" href="/assets/css/vendor/slick-theme.css">
+      <link rel="stylesheet" href="/assets/css/plugins/sal.css">
+      <link rel="stylesheet" href="/assets/css/plugins/feather.css">
+      <link rel="stylesheet" href="/assets/css/plugins/fontawesome.min.css">
+      <link rel="stylesheet" href="/assets/css/plugins/euclid-circulara.css">
+      
+    <% } %>
+    <style>
+        .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    font-family: 'Arial', sans-serif;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    width: 30%;
+    text-align: center;
+}
+
+.close {
+    color: #333;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 24px;
+    font-weight: bold;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close:hover,
+.close:focus {
+    color: #333;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#confirmLogout {
+    background-color: #f44336;
+    color: #fff;
+}
+
+#confirmLogout:hover {
+    background-color: #da190b;
+}
+
+#cancelLogout {
+    background-color: #ddd;
+    color: #333;
+}
+
+#cancelLogout:hover {
+    background-color: #ccc;
+}
+    </style>
+</head>
+
+<body class="rbt-header-sticky">
+
+    <!-- End Campain Area  -->
+
+    <!-- Start Header Area  -->
+    <header class="rbt-header rbt-header-10">
+        <div class="rbt-sticky-placeholder"></div>
+        <div class="rbt-header-wrapper header-space-betwween header-transparent header-sticky">
+            <div class="container-fluid">
+                <div class="mainbar-row rbt-navigation-start align-items-center">
+                    <div class="header-left rbt-header-content">
+                        <div class="header-info">
+                            <div class="logo">
+                                <% if (isBlogPage) { %>
+                                    <a href="/">
+                                        <img src="/assets/images/logo/logo1.png" alt="GlobaMedAcademy
+                                        ">
+                                    </a>
+                                <% } else { %>
+                                    <a href="/">
+                                        <img src="assets/images/logo/logo1.png" alt="GlobaMedAcademy
+                                        ">
+                                    </a>
+                                <% } %>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rbt-main-navigation d-none d-xl-block">
+                        <nav class="mainmenu-nav">
+                            <ul class="mainmenu">
+                                <li class="with-megamenu has-menu-child-item position-static">
+                                    <a href="/">Home</a>
+                                </li>
+
+                                <li class="with-megamenu has-menu-child-item">
+                                    <a href="#">Courses<i class="feather-chevron-down"></i></a>
+                                    <!-- Start Mega Menu  -->
+                                    <div class="rbt-megamenu grid-item-2">
+                                        <div class="wrapper">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="mega-top-banner">
+                                                        <div class="content">
+                                                            <h4 class="title">Choose Your Next Course</h4>
+                                                            <p class="description">Upskill yourself with the most
+                                                                current and trending courses</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row row--15">
+                                                <div class="col-lg-12 col-xl-6 col-xxl-6 single-mega-item">
+                                                    <h3 class="rbt-short-title">Course Layout</h3>
+                                                    <ul class="mega-menu-item">
+                                                        <li><a href="/course-masonry#professionalcourses">Professional Certificate Courses</a></li>
+                                                        <li><a href="/course-masonry#advancedcourses" class="filter-link">Advanced Certificate Courses</a></li>
+                                                        <li><a href="/course-masonry#fellowship" class="filter-link">Fellowship Courses</a></li>
+
+                                                    </ul>
+                                                </div>
+                                                <div class="col-lg-12 col-xl-6 col-xxl-6 single-mega-item">
+                                                    <h3 class="rbt-short-title">Course Layout</h3>
+                                                    <ul class="mega-menu-item">
+                                                        <li><a href="/course-masonry#trending-filter" class="filter-link" id="trending-link">Trending Courses</a></li>
+                                                        <li><a href="/course-masonry">All Courses</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- End Mega Menu  -->
+                                </li>
+
+
+                                <li class="with-megamenu has-menu-child-item">
+                                    <a href="#">Quick Links<i class="feather-chevron-down"></i></a>
+                                    <!-- Start Mega Menu  -->
+                                    <div class="rbt-megamenu grid-item-2">
+                                        <div class="wrapper">
+                                          <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="mega-top-banner-2">
+                                                    <div class="content">
+                                                        <h4 class="title">Choose Your Next Course</h4>
+                                                        <p class="description">Upskill yourself with the most current and trending courses</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                          </div>
+                                            <div class="row row--15">
+                                                <div class="col-lg-12 col-xl-6 col-xxl-6 single-mega-item">
+                                          
+                                                    <ul class="mega-menu-item">
+                                                        <li><a href="/admission-guide">Admission Guide</a></li>
+                                                        <li><a href="/become-teacher">Teach with us</a></li>
+                                                        <li><a href="/terms-conditions">Terms & Conditions</a></li>
+                                                        <li><a href="/privacy-policy">Privacy Policy</a></li>
+                                                    </ul>
+                                                </div>
+                                                <div class="col-lg-12 col-xl-6 col-xxl-6 single-mega-item">
+                                                    
+                                                    <ul class="mega-menu-item">
+                                                      <li><a href="/blogs">Blogs</a></li>
+                                                        <li><a href="/refer-and-earn">Refer & Earn</a></li>
+                                                        <li><a href="/verify-certificate">Verify Certificate</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                          
+                                        </div>
+                                    </div>
+                                    <!-- End Mega Menu  -->
+                                </li>
+                                <li class="account-access rbt-user-wrapper d-none d-xl-block">
+                                    <a href="#"><i class="feather-user"></i>My Profile</a>
+                                    <div class="rbt-user-menu-list-wrapper">
+                                        <div class="inner">
+                                            <div class="rbt-admin-profile">
+                                                <div class="admin-thumbnail">
+                                                    <img src="assets/images/team/avatar.jpg" alt="User Images">
+                                                </div>
+                                                <div class="admin-info">
+                                                    <a href="/user">
+                                                        <span class="name"><%= username %></span>
+                                                    </a>
+                                                </div>
+                                                
+                                            </div>
+                                            <hr class="mt--10 mb--10">
+                                            <ul class="user-list-wrapper">
+                                                <li>
+                                                    <a href="/user">
+                                                        <i class="feather-book-open"></i>
+                                                        <span>Purchased Courses</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                            <hr class="mt--10 mb--10">
+                                            <ul class="user-list-wrapper">
+                                                <li>
+                                                    <a href="/logout">
+                                                        <i class="feather-log-out"></i>
+                                                        <span>Logout</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="" >
+                                <a href="/logout" style="border-radius: 15px;color: aquamarine;" >Logout</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                    <div class="header-right">
+                        <div class="rbt-btn-wrapper d-none d-xl-block">
+                            <!-- Other HTML code... -->
+
+                            <h5 class="loggedInUsername">
+                                <br>
+                                Welcome,<br> Dr. <%= firstname %>
+                              </h5>
+                          
+                            <!-- Other HTML code... -->
+                  
+                        </div>
+                        <!-- Start Mobile-Menu-Bar -->
+                        <div class="mobile-menu-bar d-block d-xl-none">
+                            <div class="hamberger">
+                                <button class="hamberger-button rbt-round-btn">
+                                    <i class="feather-menu"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Start Mobile-Menu-Bar -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- End Header Area  -->
+
+      <!-- Mobile Menu Section -->
+      <div class="popup-mobile-menu">
+        <div class="inner-wrapper">
+            <div class="inner-top">
+                <div class="content">
+                    <div class="logo">
+                        <a href="/.html">
+                            <img src="assets/images/logo/logo.png" alt="GlobaMedAcademy
+                            ">
+                        </a>
+                    </div>
+                    <div class="rbt-btn-close">
+                        <button class="close-button rbt-round-btn"><i class="feather-x"></i></button>
+                    </div>
+                </div>
+                <p class="description">Welcome to GlobalMed Academy,<br><b><%= username %></b></p>
+                <ul class="navbar-top-left rbt-information-list justify-content-start">
+                    <li>
+                        <a href="mailto:info@globalmedacademy.com"><i class="feather-mail"></i>info@gobalmedacademy.com</a>
+                    </li>
+                </ul>
+            </div>
+
+            <nav class="mainmenu-nav">
+                <ul class="mainmenu">
+                    <li class="">
+                        <a href="#">Home<i class="feather-eye"></i></a>
+                        <!-- Start Mega Menu  -->
+                        
+                    </li>
+
+                    <li class="">
+                        <a href="/course-masonry">Courses<i class=""></i></a>
+                        <!-- Start Mega Menu  -->
+
+                        <!-- End Mega Menu  -->
+                    </li>
+
+                    <li class="">
+                        <a href="/logout">Logout
+                            <i class="feather-chevron-down"></i>
+                        </a>
+                    </li>
+
+                    <li class="">
+                        <a href="/user">Profile<i class="feather-chevron-down"></i></a>
+                        <!-- Start Mega Menu  -->
+                        <!-- End Mega Menu  -->
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="mobile-menu-bottom">
+                <div class="rbt-btn-wrapper mb--20">
+                    <a class="rbt-btn btn-border-gradient radius-round btn-sm hover-transform-none w-100 justify-content-center text-center" href="/course-masonry">
+                        <span>Explore</span>
+                    </a>
+                </div>
+
+                <div class="social-share-wrapper">
+                    <span class="rbt-short-title d-block">Find With Us</span>
+                    <ul class="social-icon social-default transparent-with-border justify-content-start mt--20">
+                        <li><a href="https://www.facebook.com/GlobalMedAcademyGlobalMedAcademy">
+                                <i class="feather-facebook"></i>
+                            </a>
+                        </li>
+                        <li><a href="https://twitter.com/GMEdAcademy">
+                                <i class="feather-twitter"></i>
+                            </a>
+                        </li>
+                        <li><a href="https://www.instagram.com/globalmedacademy/globalmedacademy/">
+                                <i class="feather-instagram"></i>
+                            </a>
+                        </li>
+                        <li><a href="https://www.linkedin.com/company/globalmedacademy">
+                                <i class="feather-linkedin"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div id="logoutModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h3>Logout Confirmation</h3>
+          <p>Are you sure you want to logout?</p>
+          <button id="confirmLogout">Yes</button>
+          <button id="cancelLogout">No</button>
+        </div>
+      </div>  
+      <script>
+        var modal = document.getElementById("logoutModal");
+var btn = document.querySelector("a[href='/logout']");
+var span = document.getElementsByClassName("close")[0];
+var confirmBtn = document.getElementById("confirmLogout");
+var cancelBtn = document.getElementById("cancelLogout");
+
+btn.onclick = function(event) {
+    event.preventDefault();
+    modal.style.display = "block";
+}
+
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+confirmBtn.onclick = function() {
+    window.location.href = "/logout";
+}
+
+cancelBtn.onclick = function() {
+    modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+      </script>
+    <!-- End Mobile Area  -->
