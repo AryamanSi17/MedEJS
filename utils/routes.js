@@ -503,6 +503,22 @@ function setRoutes(app) {
       username: username, isBlogPage: false, firstname: firstname
     });
   });
+  app.get("/ayush-course/course-details-breastmilk-provison-for-preterm-and-sick-neonates", function (req, res) {
+    const pageTitle = 'Breastmilk Provision for Preterm and Sick Neonates';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = '';
+    const ogDescription = '';
+    const canonicalLink = 'https://www.globalmedacademy.com/ayush-course/course-details-breastmilk-provison-for-preterm-and-sick-neonates';
+    const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
+    res.render('ayush-course/course-details-breastmilk-provison-for-preterm-and-sick-neonates', {
+      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
+      username: username, isBlogPage: false, firstname: firstname
+    });
+  });
   app.get("/course-details-obsgynae", function (req, res) {
     res.render("course-details-obsgynae");
   });
