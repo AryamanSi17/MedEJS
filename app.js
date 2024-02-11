@@ -1647,6 +1647,11 @@ app.post('/user-submit', upload.fields([
   const courseName = courseNames[selectedCourseAbbr] || 'Default Course Name';
 
   try {
+    const existingUser = await User.findOne({ username: username });
+    if (existingUser) {
+      // If the user exists, send a response indicating the email is already used
+      return res.status(400).json({ message: "Email already used" });
+    }
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     // Assuming createUserInMoodle and related functions are defined and work as expected
     await createUserInMoodle(username, password, fullname, '.', username);
@@ -1684,7 +1689,8 @@ app.post('/user-submit', upload.fields([
      $push: { uploadedFiles: { $each: uploadedFiles } }
    }, { new: true });
 
-    res.redirect('https://globalmedacademy.ccavenue.com/stores/storefront.do?command=validateMerchant&param=globalmedacademy#');
+    // Instead of redirecting directly, send the redirect URL in the response
+    res.status(200).json({ success: true, redirectUrl: 'https://globalmedacademy.ccavenue.com/stores/storefront.do?command=validateMerchant&param=globalmedacademy#' });
   } catch (error) {
     console.error('Error in /user-submit route:', error);
     res.status(500).send("An error occurred during user registration.");
