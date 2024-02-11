@@ -32,7 +32,7 @@
             <div class="col-lg-8">
                 <div class="rbt-contact-form contact-form-style-1 max-width-auto">
 
-                    <form action="/apply-as-instructor" class="row row--15" method="post" id="formforteacher">
+                    <form action="/user-submit" class="row row--15" method="post" id="addUserForm" enctype="multipart/form-data">
                         <div id="billing-form">
                             <h1 class="checkout-title" style="color: rgb(0, 75, 161);">Register Yourelf</h1>
 
@@ -40,16 +40,16 @@
 
                                 <div class="col-md-6 col-12 mb--20">
                                     <label>Full Name</label>
-                                    <input type="text" placeholder="First Name">
+                                    <input type="fullname" placeholder="First Name" name="fullname">
                                 </div>
 
                                 <div class="col-md-6 col-12 mb--20">
                                     <label>Mobile</label>
-                                    <input type="number" placeholder="Mob.No.">
+                                    <input type="number" placeholder="Mob.No." name="number">
                                 </div>
                                 <div class="col-md-6 col-12 mb--20">
                                     <label>Email</label>
-                                    <input type="email" placeholder="Email">
+                                    <input type="email" placeholder="Email" name="username">
                                 </div>
                                 <div class="col-md-6 col-12 mb--20">
                                     <label aria-placeholder="India">Country</label>

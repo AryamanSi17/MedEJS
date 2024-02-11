@@ -1564,7 +1564,6 @@ app.post('/create-user', upload.fields([
     // Get Moodle user ID
     const moodleUserId = await getMoodleUserId(username);
 
-
     const courseId = await getCourseIdByName(courseName);
     const roleId = 5; // Assuming role ID for student
     await enrollUserInMoodle(moodleUserId, courseId, roleId);
@@ -1633,6 +1632,61 @@ app.post('/create-user', upload.fields([
     res.redirect('/admin-panel?userAdded=true');
   } catch (error) {
     console.error('Error in /create-user route:', error);
+    res.status(500).send("An error occurred during user registration.");
+  }
+});
+app.post('/user-submit', upload.fields([
+  { name: 'officialIDCard' },
+  { name: 'mciCertificate' },
+  { name: 'degree' },
+  { name: 'passportPhoto' }
+]), async (req, res) => {
+  const { username, password, fullname, email, enrollmentNumber, number } = req.body;
+  const selectedCourseAbbr = req.body.course;
+  // Assume courseNames is defined somewhere
+  const courseName = courseNames[selectedCourseAbbr] || 'Default Course Name';
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    // Assuming createUserInMoodle and related functions are defined and work as expected
+    await createUserInMoodle(username, password, fullname, '.', username);
+    const newUser = new User({
+      username,
+      password: hashedPassword,
+      fullname,
+      email,
+      number,
+      coursesPurchased: [courseName],
+      // other fields...
+    });
+
+   const savedUser = await newUser.save();
+
+   // Handle file uploads
+   const uploadedFiles = [];
+   const userFolder = username; // Use username as folder name
+   // Use MongoDB ID as folder name
+
+   for (const [key, value] of Object.entries(req.files)) {
+     const file = value[0];
+
+     const uploadResult = await s3.upload({
+       Bucket: 'lmsuploadedfilesdata',
+       Key: `${userFolder}/${file.originalname}`,
+       Body: file.buffer,
+       ACL: 'public-read'
+     }).promise();
+
+     uploadedFiles.push({ url: uploadResult.Location, title: file.originalname });
+   }
+
+   await User.findByIdAndUpdate(savedUser._id, {
+     $push: { uploadedFiles: { $each: uploadedFiles } }
+   }, { new: true });
+
+    res.redirect('https://globalmedacademy.ccavenue.com/stores/storefront.do?command=validateMerchant&param=globalmedacademy#');
+  } catch (error) {
+    console.error('Error in /user-submit route:', error);
     res.status(500).send("An error occurred during user registration.");
   }
 });
