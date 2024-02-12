@@ -665,14 +665,7 @@ function setRoutes(app) {
       canonicalLink = 'https://www.globalmedacademy.com/blog/empower-your-expertise-in-professional-certificate-in-diabetes-mellitus-transforming-care-for-a-healthier-tomorrow';
       renderView = 'blog-details-4'; // Assuming you'll create a new view for this blog post
     }
-    else if (blogTitle === "empower-yourself-in-diabetes-care-with-our-professional-certificate-in-diabetes-management") {
-      pageTitle = 'Empower yourself in Diabetes Care with our Professional Certificate in Diabetes Management';
-      metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
-      metaKeywords = 'Medical Research, Future of Medicine, Medical Innovations';
-      ogDescription = 'Dive deep into the advancements and potential of future medical research.';
-      canonicalLink = 'empower-yourself-in-diabetes-care-with-our-professional-certificate-in-diabetes-management';
-      renderView = 'blog-details-5'; // Assuming you'll create a new view for this blog post
-    }
+  
     // Check to ensure we have pageTitle (and by extension, the other meta data),
     // which ensures the blogTitle provided in the URL is valid.
     if (pageTitle) {
