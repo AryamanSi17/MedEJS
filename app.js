@@ -177,17 +177,8 @@ app.get('/auth/google/callback', (req, res, next) => {
         // Additional logic for new users
       }
 
-      // Render the page with meta information
-      res.render("auth_index", {
-        username: user.displayName,
-        firstname: user.firstname,
-        pageTitle: 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy',
-        metaRobots: 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large',
-        metaKeywords: 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine',
-        ogDescription: 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals',
-        canonicalLink: 'https://globalmedacademy.com/',
-        isBlogPage: false
-      });
+      // Redirect to the "/" route
+      res.redirect('/');
     } catch (error) {
       console.error("Error after Google authentication:", error);
       res.status(500).send("An error occurred after Google authentication.");
