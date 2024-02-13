@@ -121,12 +121,7 @@ async (accessToken, refreshToken, profile, done) => {
   }
 }
 ));
-app.get('/auth/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/login' }),
-  (req, res) => {
-    // Successful authentication, redirect home or to another page.
-    res.redirect('/'); // Or redirect to another page where you want to take the user after login
-  });
+
 
 passport.serializeUser((user, done) => {
 done(null, user.id);
