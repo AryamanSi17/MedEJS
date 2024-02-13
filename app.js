@@ -85,51 +85,57 @@ app.use((req, res, next) => {
   res.locals.error = req.flash('error');
   next();
 });
-
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
   callbackURL: "https://globalmedacademy.com/auth/google/callback"
 },
-  async (accessToken, refreshToken, profile, done) => {
-    try {
-      const user = await findOrCreateUser(profile);
-      return done(null, user);
-    } catch (error) {
-      return done(error, null);
+async (accessToken, refreshToken, profile, done) => {
+  const email = profile.emails[0].value; // Assuming the email is always present
+
+  try {
+    // First, check if the email is already associated with an account (Google or otherwise)
+    let user = await User.findOne({ email: email });
+
+    if(user){
+      if(!user.googleId){
+        user.googleId=profile.id;
+        await user.save();
+      }
     }
-  }
-));
-
-async function findOrCreateUser(profile) {
-  const existingUser = await User.findOne({ googleId: profile.id });
-
-  if (existingUser) {
-    return existingUser;
-  } else {
-    const newUser = new User({
-      googleId: profile.id,
-      displayName: profile.displayName,
-      // Add additional fields as in your regular registration process
-      enrollmentNumber: await getUniqueEnrollmentNumber(),
-      // Other fields...
-    });
-
-    newUser.signupMethod = 'google';
-    return newUser.save();
+     else  {
+      // No user found with this email, create a new account
+      user = await new User({
+        googleId: profile.id,
+        email: email,
+        displayName: profile.displayName,
+        // additional fields as needed
+        signupMethod: 'google'
+      });
+      await user.save();
+    }
+    // User found or created successfully
+    return done(null, user);
+  } catch (error) {
+    return done(error);
   }
 }
+));
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  (req, res) => {
+    // Successful authentication, redirect home or to another page.
+    res.redirect('/'); // Or redirect to another page where you want to take the user after login
+  });
+
 passport.serializeUser((user, done) => {
-  done(null, user.id);
+done(null, user.id);
 });
 
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findById(id);
-    done(null, user);
-  } catch (error) {
-    done(error, null);
-  }
+passport.deserializeUser((id, done) => {
+User.findById(id, (err, user) => {
+  done(err, user);
+});
 });
 async function findOrCreateUser(profile) {
   const existingUser = await User.findOne({ googleId: profile.id });

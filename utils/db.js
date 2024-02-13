@@ -24,7 +24,7 @@ const UserSchema = new Schema({
     // Add form data fields for handling form submissions
     name: String,
     phone: String,
-    email: String,
+    email: {type : String,unique:true},
     course: String,
     coursesPurchased: [String],
     uploadedFiles: [
