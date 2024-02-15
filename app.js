@@ -771,7 +771,7 @@ app.get('/buy-now/:courseID', async (req, res) => {
         price: course.currentPrice,
       },
       merchantId: "2619634",
-      redirectUrl: "http://globalmedacademy.com/user",
+      redirectUrl: "http://localhost:3000/user",
       cancelUrl: "http://localhost:3000/ccavResponseHandler",
       pageTitle: 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy',
       metaRobots: 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large',
@@ -840,7 +840,7 @@ function decrypt(encText, workingKey) {
 
 
 // ccavResponseHandler.js integration
-app.post('/ccavResponseHandler',async function(request, response) {
+app.post('/ccavResponseHandler', async function(request, response) {
   var body = '';
   var ccavEncResponse = '',
       ccavResponse = '',
@@ -870,33 +870,39 @@ app.post('/ccavResponseHandler',async function(request, response) {
     var courseName = decryptedResponse.courseName;
       response.end();
       console.log("Payment Response:", ccavResponse);
-  });
-  try {
-    // Ideally, you should have a way to link the payment to the user directly,
-    // perhaps by including userId in the transaction record initially and using it here.
-    const transaction = await Transaction.findOne({ transactionId: decryptedResponse.transactionId });
 
+      // Redirect the user to the /user page
+      response.redirect(`/user?courseName=${encodeURIComponent(courseName)}`);
+  }); try {
+    var decryptedResponse = qs.parse(ccavResponse);
+    // Use transactionId from decryptedResponse to find the associated transaction
+    const transaction = await Transaction.findOne({ transactionId: decryptedResponse.transactionId }).populate('userId');
+    
     if (!transaction) {
-      return response.status(404).send('Transaction not found');
+        console.error('Transaction not found');
+        return response.status(404).send('Transaction not found');
     }
 
-    const user = await User.findById(transaction.userId);
-    if (!user) {
-      return response.status(404).send('User not found');
+    // Security Note: Ensure that you validate the status and authenticity of the transaction.
+    // This might involve checking the payment status and possibly a checksum or signature provided by CCAvenue.
+
+    if (transaction && decryptedResponse.status === "Success") {
+        // Update the user's coursesPurchased array
+        await User.findByIdAndUpdate(transaction.userId, {
+            $addToSet: { coursesPurchased: transaction.courseName } // Use $addToSet to avoid duplicates
+        });
+
+        // Redirect or respond to indicate success
+        response.redirect('/user?purchase=success'); // Adjust redirect as needed
+    } else {
+        // Handle payment failure or invalid transaction
+        response.status(400).send('Payment verification failed or transaction is invalid.');
     }
-
-    // Update the user's coursesPurchased array
-    await User.findByIdAndUpdate(user._id, {
-      $addToSet: { coursesPurchased: transaction.courseName } // Use $addToSet to avoid duplicates
-    });
-
-    response.redirect('/user?purchase=success');
-  } catch (error) {
-    console.error("Error updating user's coursesPurchased", error);
-    response.status(500).send('An error occurred');
-  }
+} catch (error) {
+    console.error("Error processing payment response", error);
+    response.status(500).send('An error occurred during payment processing.');
+}
 });
-
 app.post('/user', async (req, res) => {
   const userEmail=req.body.email;
   const courseName = req.query.courseName;
