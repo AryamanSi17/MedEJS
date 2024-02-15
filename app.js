@@ -6,7 +6,7 @@ const ejs = require("ejs");
 const passportLocalMongoose = require("passport-local-mongoose");
 const passport = require("passport");
 const cookieSession = require('cookie-session')
-const { mongoose, User, Course, Request, Session, UserSession, InstructorApplication } = require("./utils/db"); // Import from db.js
+const { mongoose, User, Course, Request, Session, UserSession, InstructorApplication,Transaction } = require("./utils/db"); // Import from db.js
 const db = require('./utils/db');
 const nodemailer = require('nodemailer');
 const mongodb = require("mongodb");
@@ -732,40 +732,60 @@ app.post('/submitRequestForMore', async (req, res) => {
 //   }
 // });
 app.get('/buy-now/:courseID', async (req, res) => {
-  try{
-    const course=await Course.findOne({courseID:req.params.courseID});
-    if(!course){return res.status(404).send("Course Not found");
-  }
-  const courseData = {
-    name:course.name,
-    price:course.currentPrice,
-  }
-  
+  try {
+    const course = await Course.findOne({ courseID: req.params.courseID });
+    if (!course) {
+      return res.status(404).send("Course Not found");
+    }
 
-  const pageTitle = 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy';
-  const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
-  const metaKeywords = 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ';
-  const ogDescription = 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals';
-  const canonicalLink = 'https://www.globalmedacademy.com/';
-  // Add your merchantId, redirectUrl, and cancelUrl
-  const merchantId = "2619634";
-  const redirectUrl = "http://localhost:3000/user";
-  const cancelUrl = "http://localhost:3000/ccavResponseHandler";
+    // Assume user identification logic is here, e.g., from a JWT token
+    const token = req.cookies.authToken;
+    if (!token) {
+      return res.status(401).send('Unauthorized: No token provided');
+    }
+    
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
 
-  res.render('dataFrom', { 
-    course: courseData, 
-    merchantId: merchantId, 
-    redirectUrl: redirectUrl, 
-    cancelUrl: cancelUrl ,
-    pageTitle,metaRobots,metaKeywords,ogDescription,canonicalLink,
-    isBlogPage: false,
-  });
-}
-catch(error){
-  console.error('Error fetching course data ',error);
-  res.status(500).send('Server error');
-}
+    // Generate a unique transaction ID - could be a utility function or from the payment gateway
+    const transactionId = new Date().getTime().toString(); // Simple placeholder, replace as needed
+
+    // Create the transaction record
+    const newTransaction = await Transaction.create({
+      transactionId,
+      userId: user._id,
+      courseName: course.name,
+      amount: course.currentPrice,
+      currency: 'INR', // Adjust as necessary
+      status: 'pending',
+    });
+
+    // Proceed with your payment preparation logic
+    // Render payment form or redirect to payment gateway as before
+    res.render('dataFrom', {
+      course: {
+        name: course.name,
+        price: course.currentPrice,
+      },
+      merchantId: "2619634",
+      redirectUrl: "http://localhost:3000/user",
+      cancelUrl: "http://localhost:3000/ccavResponseHandler",
+      pageTitle: 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy',
+      metaRobots: 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large',
+      metaKeywords: 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ',
+      ogDescription: 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals',
+      canonicalLink: 'https://www.globalmedacademy.com/',
+      isBlogPage: false,
+    });
+  } catch (error) {
+    console.error('Error fetching course data ', error);
+    res.status(500).send('Server error');
+  }
 });
+
 // ccavRequestHandler.js integration
 app.post('/ccavRequestHandler', function(request, response) {
   var workingKey = "1E9B36C49F90A45CEDA3827239927264"; // Test working key
@@ -873,99 +893,93 @@ app.post('/user', async (req, res) => {
   }
 
 });
-app.get('/send-payment-link/:courseID', async (req, res) => {
-  const courseID = req.params.courseID;
-  const course = courses.find(c => c.courseID === courseID);
+// app.get('/send-payment-link/:courseID', async (req, res) => {
+//   const courseID = req.params.courseID;
+//   const course = courses.find(c => c.courseID === courseID);
 
-  if (!course) {
-    return res.status(404).send('Course not found');
-  }
+//   if (!course) {
+//     return res.status(404).send('Course not found');
+//   }
 
-  const line_items = [{
-    price_data: {
-      currency: course.currency,
-      product_data: {
-        name: course.name,
-      },
-      unit_amount: course.discountedPrice,
-    },
-    quantity: 1,
-  }];
+//   const line_items = [{
+//     price_data: {
+//       currency: course.currency,
+//       product_data: {
+//         name: course.name,
+//       },
+//       unit_amount: course.discountedPrice,
+//     },
+//     quantity: 1,
+//   }];
 
+//   try {
+//     const success_url = `http://www.globalmedacademy.com/success?session_id=${CHECKOUT_SESSION_ID}&courseID=${courseID}`;
+//     const cancel_url = 'http://www.globalmedacademy.com/cancel';
+
+
+//     // Extract the JWT token from the cookie to get the user's email
+//     const token = req.cookies.authToken;
+//     if (!token) {
+//       return res.status(401).send('Unauthorized: No token provided');
+//     }
+
+//     const decoded = jwt.verify(token, JWT_SECRET);
+//     const user = await User.findById(decoded.userId);
+//     if (!user) {
+//       return res.status(404).send('User not found');
+//     }
+
+//     const session = await stripe.checkout.sessions.create({
+//       payment_method_types: ['card'],
+//       customer_email: user.username,
+//       line_items: line_items,
+//       mode: 'payment',
+//       success_url: success_url,
+//       cancel_url: cancel_url,
+//     });
+//     // Send the payment link to the user's email
+//     sendEmail({
+//       to: [user.username],
+//       subject: 'Your Payment Link',
+//       text: `Click here to make your payment: ${session.url}`
+//     });
+//     res.send('Payment link sent to your email! You may close this page .');
+
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send('Error creating checkout session');
+//   }
+// });
+app.post('/webhook-success', async (req, res) => {
   try {
-    const success_url = `http://www.globalmedacademy.com/success?session_id=${CHECKOUT_SESSION_ID}&courseID=${courseID}`;
-    const cancel_url = 'http://www.globalmedacademy.com/cancel';
-
-
-    // Extract the JWT token from the cookie to get the user's email
-    const token = req.cookies.authToken;
-    if (!token) {
-      return res.status(401).send('Unauthorized: No token provided');
+    const { transactionId, status } = req.body; // Assuming these are provided by CCAvenue
+    
+    // Verify the payment status
+    if (status !== 'Success') {
+      console.log('Payment not successful');
+      return res.status(400).send('Payment not successful');
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET);
-    const user = await User.findById(decoded.userId);
-    if (!user) {
-      return res.status(404).send('User not found');
+    // Find the transaction and associated user
+    const transaction = await TransactionData.findOne({ transactionId });
+    if (!transaction) {
+      console.log('Transaction not found');
+      return res.status(404).send('Transaction not found');
     }
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      customer_email: user.username,
-      line_items: line_items,
-      mode: 'payment',
-      success_url: success_url,
-      cancel_url: cancel_url,
-    });
-    // Send the payment link to the user's email
-    sendEmail({
-      to: [user.username],
-      subject: 'Your Payment Link',
-      text: `Click here to make your payment: ${session.url}`
-    });
-    res.send('Payment link sent to your email! You may close this page .');
+    // Update the user's coursesPurchased array
+    await User.updateOne(
+      { _id: transaction.userId },
+      { $push: { coursesPurchased: transaction.courseName } }
+    );
 
+    console.log('Course added to user successfully');
+    res.send('Webhook processed successfully');
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Error creating checkout session');
+    console.error('Error processing webhook', error);
+    res.status(500).send('Server error');
   }
 });
-// Endpoint for handling Stripe webhook events
-app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
-  const sig = req.headers['stripe-signature'];
-  let event;
-  try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_SIGNING_SECRET);
-  } catch (err) {
-    if (err instanceof stripe.errors.StripeSignatureVerificationError) {
-      // Invalid signature
-      console.error('Invalid signature:', err);
-      return res.status(400).send('Invalid signature');
-    } else if (err instanceof SyntaxError) {
-      // Invalid payload
-      console.error('Invalid payload:', err);
-      return res.status(400).send('Invalid payload');
-    } else {
-      console.error('Error constructing event:', err);
-      return res.status(400).send(`Webhook Error: ${err.message}`);
-    }
-  }
-
-  // Handle the event
-  switch (event.type) {
-    case 'payment_intent.succeeded':
-      const paymentIntent = event.data.object;
-      console.log('Payment Successful:', paymentIntent.id);
-      break;
-    // ... handle other event types ...
-    default:
-      console.log("Unhandled event type:", event.type);
-  }
-
-  // Always respond with 200 OK to acknowledge receipt of the event
-  res.json({ received: true });
-});
-
 
 app.get('/success', async (req, res) => {
   const sessionId = req.query.session_id;

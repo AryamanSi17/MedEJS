@@ -136,5 +136,17 @@ const courseData = [
 //     console.error('Error saving course data:', error);
 //   }
 // }
+const transactionSchema = new mongoose.Schema({
+  transactionId: String, // Unique ID for the transaction, could be from the payment gateway
+  userId: { type: Schema.Types.ObjectId, ref: 'User' }, // Reference to the User who made the transaction
+  courseName: String, // Name of the course purchased
+  amount: Number, // Amount of the transaction
+  currency: String, // Currency of the transaction
+  status: String, // Status of the transaction (e.g., pending, completed, failed)
+  createdAt: { type: Date, default: Date.now }, // Timestamp of when the transaction was created
+  // Add other fields as necessary, such as payment gateway specific data
+});
 
-module.exports = { mongoose, User, File, Request, Course, Session,UserSession,InstructorApplication };
+const Transaction = mongoose.model('Transaction', transactionSchema);
+
+module.exports = { mongoose, User, File, Request, Course, Session,UserSession,InstructorApplication,Transaction };
