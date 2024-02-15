@@ -96,6 +96,14 @@
             text-decoration: none;
             cursor: pointer;
         }
+        .criteria {
+    color: red; /* Default color indicating unfulfilled criteria */
+}
+
+.fulfilled {
+    color: green; /* Indicates the criteria is fulfilled */
+}
+
 
         form {
             display: flex;
@@ -447,11 +455,132 @@
         <% if(currentPage> 1) { %>
             <a href="/admin-panel?page=<%= currentPage - 1 %>" class="pagination-arrow">&laquo; Previous</a>
             <% } %>
-                <% if(currentPage < totalPages) { %>
+                <% if(currentPage < totalPagesUsers) { %>
                     <a href="/admin-panel?page=<%= currentPage + 1 %>" class="pagination-arrow">Next &raquo;</a>
                     <% } %>
     </div>
+    <h2>NonMoodle User List</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Full Name</th>
+          <th>Email (Username)</th>
+          <th>Phone</th>
+          <th>Interested Courses</th>
+          <!-- Inside the NonMoodle Users table, within each row -->
+  
+        </tr>
+      </thead>
+      <tbody>
+        <% nonMoodleUsers.forEach(function(user) { %>
+          <tr>
+            <td><%= user.fullname %></td>
+            <td><%= user.username %></td>
+            <td><%= user.number %></td>
+            <td>
+              <% (user.coursesIntrested || []).forEach(function(course) { %>
+                <div><%= course %></div>
+              <% }); %>
+            </td>
+            <td>
+                <!-- Ensure this button is within the forEach loop for nonMoodleUsers -->
+                <button class="addToMoodleBtn" data-id="<%= user._id %>">Add to Moodle</button>
+              </td>
+            <!-- Add more data fields as needed -->
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+    
+    <!-- Pagination for NonMoodleUsers -->
+    <!-- Adjust the query parameter or logic as needed to differentiate pagination -->
+    <div class="pagination">
+      <% if(currentPage > 1) { %>
+        <a href="/admin-panel?page=<%= currentPage - 1 %>&type=nonmoodle" class="pagination-arrow">&laquo; Previous</a>
+      <% } %>
+      <% if(currentPage < totalPagesNonMoodleUsers) { %>
+        <a href="/admin-panel?page=<%= currentPage + 1 %>&type=nonmoodle" class="pagination-arrow">Next &raquo;</a>
+      <% } %>
+    </div>
+ <!-- Add to Moodle Modal Structure -->
+ <div id="addToMoodleModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Set Password for Moodle User</h2>
+        <form id="moodleUserForm" action="/migrateToMoodle" method="post">
+            <input type="hidden" id="moodleUserId" name="userId">
+            <label for="moodlePassword">Password:</label>
+            <input type="password" id="moodlePassword" name="password" required>
+            <div id="passwordRequirements">
+                <p id="minLength" class="criteria">At least 8 characters</p>
+                <p id="hasDigit" class="criteria">Contains a digit</p>
+                <p id="hasLowercase" class="criteria">Contains a lowercase letter</p>
+                <p id="hasUppercase" class="criteria">Contains an uppercase letter</p>
+                <p id="hasNonAlphanumeric" class="criteria">Contains a non-alphanumeric character</p>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+
+  
+    
     <script>
+        document.getElementById('moodleUserForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const userId = document.getElementById('moodleUserId').value;
+  const password = document.getElementById('moodlePassword').value;
+
+  try {
+    const response = await fetch('/migrateToMoodle', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId, password }),
+    });
+
+    if (response.ok) {
+      alert('User migrated successfully.');
+      window.location.reload(); // Refresh to show changes
+    } else {
+      throw new Error('Failed to migrate user.');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error migrating user.');
+  }
+});
+
+        document.querySelectorAll('.addToMoodleBtn').forEach(button => {
+  button.addEventListener('click', function() {
+    const userId = this.dataset.id;
+    document.getElementById('moodleUserId').value = userId; // Pass the user ID to the form
+    document.getElementById('addToMoodleModal').style.display = 'block';
+    document.body.classList.add('blur-effect'); // Apply blur to the background
+  });
+});
+
+document.querySelector('.close').addEventListener('click', function() {
+  document.getElementById('addToMoodleModal').style.display = 'none';
+  document.body.classList.remove('blur-effect'); // Remove blur effect
+});
+document.getElementById('moodlePassword').addEventListener('input', function() {
+    const password = this.value;
+    const minLength = document.getElementById('minLength');
+    const hasDigit = document.getElementById('hasDigit');
+    const hasLowercase = document.getElementById('hasLowercase');
+    const hasUppercase = document.getElementById('hasUppercase');
+    const hasNonAlphanumeric = document.getElementById('hasNonAlphanumeric');
+
+    minLength.classList.toggle('fulfilled', password.length >= 8);
+    hasDigit.classList.toggle('fulfilled', /[0-9]/.test(password));
+    hasLowercase.classList.toggle('fulfilled', /[a-z]/.test(password));
+    hasUppercase.classList.toggle('fulfilled', /[A-Z]/.test(password));
+    hasNonAlphanumeric.classList.toggle('fulfilled', /[\W_]/.test(password));
+});
+
         document.getElementById('createUserBtn').addEventListener('click', function () {
             document.getElementById('userForm').classList.add('active');
         });

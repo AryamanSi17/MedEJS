@@ -39,6 +39,35 @@
                                 transform: rotate(360deg);
                             }
                         }
+                        .file-upload-wrapper {
+        position: relative;
+        margin-bottom: 20px;
+    }
+    .file-upload-input {
+        width: 0.1px;
+        height: 0.1px;
+        opacity: 0;
+        overflow: hidden;
+        position: absolute;
+        z-index: -1;
+    }
+    .file-upload-label {
+        display: block;
+        background-color: #3498db;
+        color: #fff;
+        padding: 10px 20px;
+        text-align: center;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .file-upload-label:hover {
+        background-color: #2980b9;
+    }
+    .file-name {
+        margin-top: 5px;
+        font-family: monospace;
+        color: #333;
+    }
                     </style>
 
                     <div class="rbt-become-area bg-color-white rbt-section-gap">
@@ -59,54 +88,33 @@
                                             enctype="multipart/form-data">
                                             <div id="billing-form">
                                                 <h1 class="checkout-title" style="color: rgb(0, 75, 161);">Register
-                                                    Yourelf</h1>
+                                                    Yourself</h1>
 
                                                 <div class="row">
 
                                                     <div class="col-md-6 col-12 mb--20">
                                                         <label>Full Name</label>
-                                                        <input type="fullname" placeholder="Full Name" name="fullname">
+                                                        <input type="fullname" name="fullname">
                                                     </div>
 
                                                     <div class="col-md-6 col-12 mb--20">
                                                         <label>Mobile</label>
-                                                        <input type="number" placeholder="Mob.No." name="number">
+                                                        <input type="number" name="number">
                                                     </div>
                                                     <div class="col-md-6 col-12 mb--20">
                                                         <label>Email</label>
-                                                        <input type="email" placeholder="Email" name="username">
+                                                        <input type="email" name="username">
                                                     </div>
                                                     <div class="col-md-6 col-12 mb--20">
                                                         <label aria-placeholder="India">Country</label>
-                                                        <input type="text" id="country" placeholder="India"
+                                                        <input type="text" id="country" 
                                                             value="India" readonly style="background-color: #f0f0f0;">
-                                                    </div>
-                                                    <div class="col-md-6 col-12 mb--20">
-                                                        <label for="password">Password</label>
-                                                        <input type="password" id="password" name="password" required>
-                                                        <div id="password-criteria">
-                                                            <p id="length" class="criteria"><span
-                                                                    class="tick-mark">&#10003;</span> At least 8
-                                                                characters</p>
-                                                            <p id="digit" class="criteria"><span
-                                                                    class="tick-mark">&#10003;</span> Contains a digit
-                                                            </p>
-                                                            <p id="lowercase" class="criteria"><span
-                                                                    class="tick-mark">&#10003;</span> Contains a
-                                                                lowercase letter</p>
-                                                            <p id="uppercase" class="criteria"><span
-                                                                    class="tick-mark">&#10003;</span> Contains an
-                                                                uppercase letter</p>
-                                                            <p id="non-alphanumeric" class="criteria"><span
-                                                                    class="tick-mark">&#10003;</span> Contains a
-                                                                non-alphanumeric character</p>
-                                                        </div>
                                                     </div>
 
                                                     <div class="col-md-6 col-12 mb--20">
                                                         <label>Course Intersted</label>
                                                         <div class="rbt-modern-select bg-transparent height-45">
-                                                            <select class="w-100">
+                                                            <select class="w-100" name="course">
                                                                 <option value="">Select a Course</option>
                                                                 <option value="PCDM">Professional Certificate in
                                                                     Diabetes Management</option>
@@ -134,27 +142,36 @@
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    <div class="file-upload-section col-md-6 col-12 mb--20">
-                                                        <input type="file" name="officialIDCard" accept="image/*"
-                                                            required>
-                                                        <br>
-                                                        <label for="officialIDCard">Official ID Card</label>
-                                                        <br>
-                                                        <br>
-                                                        <input type="file" name="mciCertificate" accept="image/*"
-                                                            required>
-                                                        <br>
-                                                        <label for="mciCertificate">MCI Certificate</label>
-                                                        <br>
-                                                        <br>
-                                                        <input type="file" name="degree" accept="image/*" required>
-                                                        <br>
-                                                        <label for="degree">Degree</label><br>
-                                                        <br>
-                                                        <input type="file" name="passportPhoto" accept="image/*"
-                                                            required>
-                                                        <br>
-                                                        <label for="passportPhoto">Passport Photo</label><br>
+                                                    <div class="col-12 mb--20">
+                                                        <div class="col-md-6 col-12">
+                                                            <div class="file-upload-wrapper">
+                                                                <input type="file" name="officialIDCard" id="officialIDCard" class="file-upload-input" accept="image/*" required>
+                                                                <label for="officialIDCard" class="file-upload-label">Upload Official ID Card</label>
+                                                                <span id="officialIDCard-name" class="file-name">No file chosen</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6 col-12">
+                                                            <div class="file-upload-wrapper">
+                                                                <input type="file" name="mciCertificate" id="mciCertificate" class="file-upload-input" accept="image/*" required>
+                                                                <label for="mciCertificate" class="file-upload-label">Upload MCI Certificate</label>
+                                                                <span id="mciCertificate-name" class="file-name">No file chosen</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6 col-12">
+                                                            <div class="file-upload-wrapper">
+                                                                <input type="file" name="degree" id="degree" class="file-upload-input" accept="image/*" required>
+                                                                <label for="degree" class="file-upload-label">Upload Degree</label>
+                                                                <span id="degree-name" class="file-name">No file chosen</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6 col-12">
+                                                            <div class="file-upload-wrapper">
+                                                                <input type="file" name="passportPhoto" id="passportPhoto" class="file-upload-input" accept="image/*" required>
+                                                                <label for="passportPhoto" class="file-upload-label">Upload Passport Photo</label>
+                                                                <span id="passportPhoto-name" class="file-name">No file chosen</span>
+                                                            </div>
+                                                        </div>
+                                                        
                                                     </div>
 
                                                 </div>
@@ -187,18 +204,13 @@
                         </div>
                     </div>
                     <script>
-                        document.getElementById('password').addEventListener('input', function () {
-                            const password = this.value;
-                            // Adjusted regex to correctly identify non-alphanumeric characters
-                            const nonAlphanumericRegex = /[^a-zA-Z0-9]/;
-
-                            document.getElementById('length').classList.toggle('fulfilled', password.length >= 8);
-                            document.getElementById('digit').classList.toggle('fulfilled', /\d/.test(password));
-                            document.getElementById('lowercase').classList.toggle('fulfilled', /[a-z]/.test(password));
-                            document.getElementById('uppercase').classList.toggle('fulfilled', /[A-Z]/.test(password));
-                            // Use the adjusted regex for non-alphanumeric character detection
-                            document.getElementById('non-alphanumeric').classList.toggle('fulfilled', nonAlphanumericRegex.test(password));
-                        });
+                         document.querySelectorAll('.file-upload-input').forEach(input => {
+        input.addEventListener('change', function() {
+            var fileName = this.files && this.files.length > 0 ? this.files[0].name : "No file chosen";
+            var fileNameDisplay = this.nextElementSibling.nextElementSibling; // Adjust based on your HTML structure
+            fileNameDisplay.textContent = fileName;
+        });
+    });
                         document.getElementById('addUserForm').addEventListener('submit', function (e) {
                             e.preventDefault(); // Prevent the default form submission
 

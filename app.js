@@ -6,7 +6,7 @@ const ejs = require("ejs");
 const passportLocalMongoose = require("passport-local-mongoose");
 const passport = require("passport");
 const cookieSession = require('cookie-session')
-const { mongoose, User, Course, Request, Session, UserSession, InstructorApplication,Transaction } = require("./utils/db"); // Import from db.js
+const { mongoose, User, Course, Request, Session, UserSession, InstructorApplication,Transaction, NonMoodleUser } = require("./utils/db"); // Import from db.js
 const db = require('./utils/db');
 const nodemailer = require('nodemailer');
 const mongodb = require("mongodb");
@@ -1550,23 +1550,103 @@ app.get('/admin-panel', authenticateAdminJWT, async function (req, res) {
   const pageSize = 10; // Fixed to 10 users per page
 
   try {
+    // Fetch regular users with pagination
     const users = await User.find({})
       .skip((page - 1) * pageSize)
       .limit(pageSize);
     const totalUsers = await User.countDocuments();
-    const totalPages = Math.ceil(totalUsers / pageSize);
 
+    // Fetch NonMoodleUsers with pagination
+    const nonMoodleUsers = await NonMoodleUser.find({})
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
+    const totalNonMoodleUsers = await NonMoodleUser.countDocuments();
+
+    // Calculate total pages for both collections
+    const totalPagesUsers = Math.ceil(totalUsers / pageSize);
+    const totalPagesNonMoodleUsers = Math.ceil(totalNonMoodleUsers / pageSize);
+
+    // Render the admin panel with both user lists and pagination details
     res.render('admin-panel', {
       users,
+      nonMoodleUsers,
       currentPage: page,
-      totalPages,
-      // ... other variables
+      totalPagesUsers,
+      totalPagesNonMoodleUsers,
+      // You may pass additional variables as needed
     });
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).send("Error fetching user data");
   }
 });
+app.post('/migrateToMoodle', async (req, res) => {
+  const { userId, password } = req.body;
+
+  try {
+    const nonMoodleUser = await NonMoodleUser.findById(userId);
+    if (!nonMoodleUser) {
+      return res.status(404).send('User not found');
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+ // Map coursesInterested to their full names using courseNames object
+ const coursesFullNames = nonMoodleUser.coursesIntrested.map(abbr => courseNames[abbr] || abbr);
+
+ // Prepare the new user details
+ const newUserDetails = {
+   fullname: nonMoodleUser.fullname,
+   username: nonMoodleUser.username,
+   password: hashedPassword,
+   phone: nonMoodleUser.number,
+   coursesPurchased: coursesFullNames,
+   // Add any other fields you need to migrate
+ };
+
+ // Create a new user in the User collection
+ const newUser = new User(newUserDetails);
+ await newUser.save();
+
+ // Create Moodle username and set Moodle password
+ await createUserInMoodle(newUser.username, password, newUser.fullname,'.', newUser.username);
+ // Get Moodle user ID
+ const moodleUserId = await getMoodleUserId(newUser.username);
+
+ // Enroll user in Moodle courses
+ for (let courseName of coursesFullNames) {
+   const courseId = await getCourseIdByName(courseName); // Make sure this function matches the course name to its Moodle ID
+   const roleId = 5; // Assuming role ID for student
+   await enrollUserInMoodle(moodleUserId, courseId, roleId);
+ }
+    // Optionally delete the nonMoodleUser or mark as migrated
+    await NonMoodleUser.findByIdAndDelete(userId);
+
+    // Send confirmation email
+    sendEmail({
+      to: newUser.username,
+      subject: 'Welcome to GlobalMed Academy!',
+      text: `Dear Dr. ${newUser.fullname.split(" ")[0]},\n\n` +
+        `Welcome aboard!\n` +
+        `We are excited to share your credentials for the GlobalMed Academy’s Learning Management System (LMS) to support your commitment to upskilling yourself. Our LMS provides you the platform to access self-learning contents and other required information.\n` +
+        `Below are the access credentials and instructions to get you started:\n` +
+        `Website: https://moodle.upskill.globalmedacademy.com/login/index.php\n` +
+        `Username: ${newUser.username}\n` +
+        `Password: ${password}\n\n` +
+        `Once logged in, our user-friendly interface will allow you to navigate through different courses and learning materials effortlessly. Feel free to browse the available courses and explore the learning modules and resources specific to your area of interest.\n` +
+        `For User Support:\n` +
+        `We have a dedicated support team available to assist you with any questions or issues you may encounter while using the LMS. Should you require any assistance, please contact 9730020462.\n\n` +
+        `Happy Learning!\n\n` +
+        `GlobalMED Academy.`
+    });
+
+    res.send('User migrated successfully to Moodle system.');
+  } catch (error) {
+    console.error('Migration error:', error);
+    res.status(500).send('Error migrating user');
+  }
+});
+
 app.post('/update-user', async function (req, res) {
   const { userId, field, value } = req.body;
 
@@ -1718,54 +1798,52 @@ app.post('/user-submit', upload.fields([
   { name: 'degree' },
   { name: 'passportPhoto' }
 ]), async (req, res) => {
-  const { username, password, fullname, email, enrollmentNumber, number } = req.body;
+  const { username,  fullname, email,  number } = req.body;
   const selectedCourseAbbr = req.body.course;
   // Assume courseNames is defined somewhere
   const courseName = courseNames[selectedCourseAbbr] || 'Default Course Name';
 
   try {
-    const existingUser = await User.findOne({ username: username });
+    const existingUser = await NonMoodleUser.findOne({ username:username });
     if (existingUser) {
-      // If the user exists, send a response indicating the email is already used
       return res.status(400).json({ message: "Email already used" });
     }
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-    // Assuming createUserInMoodle and related functions are defined and work as expected
-    await createUserInMoodle(username, password, fullname, '.', username);
-    const newUser = new User({
-      username,
-      password: hashedPassword,
+
+    const newUser = new NonMoodleUser({
       fullname,
-      email,
+      username,
       number,
-      coursesPurchased: [courseName],
-      // other fields...
+      coursesIntrested: [courseName],
+      // other fields as needed...
     });
 
-   const savedUser = await newUser.save();
+    const savedUser = await newUser.save();
+
+   
 
    // Handle file uploads
    const uploadedFiles = [];
    const userFolder = username; // Use username as folder name
    // Use MongoDB ID as folder name
 
+   
    for (const [key, value] of Object.entries(req.files)) {
-     const file = value[0];
+    const file = value[0];
 
-     const uploadResult = await s3.upload({
-       Bucket: 'lmsuploadedfilesdata',
-       Key: `${userFolder}/${file.originalname}`,
-       Body: file.buffer,
-       ACL: 'public-read'
-     }).promise();
+    const uploadResult = await s3.upload({
+      Bucket: 'nonmoodleuserdata', // Updated bucket name
+      Key: `${userFolder}/${file.originalname}`,
+      Body: file.buffer,
+      ACL: 'public-read'
+    }).promise();
 
-     uploadedFiles.push({ url: uploadResult.Location, title: file.originalname });
-   }
+    uploadedFiles.push({ url: uploadResult.Location, title: file.originalname });
+  }
 
-   await User.findByIdAndUpdate(savedUser._id, {
-     $push: { uploadedFiles: { $each: uploadedFiles } }
-   }, { new: true });
-
+  await NonMoodleUser.findByIdAndUpdate(savedUser._id, { // Make sure to update this model reference
+    $push: { uploadedFiles: { $each: uploadedFiles } }
+  }, { new: true });
+  console.log({ selectedCourseAbbr, courseName });
     // Instead of redirecting directly, send the redirect URL in the response
     res.status(200).json({ success: true, redirectUrl: 'https://globalmedacademy.ccavenue.com/stores/storefront.do?command=validateMerchant&param=globalmedacademy#' });
   } catch (error) {

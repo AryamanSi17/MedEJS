@@ -146,7 +146,23 @@ const transactionSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }, // Timestamp of when the transaction was created
   // Add other fields as necessary, such as payment gateway specific data
 });
+const NonMoodleUserSchema = new Schema({
+  fullname: String,
+  username: { type: String, unique: true, required: true },
+  number: String,
+  coursesIntrested: [String],
+  uploadedFiles: [
+    {
+      url: String,
+      title: String
+    }
+  ],
+  // Include any other fields you find necessary
+});
 
 const Transaction = mongoose.model('Transaction', transactionSchema);
 
-module.exports = { mongoose, User, File, Request, Course, Session,UserSession,InstructorApplication,Transaction };
+const NonMoodleUser = mongoose.model('NonMoodleUser', NonMoodleUserSchema);
+
+// Export the new model along with others
+module.exports = { mongoose, Course, User, File, Request, Session, UserSession, InstructorApplication, Transaction, NonMoodleUser };
