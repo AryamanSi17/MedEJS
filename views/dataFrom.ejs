@@ -14,7 +14,7 @@
           </tr>
           <tr>
             <td>Order Id</td>
-            <td><input type="text" name="order_id" value="<%= course.courseID %>" /></td>
+            <td><input type="hidden" name="order_id" value="{{orderId}}" /></td>
           </tr>
           <tr>
             <td>Currency</td>
@@ -36,6 +36,7 @@
             <td>Language</td>
             <td><input type="text" name="language" value="EN" /></td>
           </tr>
+          <input type="hidden" name="courseName" value="<%= course.name %>">
     <tr>
         <td>Billing Tel:</td>
         <td><input type="text" name="billing_tel" value="9876543210" />

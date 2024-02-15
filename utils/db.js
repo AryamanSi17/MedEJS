@@ -8,7 +8,7 @@ mongoose.connect(process.env.MONGODB_URI);
 const courseSchema = new mongoose.Schema({
   courseID: String,
   name: String,
-  realPrice: Number,
+  currentPrice: Number,
   discountedPrice: Number,
   currency: String
 });
@@ -104,5 +104,37 @@ const InstructorApplication = mongoose.model('InstructorApplication', instructor
 const UserSession = mongoose.model('UserSession', UserSessionSchema);
 const Session = mongoose.model('Session', sessionSchema);
 const Request = mongoose.model('Request', requestSchema);
+const courseData = [
+  { courseID: '017AE2', name: 'Professional Certificate in Diabetes Management', currentPrice: 30000 },
+  { courseID: '698C4B', name: 'Advanced Professional Certificate in Diabetes Management', currentPrice: 70000 },
+  { courseID: '508CCF', name: 'Fellowship in Diabetes Management', currentPrice: 135000 },
+  { courseID: '82E26F', name: 'Fellowship in Integrated Management of Diabetes', currentPrice: 80000 },
+  { courseID: '300550', name: 'Professional Certificate in Obstetrics and Gynaecology', currentPrice: 42500 },
+  { courseID: 'A88DBB', name: 'Advanced Professional Certificate in Obstetrics and Gynaecology', currentPrice: 63750 },
+  { courseID: '43CA3E', name: 'Fellowship in Obstetrics and Gynaecology', currentPrice: 153000 },
+  { courseID: '3C7E73', name: 'Professional Certificate in Critical Care', currentPrice: 35000 },
+  { courseID: 'C61D75', name: 'Advanced Professional Certificate in Critical Care', currentPrice: 75000 },
+  { courseID: 'DFBC22', name: 'Fellowship in Critical Care', currentPrice: 145000 },
+  { courseID: 'FAF478', name: 'Professional Certificate in General Practice (Internal Medicine)', currentPrice: 35000 },
+  { courseID: '8B0ACC', name: 'Advanced Professional Certificate in General Practice (Internal Medicine)', currentPrice: 75000 },
+  { courseID: '2B7F22', name: 'Fellowship in General Practice (Internal Medicine)', currentPrice: 145000 },
+];
+
+// async function insertCourses(){
+//   try{
+//     await Course.deleteMany({}); // Optional: Clear existing documents in the course collection
+//     const insertResult = await Course.insertMany(courseData.map(course => ({
+//       courseID: course.courseID,
+//       name: course.name,
+//       currentPrice: course.currentPrice,
+//       currency: 'Rs. ',
+//     })));
+//     console.log(`Courses inserted: ${insertResult.length}`);
+//     console.log('All courses have been saved successfully.');
+//   }
+//   catch (error) {
+//     console.error('Error saving course data:', error);
+//   }
+// }
 
 module.exports = { mongoose, User, File, Request, Course, Session,UserSession,InstructorApplication };

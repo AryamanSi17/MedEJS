@@ -122,7 +122,6 @@ async (accessToken, refreshToken, profile, done) => {
 }
 ));
 
-
 passport.serializeUser((user, done) => {
 done(null, user.id);
 });
@@ -152,8 +151,6 @@ async function findOrCreateUser(profile) {
     return newUser.save();
   }
 };
-
-// ends
 
 app.get("/auth/google",
   passport.authenticate('google', { scope: ['profile', 'email'] })
@@ -735,11 +732,16 @@ app.post('/submitRequestForMore', async (req, res) => {
 //   }
 // });
 app.get('/buy-now/:courseID', async (req, res) => {
-  const course = {
-    name: "Fellowship in Critical Care",
-    price: 120000, // Price in INR
-    courseID: req.params.courseID
-  };
+  try{
+    const course=await Course.findOne({courseID:req.params.courseID});
+    if(!course){return res.status(404).send("Course Not found");
+  }
+  const courseData = {
+    name:course.name,
+    price:course.currentPrice,
+  }
+  
+
   const pageTitle = 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy';
   const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
   const metaKeywords = 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ';
@@ -747,26 +749,39 @@ app.get('/buy-now/:courseID', async (req, res) => {
   const canonicalLink = 'https://www.globalmedacademy.com/';
   // Add your merchantId, redirectUrl, and cancelUrl
   const merchantId = "2619634";
-  const redirectUrl = "http://localhost:3000/ccavResponseHandler";
+  const redirectUrl = "http://localhost:3000/user";
   const cancelUrl = "http://localhost:3000/ccavResponseHandler";
 
   res.render('dataFrom', { 
-    course: course, 
+    course: courseData, 
     merchantId: merchantId, 
     redirectUrl: redirectUrl, 
     cancelUrl: cancelUrl ,
     pageTitle,metaRobots,metaKeywords,ogDescription,canonicalLink,
     isBlogPage: false,
   });
+}
+catch(error){
+  console.error('Error fetching course data ',error);
+  res.status(500).send('Server error');
+}
 });
 // ccavRequestHandler.js integration
 app.post('/ccavRequestHandler', function(request, response) {
   var workingKey = "1E9B36C49F90A45CEDA3827239927264"; // Test working key
   var accessCode = "AVUX05KH13BU86XUUB"; // Test access code
   var encRequest = '';
-
+  
   // Convert the request body to a query string format
-  var formattedBody = qs.stringify(request.body);
+  var orderId = new Date().getTime(); // Simple example for generating an order ID
+  var courseName = request.body.courseName; 
+  // Add the order_id to the request body
+  var formattedBody = qs.stringify({
+    ...request.body,
+    order_id: orderId.toString(),
+    courseName:courseName, // Ensure it's a string if required by your payment gateway
+    // Add or adjust other fields as required by CCAvenue
+  });
 
   // Encrypt the formatted body
   encRequest = encrypt(formattedBody, workingKey);
@@ -830,8 +845,33 @@ app.post('/ccavResponseHandler', function(request, response) {
       htmlcode = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Response Handler</title></head><body><center><font size="4" color="blue"><b>Response Page</b></font><br>' + pData + '</center><br></body></html>';
       response.writeHeader(200, { "Content-Type": "text/html" });
       response.write(htmlcode);
+      var decryptedResponse = qs.parse(ccavResponse);
+   
+    var courseName = decryptedResponse.courseName;
       response.end();
+      console.log("Payment Response:", ccavResponse);
+
+      // Redirect the user to the /user page
+      response.redirect(`/user?courseName=${encodeURIComponent(courseName)}`);
   });
+});
+app.post('/user', async (req, res) => {
+  const userEmail=req.body.email;
+  const courseName = req.query.courseName;
+  console.log(courseName,userEmail);
+  try{
+    // Find the user by email and add the courseName to their coursesPurchased array
+    await User.findOneAndUpdate(
+      { email: userEmail },
+      { $addToSet: { coursesPurchased: courseName } }, // $addToSet prevents duplicates
+      { new: true, runValidators: true }
+    );
+    res.redirect('/user?purchase=success');
+  } catch(error){
+    console.error("Error updating user purchased course",error);
+    res.status(500).send('An error occured');
+  }
+
 });
 app.get('/send-payment-link/:courseID', async (req, res) => {
   const courseID = req.params.courseID;

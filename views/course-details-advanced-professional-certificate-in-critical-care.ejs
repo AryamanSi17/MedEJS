@@ -1008,21 +1008,14 @@
                                 <div class="inner">
 
                                     <!-- Start Viedo Wrapper  -->
-                                    <a class="video-popup-with-text video-popup-wrapper text-center popup-video sidebar-video-hidden mb--15"
-                                        href="https://www.youtube.com/watch?v=nA1Aqp0sPQo">
-                                        <div class="video-content">
-                                            <img class="w-100 rbt-radius" src="assets/images/others/video-01.jpg"
-                                                alt="Video Images">
-                                            <div class="position-to-top">
-                                                <span class="rbt-btn rounded-player-2 with-animation">
-                                                    <span class="play-icon"></span>
-                                                </span>
+                                    <div class="video-popup-with-text video-popup-wrapper text-center popup-video sidebar-video-hidden mb--15"
+                                                id="videoTrigger">
+                                                <div class="video-content">
+                                                    <img class="w-100 rbt-radius"
+                                                        src="assets/images/others/video-01.jpg" alt="Video Images">
+                                                   
+                                                </div>
                                             </div>
-                                            <span class="play-view-text d-block color-white"><i class="feather-eye"></i>
-                                                Preview
-                                                this course</span>
-                                        </div>
-                                    </a>
                                     <!-- End Viedo Wrapper  -->
 
                                     <div class="content-item-content">
@@ -1038,11 +1031,10 @@
                                             </div>
                                         </div>
                                         <div class="buy-now-btn mt--15">
-                                            <a class="rbt-btn btn-gradient icon-hover w-100 d-block text-center btn-unauthorised"
-                                                href="/pay">
-                                                <span class="btn-text">Buy Now</span>
-                                                <span class="btn-icon"><i class="feather-arrow-right"></i></span>
-                                            </a>
+                                            <form action="/buy-now/C61D75" method="get">
+                                                        
+                                                <button type="submit">Pay</button>
+                                            </form>
                                         </div>
 
                                         <span class="subtitle"><i class="feather-rotate-ccw"></i> 30-Day Money-Back
