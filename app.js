@@ -771,7 +771,7 @@ app.get('/buy-now/:courseID', async (req, res) => {
         price: course.currentPrice,
       },
       merchantId: "2619634",
-      redirectUrl: "http://localhost:3000/user",
+      redirectUrl: "http://globalmedacademy.com/user",
       cancelUrl: "http://localhost:3000/ccavResponseHandler",
       pageTitle: 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy',
       metaRobots: 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large',
