@@ -747,21 +747,24 @@ app.get('/buy-now/:courseID', async (req, res) => {
     const decoded = jwt.verify(token, JWT_SECRET);
     const user = await User.findById(decoded.userId);
     if (!user) {
+      logger.warn(`User not found with ID: ${decoded.userId}`);
       return res.status(404).send('User not found');
     }
 
-    // Generate a unique transaction ID - could be a utility function or from the payment gateway
-    const transactionId = new Date().getTime().toString(); // Simple placeholder, replace as needed
-
-    // Create the transaction record
+    const transactionId = new Date().getTime().toString();
+    logger.info(`Creating transaction for user ${user._id} and course ${course.name}`);
+    
     const newTransaction = await Transaction.create({
       transactionId,
       userId: user._id,
       courseName: course.name,
       amount: course.currentPrice,
-      currency: 'INR', // Adjust as necessary
+      currency: 'INR',
       status: 'pending',
     });
+
+    logger.info(`Transaction created with ID: ${transactionId} for user: ${user._id}`);
+    
 
     // Proceed with your payment preparation logic
     // Render payment form or redirect to payment gateway as before
@@ -867,42 +870,49 @@ app.post('/ccavResponseHandler', async function(request, response) {
       response.write(htmlcode);
       var decryptedResponse = qs.parse(ccavResponse);
    
-    var courseName = decryptedResponse.courseName;
       response.end();
       console.log("Payment Response:", ccavResponse);
 
       // Redirect the user to the /user page
       response.redirect(`/user?courseName=${encodeURIComponent(courseName)}`);
-  }); try {
-    var decryptedResponse = qs.parse(ccavResponse);
-    // Use transactionId from decryptedResponse to find the associated transaction
-    const transaction = await Transaction.findOne({ transactionId: decryptedResponse.transactionId }).populate('userId');
-    
-    if (!transaction) {
-        console.error('Transaction not found');
-        return response.status(404).send('Transaction not found');
-    }
-
-    // Security Note: Ensure that you validate the status and authenticity of the transaction.
-    // This might involve checking the payment status and possibly a checksum or signature provided by CCAvenue.
-
-    if (transaction && decryptedResponse.status === "Success") {
-        // Update the user's coursesPurchased array
-        await User.findByIdAndUpdate(transaction.userId, {
-            $addToSet: { coursesPurchased: transaction.courseName } // Use $addToSet to avoid duplicates
-        });
-
-        // Redirect or respond to indicate success
-        response.redirect('/user?purchase=success'); // Adjust redirect as needed
-    } else {
-        // Handle payment failure or invalid transaction
-        response.status(400).send('Payment verification failed or transaction is invalid.');
-    }
-} catch (error) {
-    console.error("Error processing payment response", error);
-    response.status(500).send('An error occurred during payment processing.');
-}
+  }); 
 });
+app.post('/webhook-success', async (req, res) => {
+  try {
+    logger.info('Processing webhook-success');
+      const encryptedData = req.body.encResp; // Assuming CCAvenue sends encrypted response
+      const decryptedData = decrypt(encryptedData, '1E9B36C49F90A45CEDA3827239927264'); // Use your working key
+      const transactionData = qs.parse(decryptedData);
+
+      if (transactionData.status === "Success") {
+          const transactionId = transactionData.orderId; // Or the appropriate field for the transaction ID
+          const courseName = transactionData.courseName;
+
+          // Find the associated transaction and user
+          const transaction = await Transaction.findOne({ transactionId }).populate('userId');
+          if (transaction) {
+              const userId = transaction.userId._id;
+              // Update the user's coursesPurchased array
+              await User.findByIdAndUpdate(userId, {
+                  $addToSet: { coursesPurchased: courseName }
+              });
+
+              // Optionally, update the transaction status in your DB
+              // ...
+
+              res.status(200).send('Webhook processed successfully');
+          } else {
+              res.status(404).send('Transaction not found');
+          }
+      } else {
+          res.status(400).send('Transaction not successful');
+      }
+  } catch (error) {
+      console.error("Error processing webhook", error);
+      res.status(500).send('Server error');
+  }
+});
+
 app.post('/user', async (req, res) => {
   const userEmail=req.body.email;
   const courseName = req.query.courseName;
