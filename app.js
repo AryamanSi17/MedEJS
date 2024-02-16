@@ -752,7 +752,7 @@ app.get('/buy-now/:courseID', async (req, res) => {
     }
 
     const transactionId = new Date().getTime().toString();
-    logger.info(`Creating transaction for user ${user._id} and course ${course.name}`);
+    console.log(`Creating transaction for user ${user._id} and course ${course.name}`);
     
     const newTransaction = await Transaction.create({
       transactionId,
@@ -763,7 +763,7 @@ app.get('/buy-now/:courseID', async (req, res) => {
       status: 'pending',
     });
 
-    logger.info(`Transaction created with ID: ${transactionId} for user: ${user._id}`);
+    console.log(`Transaction created with ID: ${transactionId} for user: ${user._id}`);
     
 
     // Proceed with your payment preparation logic
@@ -879,7 +879,7 @@ app.post('/ccavResponseHandler', async function(request, response) {
 });
 app.post('/webhook-success', async (req, res) => {
   try {
-    logger.info('Processing webhook-success');
+    console.log('Processing webhook-success');
       const encryptedData = req.body.encResp; // Assuming CCAvenue sends encrypted response
       const decryptedData = decrypt(encryptedData, '1E9B36C49F90A45CEDA3827239927264'); // Use your working key
       const transactionData = qs.parse(decryptedData);
