@@ -1,6 +1,6 @@
 <% if (isUserLoggedIn) { %>
     <!-- Include auth_header -->
-    <%- include('../auth_header') %>
+    <%- include('auth_header') %>
         <% } else { %>
             <!-- Include regular header -->
             <%- include('header') %>
@@ -144,19 +144,7 @@
                                                 <div class="video-content">
                                                     <img class="w-100 rbt-radius"
                                                         src="/assets/images/others/video-01.jpg" alt="Video Images">
-                                                    <video id="videoPlayer" controls style="display:none; width:100%;">
-                                                        <source src="/assets/videos/FellowshipDB.mp4" type="video/mp4">
-                                                        Your browser does not support the video tag.
-                                                    </video>
-                                                    <div class="position-to-top">
-                                                        <span class="rbt-btn rounded-player-2 with-animation"
-                                                            id="playIcon">
-                                                            <span class="play-icon"></span>
-                                                        </span>
-                                                    </div>
-                                                    <span class="play-view-text d-block color-white" id="previewText">
-                                                        <i class="feather-eye"></i> Preview this course
-                                                    </span>
+                                                   
                                                 </div>
                                             </div>
 
@@ -238,7 +226,7 @@
                                                     </div>
                                                     <hr class="mt--20">
 
-                                                    <div class="contact-with-us text-center">
+                                                    <!-- <div class="contact-with-us text-center">
                                                         <p class="rbt-badge-2 mt--10 justify-content-center w-100"><i
                                                                 class="feather-download"></i><a
                                                                 href="https://brochuresgma.blr1.digitaloceanspaces.com/Fellowship%20in%20Diabetes%20management_Jan2024.pdf"><strong>Course
@@ -257,7 +245,7 @@
                                                                 class="feather-phone mr--5"></i> Call Us: <a
                                                                 href="#"><strong>+91 97300 20462</strong></a></p>
                                                     </div>
-                                                    <br>
+                                                    <br> -->
                                                 </div>
                                             </div>
                                         </div>
