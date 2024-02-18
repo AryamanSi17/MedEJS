@@ -873,45 +873,52 @@ app.post('/ccavResponseHandler', async function(request, response) {
       response.end();
       console.log("Payment Response:", ccavResponse);
 
-      // Redirect the user to the /user page
-      response.redirect(`/user?courseName=${encodeURIComponent(courseName)}`);
   }); 
 });
+// Logging GET requests for debugging purposes
+app.get('/webhook-success', (req, res) => {
+  console.log('GET request received on webhook-success');
+  res.status(200).send('Webhook endpoint hit with GET request');
+});
 app.post('/webhook-success', async (req, res) => {
+  console.log('Webhook hit received with POST request');
   try {
-    console.log('Processing webhook-success');
-      const encryptedData = req.body.encResp; // Assuming CCAvenue sends encrypted response
-      const decryptedData = decrypt(encryptedData, '1E9B36C49F90A45CEDA3827239927264'); // Use your working key
-      const transactionData = qs.parse(decryptedData);
+    const encryptedData = req.body.encResp;
+    if (!encryptedData) {
+      console.log('No encrypted data received');
+      return res.status(400).send('No encrypted data');
+    }
 
-      if (transactionData.status === "Success") {
-          const transactionId = transactionData.orderId; // Or the appropriate field for the transaction ID
-          const courseName = transactionData.courseName;
+    const decryptedData = decrypt(encryptedData, '1E9B36C49F90A45CEDA3827239927264');
+    const transactionData = qs.parse(decryptedData);
 
-          // Find the associated transaction and user
-          const transaction = await Transaction.findOne({ transactionId }).populate('userId');
-          if (transaction) {
-              const userId = transaction.userId._id;
-              // Update the user's coursesPurchased array
-              await User.findByIdAndUpdate(userId, {
-                  $addToSet: { coursesPurchased: courseName }
-              });
+    if (transactionData.status === "Success") {
+      const transactionId = transactionData.orderId;
+      const courseName = transactionData.courseName;
 
-              // Optionally, update the transaction status in your DB
-              // ...
+      const transaction = await Transaction.findOne({ transactionId }).populate('userId');
+      if (transaction) {
+        const userId = transaction.userId._id;
+        await User.findByIdAndUpdate(userId, { $addToSet: { coursesPurchased: courseName } });
+        await Transaction.findByIdAndUpdate(transaction._id, { status: 'completed' });
 
-              res.status(200).send('Webhook processed successfully');
-          } else {
-              res.status(404).send('Transaction not found');
-          }
+        console.log(`Transaction ${transactionId} successfully processed for user ${userId}`);
+        res.status(200).send('Webhook processed successfully');
       } else {
-          res.status(400).send('Transaction not successful');
+        console.log('Transaction not found');
+        res.status(404).send('Transaction not found');
       }
+    } else {
+      console.log('Transaction not successful', transactionData);
+      res.status(400).send('Transaction not successful');
+    }
   } catch (error) {
-      console.error("Error processing webhook", error);
-      res.status(500).send('Server error');
+    console.error("Error processing webhook:", error);
+    res.status(500).send('Server error');
   }
 });
+
+
 
 app.post('/user', async (req, res) => {
   const userEmail=req.body.email;
@@ -919,11 +926,11 @@ app.post('/user', async (req, res) => {
   console.log(courseName,userEmail);
   try{
     // Find the user by email and add the courseName to their coursesPurchased array
-    await User.findOneAndUpdate(
-      { email: userEmail },
-      { $addToSet: { coursesPurchased: courseName } }, // $addToSet prevents duplicates
-      { new: true, runValidators: true }
-    );
+    // await User.findOneAndUpdate(
+    //   { email: userEmail },
+    //   { $addToSet: { coursesPurchased: courseName } }, // $addToSet prevents duplicates
+    //   { new: true, runValidators: true }
+    // );
     res.redirect('/user?purchase=success');
   } catch(error){
     console.error("Error updating user purchased course",error);
