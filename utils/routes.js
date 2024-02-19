@@ -87,7 +87,7 @@ function setRoutes(app) {
   });
 
   app.get("/become-teacher", function (req, res) {
-    const pageTitle = 'Become a Teacher/Instructor';
+    const pageTitle = 'Become a Mentor/Instructor';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'medical instructor, medical teacher, apply for medical instructor';
     const ogDescription = 'Medical Academic Instructor - Apply for medical teacher and shine your career with us.';
