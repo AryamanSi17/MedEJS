@@ -690,7 +690,8 @@ app.post('/user-interest-form', async (req, res) => {
 
   try {
       // Extract data directly from req.body here
-      const { name, phone, email, city, education, courseInterested, country } = req.body;
+      const { name, phone, email, city, education, course, country } = req.body;
+
 
       // Assuming you're directly constructing your Kit19 payload here
       const enquiryData = {
@@ -700,7 +701,8 @@ app.post('/user-interest-form', async (req, res) => {
           MobileNo: phone,
           CountryCode: "+91",
           EmailID: email,
-          CourseInterested: courseInterested,
+          City:city,
+          CourseInterested: course,
           SourceName: 'GoogleAd', // Static value for this route
           MediumName: 'LandingPage',
           CampaignName: 'Google'
