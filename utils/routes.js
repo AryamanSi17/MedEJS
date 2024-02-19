@@ -102,6 +102,22 @@ function setRoutes(app) {
       username: username, isBlogPage: false, firstname: firstname
     });
   });
+  app.get("/user-interest-form", function (req, res) {
+    const pageTitle = 'Be a part of GlobalMed Academy';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = 'medical instructor, medical teacher, apply for medical instructor';
+    const ogDescription = 'Medical Academic Instructor - Apply for medical teacher and shine your career with us.';
+    const canonicalLink = 'https://www.globalmedacademy.com/user-interest-form';
+    const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
+    res.render('user-interest-form', {
+      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
+      username: username, isBlogPage: false, firstname: firstname
+    });
+  });
   app.get("/refer-and-earn", isAuthenticated, function (req, res) {
     const pageTitle = 'Refer and Earn';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';

@@ -3,18 +3,18 @@ async function getTokenGuid(userLogin){
     const response= await axios.get(`http://sipapi.kit19.com/Enquiry/TokenGuidOPR?UserName=${userLogin}&Mode=Get`);
     return response.data.Details;
 }
-async function saveEnquiry(data){
+async function saveEnquiry(data,marketingInfo){
     const tokenGuid=process.env.TOKEN_GUID
     const enquiryData={
         Username: process.env.KIT19_USERNAME,
-        Password: process.env.KIT19_PASSWORD,
+        Password: "Global@123#",
         PersonName: data.name,
         MobileNo: data.phone,
-        CountryCode:"+91",
+        CountryCode: "+91",
         EmailID: data.email,
-        CourseInterested: data.course,
-        // ... Add other fields as required, and provide default values if necessary
-        SourceName: "ramyogi", // Replace with actual source name
+        CourseInterested: data.courseInterested,
+        ...marketingInfo, // Assuming the API can accept this
+        // ... Add other fields as required, and provide default values if necessary // Replace with actual source name
         // ...
     };
     const response = await axios.post(`http://sipapi.kit19.com/Enquiry/${tokenGuid}/AddEnquiryAPI`, enquiryData, {

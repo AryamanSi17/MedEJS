@@ -159,10 +159,21 @@ const NonMoodleUserSchema = new Schema({
   ],
   // Include any other fields you find necessary
 });
+const userInterestSchema = new mongoose.Schema({
+  name: String,
+  phone: String,
+  email: String,
+  city: String,
+  education: String,
+  courseInterested: String,
+  country: String
+});
+
+const UserInterest = mongoose.model('UserInterest', userInterestSchema);
 
 const Transaction = mongoose.model('Transaction', transactionSchema);
 
 const NonMoodleUser = mongoose.model('NonMoodleUser', NonMoodleUserSchema);
 
 // Export the new model along with others
-module.exports = { mongoose, Course, User, File, Request, Session, UserSession, InstructorApplication, Transaction, NonMoodleUser };
+module.exports = { mongoose, Course, User, File, Request, Session, UserSession, InstructorApplication, Transaction, NonMoodleUser, UserInterest };

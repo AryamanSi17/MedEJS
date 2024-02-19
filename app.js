@@ -6,7 +6,7 @@ const ejs = require("ejs");
 const passportLocalMongoose = require("passport-local-mongoose");
 const passport = require("passport");
 const cookieSession = require('cookie-session')
-const { mongoose, User, Course, Request, Session, UserSession, InstructorApplication,Transaction, NonMoodleUser } = require("./utils/db"); // Import from db.js
+const { mongoose, User, Course, Request, Session, UserSession, InstructorApplication,Transaction, NonMoodleUser ,UserInterest} = require("./utils/db"); // Import from db.js
 const db = require('./utils/db');
 const nodemailer = require('nodemailer');
 const mongodb = require("mongodb");
@@ -665,11 +665,16 @@ const courseid = '9'; // Replace with the actual Course ID
 //Kit19Integration
 app.post('/submitRequestForMore', async (req, res) => {
   try {
-    const response = await saveEnquiry(req.body);
+    const marketingInfo = {
+      SourceName: "website",
+      MediumName: "Inquiryform",
+      CampaignName: "organic",
+  };
+    const response = await saveEnquiry(req.body,marketingInfo);
 
     console.log("Kit19 Response:", response);  // Log the entire response
 
-    if (response.data.Status === 0) {
+    if (response.data.Status === 1) {
       res.send('Form data submitted successfully. Redirecting to the homepage...<meta http-equiv="refresh" content="2;url=/">');
     } else {
       res.status(400).send('Failed to save enquiry.');
@@ -679,6 +684,52 @@ app.post('/submitRequestForMore', async (req, res) => {
     res.status(500).send('Internal server error.');
   }
 });
+
+app.post('/user-interest-form', async (req, res) => {
+  console.log(req.body); // Ensure req.body is correctly logged and structured as expected
+
+  try {
+      // Extract data directly from req.body here
+      const { name, phone, email, city, education, courseInterested, country } = req.body;
+
+      // Assuming you're directly constructing your Kit19 payload here
+      const enquiryData = {
+          Username: process.env.KIT19_USERNAME,
+          Password: "Global@123#",
+          PersonName: name, // Directly use the destructured variables
+          MobileNo: phone,
+          CountryCode: "+91",
+          EmailID: email,
+          CourseInterested: courseInterested,
+          SourceName: 'GoogleAd', // Static value for this route
+          MediumName: 'LandingPage',
+          CampaignName: 'Google'
+      };
+
+      // Example Kit19 API call with axios or similar library
+      const kit19Response = await axios.post(`http://sipapi.kit19.com/Enquiry/${process.env.TOKEN_GUID}/AddEnquiryAPI`, enquiryData, {
+          headers: {
+              'Content-Type': 'application/json'
+          }
+      });
+
+      console.log("Kit19 Response:", kit19Response.data);
+
+      if (kit19Response.data.Status === 1) {
+          res.send('<script>alert("Form data submitted successfully."); window.location.href = "/";</script>');
+      } else {
+          res.send('<script>alert("Failed to save enquiry to Kit19."); window.location.href = "/";</script>');
+      }
+  } catch (error) {
+      console.error('Error:', error);
+      res.status(500).send('Internal server error.');
+  }
+});
+
+
+
+
+
 
 //  lolo
 // app.get('/buy-now/:courseID', async (req, res) => {

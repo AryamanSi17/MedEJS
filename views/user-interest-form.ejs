@@ -1,0 +1,256 @@
+<% if (isUserLoggedIn) { %>
+    <!-- Include auth_header -->
+    <%- include('auth_header') %>
+        <% } else { %>
+            <!-- Include regular header -->
+            <%- include('header') %>
+                <% } %>
+<style>
+
+.toast {
+  visibility: hidden; /* Hidden by default */
+  min-width: 250px;
+  margin-left: -125px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  padding: 16px;
+  position: fixed;
+  z-index: 1;
+  right: 20px;
+  bottom: 30px;
+  font-size: 17px;
+  white-space: nowrap;
+}
+
+/* Show the toast when needed */
+.toast.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;} 
+  to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;} 
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+</style>
+
+                    <!-- Start breadcrumb Area -->
+                    <div class="rbt-breadcrumb-default ptb--100 ptb_md--50 ptb_sm--30 bg-gradient-1">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="breadcrumb-inner text-center">
+                                        <h1 class="title" style="color: rgb(0, 75, 161);">Join Us</h1>
+                                        <ul class="page-list">
+                                            <li class="rbt-breadcrumb-item"><a href="/">Home</a></li>
+                                            <li>
+                                                <div class="icon-right"><i class="feather-chevron-right"></i></div>
+                                            </li>
+                                            <li class="rbt-breadcrumb-item active">User Interest Form</li>
+                                        </ul>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Breadcrumb Area -->
+                    <div class="rbt-become-area bg-color-white rbt-section-gap">
+                        <div class="container">
+                            <div class="row row row--30">
+
+                                <div class="col-lg-6">
+                                    <div class="addmission-guide-content pl--50 pl_sm--0 pl_md--0 pl_lg--0">
+                                        <!-- <h3 class="title" style="color: rgb(0, 75, 161);">Be a part of <br> GlobalMed Academy</h3> -->
+                                        <p>Welcome learner! You have reached the right destination while searching for
+                                            medical fellowships and upskilling programs. We at the GlobalMed Academy
+                                            understand that, as a future fellow, you are looking for specialized
+                                            training that offers the opportunity to gain expertise in a subspecialty
+                                            area, at your convenient timing. We offer courses created by renowned
+                                            medical scholars, integrating their practical and theoretical expertise into
+                                            the curriculum.</p>
+                                        <p>With state-of-the-art technology, GlobalMed Academy ensures an engaging and
+                                            effective learning journey, preparing students for real-world medical
+                                            challenges. Our top fellowship programs after MBBS for Doctors & healthcare
+                                            professional include – </p>
+                                        <ul>
+                                            <li>
+                                                Fellowship in Diabetes Mellitus
+                                            </li>
+                                            <li>Fellowship in Integrated Management of Diabetes Mellitus</li>
+                                            <li>Fellowship In Critical Care Medicine</li>
+                                            <li>Fellowship In Internal Medicine (General Practice)</li>
+                                            <li>Fellowship in Paediatrics</li>
+                                            <li>Fellowship in Gynaecology and Obstetrics </li>
+                                            <li>Fellowship In Emergency Medicine</li>
+                                            <li>Fellowship in Family Medicine</li>
+                                        </ul>
+                                        <p>In addition to above fellowship programs after MBBS, we also offer continuous
+                                            medical learning opportunities for non-MBBS medical professionals including
+                                            AYUSH and BDS graduates. Please register your interest to connect. </p>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="">
+                                        <img class="w-100 rbt-radius" src="assets/images/others/video-04.jpg"
+                                            alt="Video Images">
+                                        <!-- <a class="rbt-btn btn-white rounded-player popup-video position-to-top" href="https://www.youtube.com/watch?v=nA1Aqp0sPQo">
+                            <span><i class="feather-play"></i></span>
+                        </a> -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row pt--60 g-5">
+                                <div class="col-lg-4">
+                                    <div class="thumbnail">
+                                        <img class="radius-10 w-100" src="assets/images/tab/userinterest.png" alt="Be a part of Globalm=Med Academy
+                        ">
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-8">
+                                    <div class="rbt-contact-form contact-form-style-1 max-width-auto">
+                                        <hr class="mb--30">
+                                        <form action="/user-interest-form" class="row row--15" method="post">
+                                            <div id="billing-form">
+                                                <div class="row">
+
+                                                    <div class="col-md-6 col-12 mb--20">
+                                                        <label>Name</label>
+                                                        <input type="text" name="name">
+                                                        <!-- Ensure the name attribute is set -->
+                                                    </div>
+                                                    <div class="col-md-6 col-12 mb--20">
+                                                        <label>Mobile</label>
+                                                        <input type="number" name="phone">
+                                                        <!-- Changed to phone to match schema -->
+                                                    </div>
+                                                    <div class="col-md-6 col-12 mb--20">
+                                                        <label>Email</label>
+                                                        <input type="email" name="email">
+                                                    </div>
+                                                    <div class="col-md-6 col-12 mb--20">
+                                                        <label>City</label>
+                                                        <input type="text" name="city">
+                                                    </div>
+                                                    <div class="col-md-6 col-12 mb--20">
+                                                        <label>Education</label>
+                                                        <input type="text" name="education">
+                                                    </div>
+                                                    <div class="col-md-6 col-12 mb--20">
+                                                        <label>Course Intersted</label>
+                                                        <div class="rbt-modern-select bg-transparent height-45">
+                                                            <select class="w-100" name="courseInterested">
+                                                                <option value="">Select a Course</option>
+                                                                <option value="PCDM">Professional Certificate in
+                                                                    Diabetes Management</option>
+                                                                <option value="ACDM">Advance Certificate in Diabetes
+                                                                    Management</option>
+                                                                <option value="FDM">Fellowship in Diabetes Management
+                                                                </option>
+                                                                <option value="PCC">Professional Certificate in Critical
+                                                                    Care</option>
+                                                                <option value="ACC">Advance Certificate in Critical Care
+                                                                </option>
+                                                                <option value="FCC">Fellowship in Critical Care</option>
+                                                                <option value="PCGP">Professional Certificate in General
+                                                                    Practice</option>
+                                                                <option value="ACGP">Advance Certificate in General
+                                                                    Practice</option>
+                                                                <option value="FGP">Fellowship in General Practice
+                                                                </option>
+                                                                <option value="PCIM">Professional Certificate in
+                                                                    Internal Medicine</option>
+                                                                <option value="ACIM">Advance Certificate in Internal
+                                                                    Medicine</option>
+                                                                <option value="FIM">Fellowship in Internal Medicine
+                                                                </option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 col-12 mb--20">
+                                                        <label>Country</label>
+                                                        <input type="text" id="country" name="country"
+                                                            placeholder="India" value="India" readonly
+                                                            style="background-color: #f0f0f0;">
+                                                    </div>
+                                                    <input type="hidden" name="source" value="GoogleAd">
+                                                    <input type="hidden" name="medium" value="LandingPage">
+                                                    <input type="hidden" name="campaign" value="Google">
+
+                                                </div>
+                                                <div class="col-lg-12">
+                                                    <div class="form-submit-group">
+                                                        <button type="submit"
+                                                            class="rbt-btn btn-md btn-gradient hover-icon-reverse w-100">
+                                                            <span class="icon-reverse-wrapper">
+                                                                <span class="btn-text">Submit</span>
+                                                                <span class="btn-icon"><i
+                                                                        class="feather-arrow-right"></i></span>
+                                                                <span class="btn-icon"><i
+                                                                        class="feather-arrow-right"></i></span>
+                                                            </span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            var form = document.querySelector('form[data-form="userInterest"]');
+                            form.addEventListener('submit', function(e) {
+                                e.preventDefault(); // Stop the form from submitting normally
+                        
+                                var formData = new FormData(this);
+                        
+                                fetch('/user-interest-form', {
+                                    method: 'POST',
+                                    body: formData
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    // Log the success message, but you could also use alert(data.message) if you need to show a message
+                                    console.log(data.message); // Or use alert(data.message) if you prefer a popup message
+                                    // Reload the page after a short delay to show changes or reset form state
+                                    setTimeout(() => window.location.reload(), 2000);
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    // Optionally, display an error message or simply reload the page
+                                    setTimeout(() => window.location.reload(), 2000);
+                                });
+                            });
+                        });
+                        </script>
+                        
+                        
+                        
+                        
