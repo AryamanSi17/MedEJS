@@ -5,52 +5,80 @@
             <!-- Include regular header -->
             <%- include('header') %>
                 <% } %>
-<style>
+                    <style>
+                        .toast {
+                            visibility: hidden;
+                            /* Hidden by default */
+                            min-width: 250px;
+                            margin-left: -125px;
+                            background-color: #333;
+                            color: #fff;
+                            text-align: center;
+                            border-radius: 2px;
+                            padding: 16px;
+                            position: fixed;
+                            z-index: 1;
+                            right: 20px;
+                            bottom: 30px;
+                            font-size: 17px;
+                            white-space: nowrap;
+                        }
 
-.toast {
-  visibility: hidden; /* Hidden by default */
-  min-width: 250px;
-  margin-left: -125px;
-  background-color: #333;
-  color: #fff;
-  text-align: center;
-  border-radius: 2px;
-  padding: 16px;
-  position: fixed;
-  z-index: 1;
-  right: 20px;
-  bottom: 30px;
-  font-size: 17px;
-  white-space: nowrap;
-}
+                        /* Show the toast when needed */
+                        .toast.show {
+                            visibility: visible;
+                            -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+                            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+                        }
 
-/* Show the toast when needed */
-.toast.show {
-  visibility: visible;
-  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
-  animation: fadein 0.5s, fadeout 0.5s 2.5s;
-}
+                        @-webkit-keyframes fadein {
+                            from {
+                                bottom: 0;
+                                opacity: 0;
+                            }
 
-@-webkit-keyframes fadein {
-  from {bottom: 0; opacity: 0;} 
-  to {bottom: 30px; opacity: 1;}
-}
+                            to {
+                                bottom: 30px;
+                                opacity: 1;
+                            }
+                        }
 
-@keyframes fadein {
-  from {bottom: 0; opacity: 0;}
-  to {bottom: 30px; opacity: 1;}
-}
+                        @keyframes fadein {
+                            from {
+                                bottom: 0;
+                                opacity: 0;
+                            }
 
-@-webkit-keyframes fadeout {
-  from {bottom: 30px; opacity: 1;} 
-  to {bottom: 0; opacity: 0;}
-}
+                            to {
+                                bottom: 30px;
+                                opacity: 1;
+                            }
+                        }
 
-@keyframes fadeout {
-  from {bottom: 30px; opacity: 1;}
-  to {bottom: 0; opacity: 0;}
-}
-</style>
+                        @-webkit-keyframes fadeout {
+                            from {
+                                bottom: 30px;
+                                opacity: 1;
+                            }
+
+                            to {
+                                bottom: 0;
+                                opacity: 0;
+                            }
+                        }
+
+                        @keyframes fadeout {
+                            from {
+                                bottom: 30px;
+                                opacity: 1;
+                            }
+
+                            to {
+                                bottom: 0;
+                                opacity: 0;
+                            }
+                        }
+                    </style>
 
                     <!-- Start breadcrumb Area -->
                     <div class="rbt-breadcrumb-default ptb--100 ptb_md--50 ptb_sm--30 bg-gradient-1">
@@ -222,35 +250,333 @@
                             </div>
                         </div>
                     </div>
-                
+                    <br>
+                    <br>
+                    <br><br><br> <br><br><br>
+                    <div class="rbt-section-overlayping-top rbt-section-gapBottom masonary-wrapper-activation">
+                        <div class="container">
+                            <h1 class="title" style="color: rgb(0, 75, 161);">Trending Courses</h1>
+                            <!-- Start Card Area -->
+                            <div class="row row--15">
+                                <div class="col-lg-12">
+                                    <div class="mesonry-list grid-metro2">
+                                        <div class="resizer"></div>
+                                        <!-- Start Single Card  -->
+                                        <!-- Start Single Card  -->
+                                        <div class="maso-item cat--3 cat--4">
+                                            <div class="rbt-card variation-01 rbt-hover card-list-2">
+                                                <div class="rbt-card-img">
+                                                    <a href="/course-details-fellowship-in-diabetes-management">
+                                                        <img src="assets/images/course/course-list-01b.jpg"
+                                                            alt="Card image">
+                                                    </a>
+                                                </div>
+                                                <div class="rbt-card-body">
+                                                    <div class="rbt-card-top">
+                                                        <div class="rbt-review">
+                                                            <div class="rating">
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star half"></i>
+                                                            </div>
+                                                            <span class="rating-count"></span>
+                                                        </div>
+                                                        <div class="rbt-bookmark-btn">
+                                                            <!-- <a class="rbt-round-btn" title="Bookmark" href="#"><i
+                                                                    class="feather-bookmark"></i></a> -->
+                                                        </div>
+                                                    </div>
+
+                                                    <h4 class="rbt-card-title"><a
+                                                            href="/course-details-fellowship-in-diabetes-management">Fellowship
+                                                            in Diabetes Management</a>
+                                                    </h4>
+
+                                                    <ul class="rbt-meta">
+
+                                                        <li><i class="feather-users"></i>Batch Starts-</li>
+                                                        <li class="hola"><i class="feather-book"></i>15 Mar,2024</li>
+                                                        <li><i class="feather-clock"></i>12 Months</li>
+                                                    </ul>
+
+                                                    <p class="rbt-card-text">Learn to address diabetes complications
+                                                        and become expert</p>
+                                                    <div class="rbt-author-meta mb--10">
+                                                        <div class="rbt-avater">
+                                                            <a href="#">
+                                                                <img src="assets/images/MedicollLogos/Diabeteslogos/eIntegrity_logo.jpg"
+                                                                    alt="eIntegrity">
+                                                                <img src="assets/images/MedicollLogos/Diabeteslogos/HEE_logo.jpg"
+                                                                    alt="Health Education England">
+                                                                <img src="assets/images/MedicollLogos/Diabeteslogos/NHSGEP logo.jpg"
+                                                                    alt="Genomics Education Programme">
+                                                                <img src="assets/images/MedicollLogos/Diabeteslogos/NHSLW logo.jpg"
+                                                                    alt="Liverpool Women's NHS Foundation Trust">
+                                                                <img src="assets/images/MedicollLogos/Diabeteslogos/RCGP logo.jpg"
+                                                                    alt="Royal College of General Practitioners">
+                                                                <img src="assets/images/MedicollLogos/Diabeteslogos/UOL logo.jpg"
+                                                                    alt="University of Pool">
+                                                            </a>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="rbt-card-bottom">
+                                                        <div class="rbt-price">
+                                                            <span class="current-price">Rs 1,35,000</span>
+                                                            <span class="off-price">Rs 1,45,000</span>
+                                                        </div>
+                                                        <a class="rbt-btn-link"
+                                                            href="/course-details-fellowship-in-diabetes-management">Learn
+                                                            More<i class="feather-arrow-right"></i></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- End Single Card  -->
+                                        <div class="maso-item cat--3 cat--4">
+                                            <div class="rbt-card variation-01 rbt-hover card-list-2">
+                                                <div class="rbt-card-img">
+                                                    <a href="/course-details-fellowship-in-integrated-diabetes-management">
+                                                        <img src="assets/images/course/course-list-01b.jpg"
+                                                            alt="Card image">
+                                                    </a>
+                                                </div>
+                                                <div class="rbt-card-body">
+                                                    <div class="rbt-card-top">
+                                                        <div class="rbt-review">
+                                                            <div class="rating">
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star half"></i>
+                                                            </div>
+                                                            <span class="rating-count"></span>
+                                                        </div>
+                                                        <div class="rbt-bookmark-btn">
+                                                            <!-- <a class="rbt-round-btn" title="Bookmark" href="#"><i
+                                                                    class="feather-bookmark"></i></a> -->
+                                                        </div>
+                                                    </div>
+
+                                                    <h4 class="rbt-card-title"><a
+                                                            href="/course-details-fellowship-in-integrated-diabetes-management">Fellowship
+                                                            in Integrated Management of Diabetes</a>
+                                                    </h4>
+
+                                                    <ul class="rbt-meta">
+
+                                                        <li><i class="feather-users"></i>Batch Starts-</li>
+                                                        <li class="hola"><i class="feather-book"></i>15 Mar,2024</li>
+                                                        <li><i class="feather-clock"></i>12 Months</li>
+                                                    </ul>
+
+                                                    <p class="rbt-card-text">Learn to address diabetes complications
+                                                        and become expert</p>
+                                                    <div class="rbt-author-meta mb--10">
+                                                        <div class="rbt-avater">
+                                                            <a href="#">
+                                                                <img src="assets/images/MedicollLogos/Diabeteslogos/eIntegrity_logo.jpg"
+                                                                    alt="eIntegrity">
+                                                                <img src="assets/images/MedicollLogos/Diabeteslogos/HEE_logo.jpg"
+                                                                    alt="Health Education England">
+                                                                <img src="assets/images/MedicollLogos/Diabeteslogos/NHSGEP logo.jpg"
+                                                                    alt="Genomics Education Programme">
+                                                                <img src="assets/images/MedicollLogos/Diabeteslogos/NHSLW logo.jpg"
+                                                                    alt="Liverpool Women's NHS Foundation Trust">
+                                                                <img src="assets/images/MedicollLogos/Diabeteslogos/RCGP logo.jpg"
+                                                                    alt="Royal College of General Practitioners">
+                                                                <img src="assets/images/MedicollLogos/Diabeteslogos/UOL logo.jpg"
+                                                                    alt="University of Pool">
+                                                            </a>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="rbt-card-bottom">
+                                                        <div class="rbt-price">
+                                                            <span class="current-price">Rs 80,000</span>
+                                                            <span class="off-price">Rs 1,00,000</span>
+                                                        </div>
+                                                        <a class="rbt-btn-link"
+                                                            href="/course-details-fellowship-in-integrated-diabetes-management">Learn
+                                                            More<i class="feather-arrow-right"></i></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                       
+                                        <!-- End Single Card  -->
+
+                                        
+                                        <!-- Start Single Card  -->
+                                        <div class="maso-item cat--3 cat--4">
+                                            <div class="rbt-card variation-01 rbt-hover card-list-2">
+                                                <div class="rbt-card-img">
+                                                    <a href="/course-details-fellowship-in-critical-care">
+                                                        <img src="assets/images/course/course-list-03b.jpg"
+                                                            alt="Card image">
+                                                    </a>
+                                                </div>
+                                                <div class="rbt-card-body">
+                                                    <div class="rbt-card-top">
+                                                        <div class="rbt-review">
+                                                            <div class="rating">
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star half"></i>
+                                                            </div>
+                                                            <span class="rating-count"></span>
+                                                        </div>
+                                                        <div class="rbt-bookmark-btn">
+                                                            <!-- <a class="rbt-round-btn" title="Bookmark" href="#"><i
+                                                                    class="feather-bookmark"></i></a> -->
+                                                        </div>
+                                                    </div>
+
+                                                    <h4 class="rbt-card-title"><a
+                                                            href="/course-details-fellowship-in-critical-care">Fellowship
+                                                            in Critical Care</a>
+                                                    </h4>
+                                                    <br>
+                                                    <ul class="rbt-meta">
+
+                                                        <li><i class="feather-users"></i>Batch Starts-</li>
+                                                        <li class="hola"><i class="feather-book"></i>15 Mar,2024</li>
+                                                        <li><i class="feather-clock"></i>12 Months</li>
+                                                    </ul>
+
+                                                    <p class="rbt-card-text">Provide comprehensive ICU care & management
+                                                    </p>
+                                                    <div class="rbt-author-meta mb--10">
+                                                        <div class="rbt-avater">
+                                                            <a href="#">
+                                                                <img src="assets/images/MedicollLogos/CriticalCarelogos/eIntegrity_logo.jpg"
+                                                                    alt="eIntegrity">
+                                                                <img src="assets/images/MedicollLogos/CriticalCarelogos/HEE_logo.jpg"
+                                                                    alt="Health Education England">
+                                                                <img src="assets/images/MedicollLogos/CriticalCarelogos/Intensive care logo.jpg"
+                                                                    alt="Health Education England">
+                                                                <br> <img
+                                                                    src="assets/images/MedicollLogos/CriticalCarelogos/RCOA_logo.jpg"
+                                                                    alt="Health Education England">
+                                                            </a>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="rbt-card-bottom">
+                                                        <div class="rbt-price">
+                                                            <span class="current-price">Rs 1,45,000</span>
+                                                            <span class="off-price">Rs 1,55,000</span>
+                                                        </div>
+                                                        <a class="rbt-btn-link"
+                                                            href="/course-details-fellowship-in-critical-care">Learn
+                                                            More<i class="feather-arrow-right"></i></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- End Single Card  -->
+
+                                        <div class="maso-item cat--3 cat--4">
+                                            <div class="rbt-card variation-01 rbt-hover card-list-2">
+                                                <div class="rbt-card-img">
+                                                    <a href="/course-details-fellowship-in-general-practice">
+                                                        <img src="assets/images/course/course-list-06a.jpg"
+                                                            alt="Card image">
+                                                    </a>
+                                                </div>
+                                                <div class="rbt-card-body">
+                                                    <div class="rbt-card-top">
+                                                        <div class="rbt-review">
+                                                            <div class="rating">
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star half"></i>
+                                                            </div>
+                                                            <span class="rating-count"></span>
+                                                        </div>
+                                                        <div class="rbt-bookmark-btn">
+                                                            <!-- <a class="rbt-round-btn" title="Bookmark" href="#"><i
+                                                                    class="feather-bookmark"></i></a> -->
+                                                        </div>
+                                                    </div>
+
+                                                    <h4 class="rbt-card-title"><a
+                                                            href="/course-details-fellowship-in-general-practice">Fellowship
+                                                            in General Practice (Internal Medicine) </a>
+                                                    </h4>
+
+                                                    <ul class="rbt-meta">
+
+                                                        <li><i class="feather-users"></i>Batch Starts-</li>
+                                                        <li class="hola"><i class="feather-book"></i>15 Mar,2024</li>
+                                                        <li><i class="feather-clock"></i>6 Months</li>
+                                                    </ul>
+                                                    <div class="rbt-author-meta mb--10">
+                                                        <div class="rbt-avater">
+                                                            <a href="#">
+                                                                <img src="assets/images/MedicollLogos/Cardologylogos/eIntegrity_logo.jpg"
+                                                                    alt="eIntegrity">
+                                                                <img src="assets/images/MedicollLogos/Cardologylogos/elfh_logo.png"
+                                                                    alt="eLearning for Health Care">
+                                                                <img src="assets/images/MedicollLogos/Cardologylogos/HEE_logo.jpg"
+                                                                    alt="Health Education England">
+                                                            </a>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="rbt-card-bottom">
+                                                        <div class="rbt-price">
+                                                            <span class="current-price">Rs 1,45,000</span>
+                                                            <span class="off-price">Rs 1,55,000</span>
+                                                        </div>
+                                                        <a class="rbt-btn-link"
+                                                            href="/course-details-fellowship-in-general-practice">Learn
+                                                            More<i class="feather-arrow-right"></i></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- End Single Card  -->
+                                        
+                                       
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                     <script>
-                        document.addEventListener('DOMContentLoaded', function() {
+                        document.addEventListener('DOMContentLoaded', function () {
                             var form = document.querySelector('form[data-form="userInterest"]');
-                            form.addEventListener('submit', function(e) {
+                            form.addEventListener('submit', function (e) {
                                 e.preventDefault(); // Stop the form from submitting normally
-                        
+
                                 var formData = new FormData(this);
-                        
+
                                 fetch('/user-interest-form', {
                                     method: 'POST',
                                     body: formData
                                 })
-                                .then(response => response.json())
-                                .then(data => {
-                                    // Log the success message, but you could also use alert(data.message) if you need to show a message
-                                    console.log(data.message); // Or use alert(data.message) if you prefer a popup message
-                                    // Reload the page after a short delay to show changes or reset form state
-                                    setTimeout(() => window.location.reload(), 2000);
-                                })
-                                .catch(error => {
-                                    console.error('Error:', error);
-                                    // Optionally, display an error message or simply reload the page
-                                    setTimeout(() => window.location.reload(), 2000);
-                                });
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        // Log the success message, but you could also use alert(data.message) if you need to show a message
+                                        console.log(data.message); // Or use alert(data.message) if you prefer a popup message
+                                        // Reload the page after a short delay to show changes or reset form state
+                                        setTimeout(() => window.location.reload(), 2000);
+                                    })
+                                    .catch(error => {
+                                        console.error('Error:', error);
+                                        // Optionally, display an error message or simply reload the page
+                                        setTimeout(() => window.location.reload(), 2000);
+                                    });
                             });
                         });
-                        </script>
-                        
-                        
-                        
-                        
+                    </script>
+                    <%- include ('footer'); %>
