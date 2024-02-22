@@ -681,6 +681,14 @@ function setRoutes(app) {
       canonicalLink = 'https://www.globalmedacademy.com/blog/empower-your-expertise-in-professional-certificate-in-diabetes-mellitus-transforming-care-for-a-healthier-tomorrow';
       renderView = 'blog-details-4'; // Assuming you'll create a new view for this blog post
     }
+    else if (blogTitle === "how-to-navigate-the-complexities-of-diabetes-care-join-gma-fellowship-in-diabetes-management-program") {
+      pageTitle = 'How to Navigate the Complexities of Diabetes Care: Join GMA’s ‘Fellowship in Diabetes Management’ Program';
+      metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+      metaKeywords = 'Medical Research, Future of Medicine, Medical Innovations';
+      ogDescription = 'Dive deep into the advancements and potential of future medical research.';
+      canonicalLink = 'https://www.globalmedacademy.com/blog/how-to-navigate-the-complexities-of-diabetes-care-join-gma-fellowship-in-diabetes-management-program';
+      renderView = 'blog-details-6'; // Assuming you'll create a new view for this blog post
+    }
   
     // Check to ensure we have pageTitle (and by extension, the other meta data),
     // which ensures the blogTitle provided in the URL is valid.
