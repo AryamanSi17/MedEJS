@@ -103,7 +103,7 @@ function setRoutes(app) {
     });
   });
   app.get("/user-interest-form", function (req, res) {
-    const pageTitle = 'Be a part of GlobalMed Academy';
+    const pageTitle = 'User Interest Form - GlobalMed Academy';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'medical instructor, medical teacher, apply for medical instructor';
     const ogDescription = 'Medical Academic Instructor - Apply for medical teacher and shine your career with us.';
