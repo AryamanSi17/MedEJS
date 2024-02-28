@@ -945,6 +945,8 @@ app.post('/webhook-success', async (req, res) => {
     const decryptedData = decrypt(encryptedData, '1E9B36C49F90A45CEDA3827239927264');
     const transactionData = qs.parse(decryptedData);
 
+    console.log('Decrypted Transaction Data:', transactionData); // Log for debugging
+
     if (transactionData.status === "Success") {
       const transactionId = transactionData.orderId;
       const courseName = transactionData.courseName;
@@ -970,6 +972,8 @@ app.post('/webhook-success', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+
 
 
 
