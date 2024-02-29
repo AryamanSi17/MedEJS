@@ -962,16 +962,23 @@ app.post('/webhook-success', async (req, res) => {
 
   try {
       const encryptedData = req.body.encResp;
+      console.log('Encrypted Data:', encryptedData); // Verify encrypted data is received
       if (!encryptedData) {
           console.log('No encrypted data received');
           return res.status(400).send('No encrypted data');
       }
 
-      // Use the customDecrypt function with the provided working key
-      const decryptedData = customDecrypt(encryptedData, '41F0052B4F5A9278198DEED49BED2A4D');
-      const transactionData = qs.parse(decryptedData);
+      // Attempt decryption and log possible errors
+      let decryptedData;
+      try {
+        decryptedData = customDecrypt(encryptedData, '41F0052B4F5A9278198DEED49BED2A4D');
+      } catch (decryptError) {
+        console.error("Decryption error:", decryptError);
+        return res.status(500).send('Error decrypting data');
+      }
 
-      console.log('Decrypted Transaction Data:', transactionData);
+      console.log('Decrypted Transaction Data:', decryptedData); // Verify format before parsing
+      const transactionData = qs.parse(decryptedData);
 
       if (transactionData.status === "Success") {
           const transactionId = transactionData.orderId;
