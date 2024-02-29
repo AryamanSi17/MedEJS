@@ -790,7 +790,7 @@ app.get('/buy-now/:courseID', async (req, res) => {
       return res.status(404).send("Course Not found");
     }
 
-    // Assume user identification logic is here, e.g., from a JWT token
+    // User identification logic here
     const token = req.cookies.authToken;
     if (!token) {
       return res.status(401).send('Unauthorized: No token provided');
@@ -803,43 +803,29 @@ app.get('/buy-now/:courseID', async (req, res) => {
       return res.status(404).send('User not found');
     }
 
+    // Prepare transaction data
     const transactionId = new Date().getTime().toString();
-    console.log(`Creating transaction for user ${user._id} and course ${course.name}`);
-    
-    const newTransaction = await Transaction.create({
+    const paymentData = {
       transactionId,
-      userId: user._id,
+      userId: user._id.toString(), // Include user ID in payment data
       courseName: course.name,
       amount: course.currentPrice,
       currency: 'INR',
-      status: 'pending',
-    });
+    };
 
-    console.log(`Transaction created with ID: ${transactionId} for user: ${user._id}`);
-    
+    // Encrypt payment data
+    const workingKey = "1E9B36C49F90A45CEDA3827239927264"; // Use your actual working key
+    const encryptedData = encrypt(JSON.stringify(paymentData), workingKey);
 
-    // Proceed with your payment preparation logic
-    // Render payment form or redirect to payment gateway as before
-    res.render('dataFrom', {
-      course: {
-        name: course.name,
-        price: course.currentPrice,
-      },
-      merchantId: "2619634",
-      redirectUrl: "https://globalmedacademy.com/user",
-      cancelUrl: "https://localhost:3000/ccavResponseHandler",
-      pageTitle: 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy',
-      metaRobots: 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large',
-      metaKeywords: 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ',
-      ogDescription: 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals',
-      canonicalLink: 'https://www.globalmedacademy.com/',
-      isBlogPage: false,
-    });
+    // Directly redirect to CCAvenue with encrypted data
+    const ccavRequestUrl = `https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction&encRequest=${encryptedData}&access_code=AVUX05KH13BU86XUUB`; // Use actual URL and access code
+    res.redirect(ccavRequestUrl);
   } catch (error) {
-    console.error('Error fetching course data ', error);
+    console.error('Error initiating payment process', error);
     res.status(500).send('Server error');
   }
 });
+
 
 // ccavRequestHandler.js integration
 app.post('/ccavRequestHandler', function(request, response) {
