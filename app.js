@@ -917,18 +917,19 @@ app.post('/ccavResponseHandler', async function(request, response) {
     // Check if payment was successful
     if (decryptedResponse.order_status && decryptedResponse.order_status === 'Success') {
       try {
-        // Assuming userId is part of your decrypted response
-        const user = await User.findById(decryptedResponse.userId);
+        // Retrieve user based on passed userId or username from the decryptedResponse
+        const user = await User.findOne({ _id: decryptedResponse.userId }); // Adjust based on your user identification method
         if (!user) {
-          console.error('User not found with ID:', decryptedResponse.userId);
+          console.error('User not found');
           // Handle user not found error
         } else {
-          // Assuming courseName is part of your decrypted response
-          const courseName = decryptedResponse.courseName;
           // Update user's coursesPurchased array
-          user.coursesPurchased.push(courseName);
+          user.coursesPurchased.push(decryptedResponse.courseName);
           await user.save();
-          console.log(`Course ${courseName} added to user ${user._id}'s purchased courses.`);
+          console.log(`Course ${decryptedResponse.courseName} added to user ${user._id}'s purchased courses.`);
+
+          // Optionally, regenerate user's session or authentication token here
+          // This step depends on your authentication mechanism
         }
       } catch (error) {
         console.error('Error updating user purchased courses:', error);
@@ -938,12 +939,23 @@ app.post('/ccavResponseHandler', async function(request, response) {
       console.log('Payment not successful or unable to verify payment status.');
     }
 
-    // Respond to the request
-    response.writeHeader(200, { "Content-Type": "text/html" });
-    response.write('<html><head><title>Payment Status</title></head><body><h1>Payment Processed</h1></body></html>');
-    response.end();
+    // Redirect to a secure page where the user is logged in
+    // Replace 'yourSecurePageURL' with the URL to which you want to redirect the user
+    response.redirect('https://globalmedacademy.com/user'); // Adjust URL as needed
   });
 });
+function isValidWebhookSource(request) {
+  const expectedSignature = request.headers['x-signature']; // The header name might differ
+  const requestBodyString = JSON.stringify(request.body); // Assuming JSON body; adjust as necessary
+  const secret = '41F0052B4F5A9278198DEED49BED2A4D'; // The secret shared with you by the payment gateway
+
+  // Example: HMAC SHA256 signature
+  const hash = crypto.createHmac('sha256', secret)
+                .update(requestBodyString)
+                .digest('hex');
+
+  return expectedSignature === hash;
+}
 // Logging GET requests for debugging purposes
 app.get('/webhook-success', (req, res) => {
   console.log('GET request received on webhook-success');
@@ -951,6 +963,12 @@ app.get('/webhook-success', (req, res) => {
 });
 app.post('/webhook-success', async (req, res) => {
   console.log('Webhook hit received with POST request');
+
+  if (!isValidWebhookSource(req)) {
+    console.log('Invalid webhook source');
+    return res.status(403).send('Forbidden - Invalid source');
+  }
+
   try {
     const encryptedData = req.body.encResp;
     if (!encryptedData) {
@@ -961,7 +979,7 @@ app.post('/webhook-success', async (req, res) => {
     const decryptedData = decrypt(encryptedData, '1E9B36C49F90A45CEDA3827239927264');
     const transactionData = qs.parse(decryptedData);
 
-    console.log('Decrypted Transaction Data:', transactionData); // Log for debugging
+    console.log('Decrypted Transaction Data:', transactionData);
 
     if (transactionData.status === "Success") {
       const transactionId = transactionData.orderId;
