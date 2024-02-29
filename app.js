@@ -547,7 +547,6 @@ app.post("/refer-and-earn", async (req, res) => {
       return res.status(400).send("User not found");
     }
 
-    // Update user data
     // Example: Add friend's details to a 'referrals' array in user document
     user.referrals = user.referrals || [];
     user.referrals.push({ friendMobile, friendName, recommendedCourse });
@@ -897,36 +896,53 @@ function decrypt(encText, workingKey) {
 
 // ccavResponseHandler.js integration
 app.post('/ccavResponseHandler', async function(request, response) {
-  var body = '';
-  var ccavEncResponse = '',
-      ccavResponse = '',
-      workingKey = '1E9B36C49F90A45CEDA3827239927264', //Put in the 32-Bit key shared by CCAvenues.
-      ccavPOST = '';
+  let body = '';
+  let ccavEncResponse = '';
 
   request.on('data', function(data) {
-      console.log("Data received: ", data.toString());
-      body += data;
-      ccavEncResponse += data;
-      ccavPOST = qs.parse(ccavEncResponse);
-      var encryption = ccavPOST.encResp;
-      ccavResponse = decrypt(encryption, workingKey);
+    console.log("Data received: ", data.toString());
+    body += data;
+    ccavEncResponse += data;
   });
 
-  request.on('end', function() {
-      var pData = '';
-      pData = '<table border=1 cellspacing=2 cellpadding=2><tr><td>'
-      pData = pData + ccavResponse.replace(/=/gi, '</td><td>')
-      pData = pData.replace(/&/gi, '</td></tr><tr><td>')
-      pData = pData + '</td></tr></table>'
-      htmlcode = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Response Handler</title></head><body><center><font size="4" color="blue"><b>Response Page</b></font><br>' + pData + '</center><br></body></html>';
-      response.writeHeader(200, { "Content-Type": "text/html" });
-      response.write(htmlcode);
-      var decryptedResponse = qs.parse(ccavResponse);
-   
-      response.end();
-      console.log("Payment Response:", ccavResponse);
+  request.on('end', async function() {
+    const ccavPOST = qs.parse(ccavEncResponse);
+    const encryption = ccavPOST.encResp;
+    const ccavResponse = decrypt(encryption, '1E9B36C49F90A45CEDA3827239927264');
+    console.log("Decrypted Payment Response:", ccavResponse);
 
-  }); 
+    const decryptedResponse = qs.parse(ccavResponse);
+    console.log("Parsed Payment Response:", decryptedResponse);
+
+    // Check if payment was successful
+    if (decryptedResponse.order_status && decryptedResponse.order_status === 'Success') {
+      try {
+        // Assuming userId is part of your decrypted response
+        const user = await User.findById(decryptedResponse.userId);
+        if (!user) {
+          console.error('User not found with ID:', decryptedResponse.userId);
+          // Handle user not found error
+        } else {
+          // Assuming courseName is part of your decrypted response
+          const courseName = decryptedResponse.courseName;
+          // Update user's coursesPurchased array
+          user.coursesPurchased.push(courseName);
+          await user.save();
+          console.log(`Course ${courseName} added to user ${user._id}'s purchased courses.`);
+        }
+      } catch (error) {
+        console.error('Error updating user purchased courses:', error);
+        // Handle error
+      }
+    } else {
+      console.log('Payment not successful or unable to verify payment status.');
+    }
+
+    // Respond to the request
+    response.writeHeader(200, { "Content-Type": "text/html" });
+    response.write('<html><head><title>Payment Status</title></head><body><h1>Payment Processed</h1></body></html>');
+    response.end();
+  });
 });
 // Logging GET requests for debugging purposes
 app.get('/webhook-success', (req, res) => {
@@ -1052,36 +1068,7 @@ app.post('/user', async (req, res) => {
 //     res.status(500).send('Error creating checkout session');
 //   }
 // });
-app.post('/webhook-success', async (req, res) => {
-  try {
-    const { transactionId, status } = req.body; // Assuming these are provided by CCAvenue
-    
-    // Verify the payment status
-    if (status !== 'Success') {
-      console.log('Payment not successful');
-      return res.status(400).send('Payment not successful');
-    }
 
-    // Find the transaction and associated user
-    const transaction = await TransactionData.findOne({ transactionId });
-    if (!transaction) {
-      console.log('Transaction not found');
-      return res.status(404).send('Transaction not found');
-    }
-
-    // Update the user's coursesPurchased array
-    await User.updateOne(
-      { _id: transaction.userId },
-      { $push: { coursesPurchased: transaction.courseName } }
-    );
-
-    console.log('Course added to user successfully');
-    res.send('Webhook processed successfully');
-  } catch (error) {
-    console.error('Error processing webhook', error);
-    res.status(500).send('Server error');
-  }
-});
 
 app.get('/success', async (req, res) => {
   const sessionId = req.query.session_id;
