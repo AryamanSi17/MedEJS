@@ -944,68 +944,60 @@ app.post('/ccavResponseHandler', async function(request, response) {
     response.redirect('https://globalmedacademy.com/user'); // Adjust URL as needed
   });
 });
-function isValidWebhookSource(request) {
-  const expectedSignature = request.headers['x-signature']; // The header name might differ
-  const requestBodyString = JSON.stringify(request.body); // Assuming JSON body; adjust as necessary
-  const secret = '41F0052B4F5A9278198DEED49BED2A4D'; // The secret shared with you by the payment gateway
-
-  // Example: HMAC SHA256 signature
-  const hash = crypto.createHmac('sha256', secret)
-                .update(requestBodyString)
-                .digest('hex');
-
-  return expectedSignature === hash;
+function customDecrypt(encText, workingKey) {
+  const m = crypto.createHash('md5');
+  m.update(workingKey);
+  const key = m.digest();
+  const iv = Buffer.alloc(16); // Changed to use a zero-filled buffer for IV
+  const decipher = crypto.createDecipheriv('aes-128-cbc', key, iv);
+  let decoded = decipher.update(encText, 'hex', 'utf8');
+  decoded += decipher.final('utf8');
+  return decoded;
 }
-// Logging GET requests for debugging purposes
-app.get('/webhook-success', (req, res) => {
-  console.log('GET request received on webhook-success');
-  res.status(200).send('Webhook endpoint hit with GET request');
-});
+
 app.post('/webhook-success', async (req, res) => {
   console.log('Webhook hit received with POST request');
 
-  if (!isValidWebhookSource(req)) {
-    console.log('Invalid webhook source');
-    return res.status(403).send('Forbidden - Invalid source');
-  }
-
   try {
-    const encryptedData = req.body.encResp;
-    if (!encryptedData) {
-      console.log('No encrypted data received');
-      return res.status(400).send('No encrypted data');
-    }
-
-    const decryptedData = decrypt(encryptedData, '1E9B36C49F90A45CEDA3827239927264');
-    const transactionData = qs.parse(decryptedData);
-
-    console.log('Decrypted Transaction Data:', transactionData);
-
-    if (transactionData.status === "Success") {
-      const transactionId = transactionData.orderId;
-      const courseName = transactionData.courseName;
-
-      const transaction = await Transaction.findOne({ transactionId }).populate('userId');
-      if (transaction) {
-        const userId = transaction.userId._id;
-        await User.findByIdAndUpdate(userId, { $addToSet: { coursesPurchased: courseName } });
-        await Transaction.findByIdAndUpdate(transaction._id, { status: 'completed' });
-
-        console.log(`Transaction ${transactionId} successfully processed for user ${userId}`);
-        res.status(200).send('Webhook processed successfully');
-      } else {
-        console.log('Transaction not found');
-        res.status(404).send('Transaction not found');
+      const encryptedData = req.body.encResp;
+      if (!encryptedData) {
+          console.log('No encrypted data received');
+          return res.status(400).send('No encrypted data');
       }
-    } else {
-      console.log('Transaction not successful', transactionData);
-      res.status(400).send('Transaction not successful');
-    }
+
+      // Use the customDecrypt function with the provided working key
+      const decryptedData = customDecrypt(encryptedData, '41F0052B4F5A9278198DEED49BED2A4D');
+      const transactionData = qs.parse(decryptedData);
+
+      console.log('Decrypted Transaction Data:', transactionData);
+
+      if (transactionData.status === "Success") {
+          const transactionId = transactionData.orderId;
+          const courseName = transactionData.courseName;
+
+          // Find the transaction and update it along with the user's courses
+          const transaction = await Transaction.findOne({ transactionId }).populate('userId');
+          if (transaction) {
+              const userId = transaction.userId._id;
+              await User.findByIdAndUpdate(userId, { $addToSet: { coursesPurchased: courseName } });
+              await Transaction.findByIdAndUpdate(transaction._id, { status: 'completed' });
+
+              console.log(`Transaction ${transactionId} successfully processed for user ${userId}`);
+              res.status(200).send('Webhook processed successfully');
+          } else {
+              console.log('Transaction not found');
+              res.status(404).send('Transaction not found');
+          }
+      } else {
+          console.log('Transaction not successful', transactionData);
+          res.status(400).send('Transaction not successful');
+      }
   } catch (error) {
-    console.error("Error processing webhook:", error);
-    res.status(500).send('Server error');
+      console.error("Error processing webhook:", error);
+      res.status(500).send('Server error');
   }
 });
+
 
 
 
