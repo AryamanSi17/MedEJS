@@ -917,8 +917,7 @@ app.post('/ccavResponseHandler', async function(request, response) {
     // Check if payment was successful
     if (decryptedResponse.order_status && decryptedResponse.order_status === 'Success') {
       try {
-        // Retrieve user based on passed userId or username from the decryptedResponse
-        const user = await User.findOne({ _id: decryptedResponse.userId }); // Adjust based on your user identification method
+        const user = await User.findOne({ _id: decryptedResponse.userId });
         if (!user) {
           console.error('User not found');
           // Handle user not found error
@@ -928,20 +927,23 @@ app.post('/ccavResponseHandler', async function(request, response) {
           await user.save();
           console.log(`Course ${decryptedResponse.courseName} added to user ${user._id}'s purchased courses.`);
 
-          // Optionally, regenerate user's session or authentication token here
-          // This step depends on your authentication mechanism
+          // Generate a new JWT token for the user
+          const newToken = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' }); // Adjust expiresIn as per your requirement
+
+          // Set the new token as a cookie
+          response.cookie('authToken', newToken, { httpOnly: true, secure: true }); // Make sure to use secure: true in production
+
+          // Redirect the user to the secure page
+          response.redirect('https://globalmedacademy.com/user');
         }
       } catch (error) {
         console.error('Error updating user purchased courses:', error);
-        // Handle error
+        response.status(500).send('Server error');
       }
     } else {
-      console.log('Payment not successful or unable to verify payment status.');
+      console.log('Payment not successful or unable to verify payment status');
+      response.status(400).send('Payment failure or verification issue');
     }
-
-    // Redirect to a secure page where the user is logged in
-    // Replace 'yourSecurePageURL' with the URL to which you want to redirect the user
-    response.redirect('https://globalmedacademy.com/user'); // Adjust URL as needed
   });
 });
 function customDecrypt(encText, workingKey) {
