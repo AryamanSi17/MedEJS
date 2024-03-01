@@ -826,14 +826,14 @@ app.get('/buy-now/:courseID', async (req, res) => {
         price: course.currentPrice,
       },
       merchantId: "2619634",
-      redirectUrl: "https://globalmedacademy.com/user",
-      cancelUrl: "https://localhost:3000/ccavResponseHandler",
-      pageTitle: 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy',
-      metaRobots: 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large',
-      metaKeywords: 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ',
-      ogDescription: 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals',
-      canonicalLink: 'https://www.globalmedacademy.com/',
-      isBlogPage: false,
+  redirectUrl: `https://globalmedacademy.com/success?courseID=${req.params.courseID}`,
+  cancelUrl: "https://localhost:3000/ccavResponseHandler",
+  pageTitle: 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy',
+  metaRobots: 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large',
+  metaKeywords: 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ',
+  ogDescription: 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals',
+  canonicalLink: 'https://www.globalmedacademy.com/',
+  isBlogPage: false,
     });
   } catch (error) {
     console.error('Error fetching course data ', error);
@@ -934,7 +934,7 @@ app.post('/ccavResponseHandler', async function(request, response) {
           response.cookie('authToken', newToken, { httpOnly: true, secure: true }); // Make sure to use secure: true in production
 
           // Redirect the user to the secure page
-          response.redirect('https://globalmedacademy.com/user');
+          response.redirect('https://globalmedacademy.com/user/success');
         }
       } catch (error) {
         console.error('Error updating user purchased courses:', error);
@@ -1087,14 +1087,11 @@ app.post('/user', async (req, res) => {
 //     res.status(500).send('Error creating checkout session');
 //   }
 // });
-
-
 app.get('/success', async (req, res) => {
-  const sessionId = req.query.session_id;
   const courseID = req.query.courseID; // Extract courseID from the URL
 
-  if (!sessionId || !courseID) {
-    return res.status(400).send('Session ID and Course ID are required');
+  if (!courseID) {
+    return res.status(400).send('Course ID is required');
   }
 
   // Extract the JWT token from the cookie
@@ -1113,21 +1110,13 @@ app.get('/success', async (req, res) => {
   }
 
   try {
-    // Retrieve the session from Stripe
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
-
-    // Verify if the payment was successful
-    if (session.payment_status !== 'paid') {
-      return res.status(400).send('Payment was not successful');
-    }
-
-    // Find the course and the user, then add the course to the user's purchased courses
+    // Find the course by courseID
     const course = await Course.findOne({ courseID: courseID });
-
     if (!course) return res.status(404).send('Course not found');
 
     const courseName = course.name;
 
+    // Add the course to the user's purchased courses
     const user = await User.findByIdAndUpdate(userId, {
       $addToSet: { coursesPurchased: courseName }
     }, { new: true });
@@ -1137,30 +1126,89 @@ app.get('/success', async (req, res) => {
       return res.status(404).send('User not found');
     }
 
-    // Enroll the user in the Moodle course with category number D1
-    await enrollUserInCourse(user.username, '12');
+    // Additional logic (e.g., enrollment in Moodle, sending emails) goes here
 
-    // Send a payment receipt to the user
-    sendEmail({
-      to: [user.username],
-      subject: 'Your Payment Receipt',
-      text: `Thank you for purchasing the course. Your payment was successful! We will send you the receipt!`
-    });
-
-    // Send a new enrollment message to the admin
-    sendEmail({
-      to: 'onlinemedcourses@gmail.com',
-      subject: 'New User Enrollment',
-      text: `A new user has enrolled in the course. \n\nUser Email: ${user.username}\nCourse: ${courseName}\nPayment Status: Successful`
-    });
-
-    // Redirect to the user page or another appropriate page with a success message
-    res.redirect('/user?message=Payment is successful!');
+    // Redirect to the user page with a success message
+    res.redirect('/user?message=Payment successful! Course added.');
   } catch (error) {
     console.error('Error in success route:', error);
     res.status(500).send('Internal Server Error');
   }
 });
+
+
+// app.get('/success', async (req, res) => {
+//   const sessionId = req.query.session_id;
+//   const courseID = req.query.courseID; // Extract courseID from the URL
+
+//   if (!sessionId || !courseID) {
+//     return res.status(400).send('Session ID and Course ID are required');
+//   }
+
+//   // Extract the JWT token from the cookie
+//   const token = req.cookies.authToken;
+//   if (!token) {
+//     return res.status(401).send('Unauthorized: No token provided');
+//   }
+
+//   let userId;
+//   try {
+//     // Verify and decode the token to get the user's ID
+//     const decoded = jwt.verify(token, JWT_SECRET);
+//     userId = decoded.userId;
+//   } catch (error) {
+//     return res.status(401).send('Unauthorized: Invalid token');
+//   }
+
+//   try {
+//     // Retrieve the session from Stripe
+//     const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+//     // Verify if the payment was successful
+//     if (session.payment_status !== 'paid') {
+//       return res.status(400).send('Payment was not successful');
+//     }
+
+//     // Find the course and the user, then add the course to the user's purchased courses
+//     const course = await Course.findOne({ courseID: courseID });
+
+//     if (!course) return res.status(404).send('Course not found');
+
+//     const courseName = course.name;
+
+//     const user = await User.findByIdAndUpdate(userId, {
+//       $addToSet: { coursesPurchased: courseName }
+//     }, { new: true });
+
+//     if (!user) {
+//       console.error('User not found:', userId);
+//       return res.status(404).send('User not found');
+//     }
+
+//     // Enroll the user in the Moodle course with category number D1
+//     await enrollUserInCourse(user.username, '12');
+
+//     // Send a payment receipt to the user
+//     sendEmail({
+//       to: [user.username],
+//       subject: 'Your Payment Receipt',
+//       text: `Thank you for purchasing the course. Your payment was successful! We will send you the receipt!`
+//     });
+
+//     // Send a new enrollment message to the admin
+//     sendEmail({
+//       to: 'onlinemedcourses@gmail.com',
+//       subject: 'New User Enrollment',
+//       text: `A new user has enrolled in the course. \n\nUser Email: ${user.username}\nCourse: ${courseName}\nPayment Status: Successful`
+//     });
+
+//     // Redirect to the user page or another appropriate page with a success message
+//     res.redirect('/user?message=Payment is successful!');
+//   } catch (error) {
+//     console.error('Error in success route:', error);
+//     res.status(500).send('Internal Server Error');
+//   }
+// });
 
 
 
