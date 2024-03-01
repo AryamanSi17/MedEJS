@@ -695,7 +695,7 @@ app.post('/user-interest-form', async (req, res) => {
       // Assuming you're directly constructing your Kit19 payload here
       const enquiryData = {
           Username: process.env.KIT19_USERNAME,
-          Password: "Global@123#",
+          Password: "Medical@123#",
           PersonName: name, // Directly use the destructured variables
           MobileNo: phone,
           CountryCode: "+91",
