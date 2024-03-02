@@ -6,7 +6,7 @@ const ejs = require("ejs");
 const passportLocalMongoose = require("passport-local-mongoose");
 const passport = require("passport");
 const cookieSession = require('cookie-session')
-const { mongoose, User, Course, Request, Session, UserSession, InstructorApplication,Transaction, NonMoodleUser ,UserInterest} = require("./utils/db"); // Import from db.js
+const { mongoose, User, Course, Request, Session, UserSession, InstructorApplication, Transaction, NonMoodleUser, UserInterest } = require("./utils/db"); // Import from db.js
 const db = require('./utils/db');
 const nodemailer = require('nodemailer');
 const mongodb = require("mongodb");
@@ -90,40 +90,40 @@ passport.use(new GoogleStrategy({
   clientSecret: process.env.CLIENT_SECRET,
   callbackURL: "https://globalmedacademy.com/auth/google/callback"
 },
-async (accessToken, refreshToken, profile, done) => {
-  const email = profile.emails[0].value; // Assuming the email is always present
+  async (accessToken, refreshToken, profile, done) => {
+    const email = profile.emails[0].value; // Assuming the email is always present
 
-  try {
-    // First, check if the email is already associated with an account (Google or otherwise)
-    let user = await User.findOne({ email: email });
+    try {
+      // First, check if the email is already associated with an account (Google or otherwise)
+      let user = await User.findOne({ email: email });
 
-    if(user){
-      if(!user.googleId){
-        user.googleId=profile.id;
+      if (user) {
+        if (!user.googleId) {
+          user.googleId = profile.id;
+          await user.save();
+        }
+      }
+      else {
+        // No user found with this email, create a new account
+        user = await new User({
+          googleId: profile.id,
+          email: email,
+          displayName: profile.displayName,
+          // additional fields as needed
+          signupMethod: 'google'
+        });
         await user.save();
       }
+      // User found or created successfully
+      return done(null, user);
+    } catch (error) {
+      return done(error);
     }
-     else  {
-      // No user found with this email, create a new account
-      user = await new User({
-        googleId: profile.id,
-        email: email,
-        displayName: profile.displayName,
-        // additional fields as needed
-        signupMethod: 'google'
-      });
-      await user.save();
-    }
-    // User found or created successfully
-    return done(null, user);
-  } catch (error) {
-    return done(error);
   }
-}
 ));
 
 passport.serializeUser((user, done) => {
-done(null, user.id);
+  done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done) => {
@@ -668,8 +668,8 @@ app.post('/submitRequestForMore', async (req, res) => {
       SourceName: "website",
       MediumName: "Inquiryform",
       CampaignName: "organic",
-  };
-    const response = await saveEnquiry(req.body,marketingInfo);
+    };
+    const response = await saveEnquiry(req.body, marketingInfo);
 
     console.log("Kit19 Response:", response);  // Log the entire response
 
@@ -688,42 +688,42 @@ app.post('/user-interest-form', async (req, res) => {
   console.log(req.body); // Ensure req.body is correctly logged and structured as expected
 
   try {
-      // Extract data directly from req.body here
-      const { name, phone, email, city, education, course, country } = req.body;
+    // Extract data directly from req.body here
+    const { name, phone, email, city, education, course, country } = req.body;
 
 
-      // Assuming you're directly constructing your Kit19 payload here
-      const enquiryData = {
-          Username: process.env.KIT19_USERNAME,
-          Password: "Medical@123#",
-          PersonName: name, // Directly use the destructured variables
-          MobileNo: phone,
-          CountryCode: "+91",
-          EmailID: email,
-          City:city,
-          CourseInterested: course,
-          SourceName: 'GoogleAd', // Static value for this route
-          MediumName: 'LandingPage',
-          CampaignName: 'Google'
-      };
+    // Assuming you're directly constructing your Kit19 payload here
+    const enquiryData = {
+      Username: process.env.KIT19_USERNAME,
+      Password: "Medical@123#",
+      PersonName: name, // Directly use the destructured variables
+      MobileNo: phone,
+      CountryCode: "+91",
+      EmailID: email,
+      City: city,
+      CourseInterested: course,
+      SourceName: 'GoogleAd', // Static value for this route
+      MediumName: 'LandingPage',
+      CampaignName: 'Google'
+    };
 
-      // Example Kit19 API call with axios or similar library
-      const kit19Response = await axios.post(`http://sipapi.kit19.com/Enquiry/${process.env.TOKEN_GUID}/AddEnquiryAPI`, enquiryData, {
-          headers: {
-              'Content-Type': 'application/json'
-          }
-      });
-
-      console.log("Kit19 Response:", kit19Response.data);
-
-      if (kit19Response.data.Status === 1) {
-          res.send('<script>alert("Form data submitted successfully."); window.location.href = "/";</script>');
-      } else {
-          res.send('<script>alert("Failed to save enquiry to Kit19."); window.location.href = "/";</script>');
+    // Example Kit19 API call with axios or similar library
+    const kit19Response = await axios.post(`http://sipapi.kit19.com/Enquiry/${process.env.TOKEN_GUID}/AddEnquiryAPI`, enquiryData, {
+      headers: {
+        'Content-Type': 'application/json'
       }
+    });
+
+    console.log("Kit19 Response:", kit19Response.data);
+
+    if (kit19Response.data.Status === 1) {
+      res.send('<script>alert("Form data submitted successfully."); window.location.href = "/";</script>');
+    } else {
+      res.send('<script>alert("Failed to save enquiry to Kit19."); window.location.href = "/";</script>');
+    }
   } catch (error) {
-      console.error('Error:', error);
-      res.status(500).send('Internal server error.');
+    console.error('Error:', error);
+    res.status(500).send('Internal server error.');
   }
 });
 
@@ -789,15 +789,15 @@ app.get('/buy-now/:courseID', async (req, res) => {
     if (!course) {
       return res.status(404).send("Course Not found");
     }
-// Accessing the course name
-const courseName = course.name;
-console.log(courseName); 
+    // Accessing the course name
+    const courseName = course.name;
+    console.log(courseName);
     // Assume user identification logic is here, e.g., from a JWT token
     const token = req.cookies.authToken;
     if (!token) {
       return res.status(401).send('Unauthorized: No token provided');
     }
-    
+
     const decoded = jwt.verify(token, JWT_SECRET);
     const user = await User.findById(decoded.userId);
     if (!user) {
@@ -807,7 +807,7 @@ console.log(courseName);
 
     const transactionId = new Date().getTime().toString();
     console.log(`Creating transaction for user ${user._id} and course ${course.name}`);
-    
+
     const newTransaction = await Transaction.create({
       transactionId,
       userId: user._id,
@@ -818,7 +818,7 @@ console.log(courseName);
     });
 
     console.log(`Transaction created with ID: ${transactionId} for user: ${user._id}`);
-    
+
 
     // Proceed with your payment preparation logic
     // Render payment form or redirect to payment gateway as before
@@ -828,14 +828,14 @@ console.log(courseName);
         price: course.currentPrice,
       },
       merchantId: "2619634",
-  redirectUrl: `https://globalmedacademy.com/success?courseID=${req.params.courseID}`,
-  cancelUrl: "https://globalmedacademy.com/ccavResponseHandler",
-  pageTitle: 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy',
-  metaRobots: 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large',
-  metaKeywords: 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ',
-  ogDescription: 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals',
-  canonicalLink: 'https://www.globalmedacademy.com/',
-  isBlogPage: false,
+      redirectUrl: `https://globalmedacademy.com/success?courseID=${req.params.courseID}`,
+      cancelUrl: "https://globalmedacademy.com/ccavResponseHandler",
+      pageTitle: 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy',
+      metaRobots: 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large',
+      metaKeywords: 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ',
+      ogDescription: 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals',
+      canonicalLink: 'https://www.globalmedacademy.com/',
+      isBlogPage: false,
     });
   } catch (error) {
     console.error('Error fetching course data ', error);
@@ -844,19 +844,19 @@ console.log(courseName);
 });
 
 // ccavRequestHandler.js integration
-app.post('/ccavRequestHandler', function(request, response) {
+app.post('/ccavRequestHandler', function (request, response) {
   var workingKey = "1E9B36C49F90A45CEDA3827239927264"; // Test working key
   var accessCode = "AVUX05KH13BU86XUUB"; // Test access code
   var encRequest = '';
-  
+
   // Convert the request body to a query string format
   var orderId = new Date().getTime(); // Simple example for generating an order ID
-  var courseName = request.body.courseName; 
+  var courseName = request.body.courseName;
   // Add the order_id to the request body
   var formattedBody = qs.stringify({
     ...request.body,
     order_id: orderId.toString(),
-    courseName:courseName, // Ensure it's a string if required by your payment gateway
+    courseName: courseName, // Ensure it's a string if required by your payment gateway
     // Add or adjust other fields as required by CCAvenue
   });
 
@@ -873,41 +873,41 @@ app.post('/ccavRequestHandler', function(request, response) {
 });
 
 function encrypt(plainText, workingKey) {
-	var m = crypto.createHash('md5');
-    	m.update(workingKey);
-   	var key = m.digest();
-      	var iv = '\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f';	
-	var cipher = crypto.createCipheriv('aes-128-cbc', key, iv);
-	var encoded = cipher.update(plainText,'utf8','hex');
-	encoded += cipher.final('hex');
-    	return encoded;
+  var m = crypto.createHash('md5');
+  m.update(workingKey);
+  var key = m.digest();
+  var iv = '\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f';
+  var cipher = crypto.createCipheriv('aes-128-cbc', key, iv);
+  var encoded = cipher.update(plainText, 'utf8', 'hex');
+  encoded += cipher.final('hex');
+  return encoded;
 };
 
 
 function decrypt(encText, workingKey) {
-    	var m = crypto.createHash('md5');
-    	m.update(workingKey)
-    	var key = m.digest();
-	var iv = '\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f';	
-	var decipher = crypto.createDecipheriv('aes-128-cbc', key, iv);
-    	var decoded = decipher.update(encText,'hex','utf8');
-	decoded += decipher.final('utf8');
-    	return decoded;
+  var m = crypto.createHash('md5');
+  m.update(workingKey)
+  var key = m.digest();
+  var iv = '\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f';
+  var decipher = crypto.createDecipheriv('aes-128-cbc', key, iv);
+  var decoded = decipher.update(encText, 'hex', 'utf8');
+  decoded += decipher.final('utf8');
+  return decoded;
 };
 
 
 // ccavResponseHandler.js integration
-app.post('/ccavResponseHandler', async function(request, response) {
+app.post('/ccavResponseHandler', async function (request, response) {
   let body = '';
   let ccavEncResponse = '';
 
-  request.on('data', function(data) {
+  request.on('data', function (data) {
     console.log("Data received: ", data.toString());
     body += data;
     ccavEncResponse += data;
   });
 
-  request.on('end', async function() {
+  request.on('end', async function () {
     const ccavPOST = qs.parse(ccavEncResponse);
     const encryption = ccavPOST.encResp;
     const ccavResponse = decrypt(encryption, '1E9B36C49F90A45CEDA3827239927264');
@@ -963,49 +963,49 @@ app.post('/webhook-success', async (req, res) => {
   console.log('Webhook hit received with POST request');
 
   try {
-      const encryptedData = req.body.encResp;
-      console.log('Encrypted Data:', encryptedData); // Verify encrypted data is received
-      if (!encryptedData) {
-          console.log('No encrypted data received');
-          return res.status(400).send('No encrypted data');
-      }
+    const encryptedData = req.body.encResp;
+    console.log('Encrypted Data:', encryptedData); // Verify encrypted data is received
+    if (!encryptedData) {
+      console.log('No encrypted data received');
+      return res.status(400).send('No encrypted data');
+    }
 
-      // Attempt decryption and log possible errors
-      let decryptedData;
-      try {
-        decryptedData = customDecrypt(encryptedData, '41F0052B4F5A9278198DEED49BED2A4D');
-      } catch (decryptError) {
-        console.error("Decryption error:", decryptError);
-        return res.status(500).send('Error decrypting data');
-      }
+    // Attempt decryption and log possible errors
+    let decryptedData;
+    try {
+      decryptedData = customDecrypt(encryptedData, '41F0052B4F5A9278198DEED49BED2A4D');
+    } catch (decryptError) {
+      console.error("Decryption error:", decryptError);
+      return res.status(500).send('Error decrypting data');
+    }
 
-      console.log('Decrypted Transaction Data:', decryptedData); // Verify format before parsing
-      const transactionData = qs.parse(decryptedData);
+    console.log('Decrypted Transaction Data:', decryptedData); // Verify format before parsing
+    const transactionData = qs.parse(decryptedData);
 
-      if (transactionData.status === "Success") {
-          const transactionId = transactionData.orderId;
-          const courseName = transactionData.courseName;
+    if (transactionData.status === "Success") {
+      const transactionId = transactionData.orderId;
+      const courseName = transactionData.courseName;
 
-          // Find the transaction and update it along with the user's courses
-          const transaction = await Transaction.findOne({ transactionId }).populate('userId');
-          if (transaction) {
-              const userId = transaction.userId._id;
-              await User.findByIdAndUpdate(userId, { $addToSet: { coursesPurchased: courseName } });
-              await Transaction.findByIdAndUpdate(transaction._id, { status: 'completed' });
+      // Find the transaction and update it along with the user's courses
+      const transaction = await Transaction.findOne({ transactionId }).populate('userId');
+      if (transaction) {
+        const userId = transaction.userId._id;
+        await User.findByIdAndUpdate(userId, { $addToSet: { coursesPurchased: courseName } });
+        await Transaction.findByIdAndUpdate(transaction._id, { status: 'completed' });
 
-              console.log(`Transaction ${transactionId} successfully processed for user ${userId}`);
-              res.status(200).send('Webhook processed successfully');
-          } else {
-              console.log('Transaction not found');
-              res.status(404).send('Transaction not found');
-          }
+        console.log(`Transaction ${transactionId} successfully processed for user ${userId}`);
+        res.status(200).send('Webhook processed successfully');
       } else {
-          console.log('Transaction not successful', transactionData);
-          res.status(400).send('Transaction not successful');
+        console.log('Transaction not found');
+        res.status(404).send('Transaction not found');
       }
+    } else {
+      console.log('Transaction not successful', transactionData);
+      res.status(400).send('Transaction not successful');
+    }
   } catch (error) {
-      console.error("Error processing webhook:", error);
-      res.status(500).send('Server error');
+    console.error("Error processing webhook:", error);
+    res.status(500).send('Server error');
   }
 });
 
@@ -1015,10 +1015,10 @@ app.post('/webhook-success', async (req, res) => {
 
 
 app.post('/user', async (req, res) => {
-  const userEmail=req.body.email;
+  const userEmail = req.body.email;
   const courseName = req.query.courseName;
-  console.log(courseName,userEmail);
-  try{
+  console.log(courseName, userEmail);
+  try {
     // Find the user by email and add the courseName to their coursesPurchased array
     // await User.findOneAndUpdate(
     //   { email: userEmail },
@@ -1026,8 +1026,8 @@ app.post('/user', async (req, res) => {
     //   { new: true, runValidators: true }
     // );
     res.redirect('/user?purchase=success');
-  } catch(error){
-    console.error("Error updating user purchased course",error);
+  } catch (error) {
+    console.error("Error updating user purchased course", error);
     res.status(500).send('An error occured');
   }
 
@@ -1117,7 +1117,7 @@ app.get('/success', async (req, res) => {
     if (!course) return res.status(404).send('Course not found');
 
     const courseName = course.name;
-console.log(courseName);
+    console.log(courseName);
     // Add the course to the user's purchased courses
     const user = await User.findByIdAndUpdate(userId, {
       $addToSet: { coursesPurchased: courseName }
@@ -1127,15 +1127,21 @@ console.log(courseName);
       console.error('User not found:', userId);
       return res.status(404).send('User not found');
     }
+    console.log(`User ${user.username} found. Proceeding to enroll in Moodle.`);
+
     // Assuming you have a function to get Moodle user ID similar to your createUserInMoodle logic
     const moodleUserId = await getMoodleUserId(user.username);
 
     // Assuming you have a function to get Course ID by Name for Moodle
-    const courseId = await getCourseIdByName(courseName);
+    const courseId = await getCourseIdByName(course.name);
     const roleId = 5; // Assuming role ID for student
 
+    console.log(`Enrolling user in Moodle. MoodleUserId: ${moodleUserId}, CourseId: ${courseId}, RoleId: ${roleId}`);
+
     // Enroll the user in the Moodle course
-    await enrollUserInMoodle(moodleUserId, courseId, roleId);
+    const enrollmentResponse = await enrollUserInMoodle(moodleUserId, courseId, roleId);
+
+    console.log('Moodle enrollment response:', enrollmentResponse);
 
     // Send a payment receipt to the user
     sendEmail({
@@ -1742,34 +1748,34 @@ app.post('/migrateToMoodle', async (req, res) => {
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
- // Map coursesInterested to their full names using courseNames object
- const coursesFullNames = nonMoodleUser.coursesIntrested.map(abbr => courseNames[abbr] || abbr);
+    // Map coursesInterested to their full names using courseNames object
+    const coursesFullNames = nonMoodleUser.coursesIntrested.map(abbr => courseNames[abbr] || abbr);
 
- // Prepare the new user details
- const newUserDetails = {
-   fullname: nonMoodleUser.fullname,
-   username: nonMoodleUser.username,
-   password: hashedPassword,
-   phone: nonMoodleUser.number,
-   coursesPurchased: coursesFullNames,
-   // Add any other fields you need to migrate
- };
+    // Prepare the new user details
+    const newUserDetails = {
+      fullname: nonMoodleUser.fullname,
+      username: nonMoodleUser.username,
+      password: hashedPassword,
+      phone: nonMoodleUser.number,
+      coursesPurchased: coursesFullNames,
+      // Add any other fields you need to migrate
+    };
 
- // Create a new user in the User collection
- const newUser = new User(newUserDetails);
- await newUser.save();
+    // Create a new user in the User collection
+    const newUser = new User(newUserDetails);
+    await newUser.save();
 
- // Create Moodle username and set Moodle password
- await createUserInMoodle(newUser.username, password, newUser.fullname,'.', newUser.username);
- // Get Moodle user ID
- const moodleUserId = await getMoodleUserId(newUser.username);
+    // Create Moodle username and set Moodle password
+    await createUserInMoodle(newUser.username, password, newUser.fullname, '.', newUser.username);
+    // Get Moodle user ID
+    const moodleUserId = await getMoodleUserId(newUser.username);
 
- // Enroll user in Moodle courses
- for (let courseName of coursesFullNames) {
-   const courseId = await getCourseIdByName(courseName); // Make sure this function matches the course name to its Moodle ID
-   const roleId = 5; // Assuming role ID for student
-   await enrollUserInMoodle(moodleUserId, courseId, roleId);
- }
+    // Enroll user in Moodle courses
+    for (let courseName of coursesFullNames) {
+      const courseId = await getCourseIdByName(courseName); // Make sure this function matches the course name to its Moodle ID
+      const roleId = 5; // Assuming role ID for student
+      await enrollUserInMoodle(moodleUserId, courseId, roleId);
+    }
     // Optionally delete the nonMoodleUser or mark as migrated
     await NonMoodleUser.findByIdAndDelete(userId);
 
@@ -1843,15 +1849,15 @@ const courseNames = {
   PCDM: "Professional Certificate in Diabetes Management",
   ACDM: "Advanced Certificate in Diabetes Management",
   FDM: "Fellowship in Diabetes Management",
-  PCC : "Professional Certificate in Critical Care",
-  ACC : "Advance Certificate in Critical Care",
-  FCC :"Fellowship in Critical Care",
-  PCGP:"Professional Certificate in General Practice",
-  ACGP:"Advance Certificate in General Practice",
-  FGP:"Fellowship in General Practice",
-  PCIM:"Professional Certificate in Internal Medicine",
-  ACIM:"Advance Certificate in Internal Medicine",
-  FIM:"Fellowship in Internal Medicine",
+  PCC: "Professional Certificate in Critical Care",
+  ACC: "Advance Certificate in Critical Care",
+  FCC: "Fellowship in Critical Care",
+  PCGP: "Professional Certificate in General Practice",
+  ACGP: "Advance Certificate in General Practice",
+  FGP: "Fellowship in General Practice",
+  PCIM: "Professional Certificate in Internal Medicine",
+  ACIM: "Advance Certificate in Internal Medicine",
+  FIM: "Fellowship in Internal Medicine",
 };
 app.post('/create-user', upload.fields([
   { name: 'officialIDCard' },
@@ -1949,13 +1955,13 @@ app.post('/user-submit', upload.fields([
   { name: 'degree' },
   { name: 'passportPhoto' }
 ]), async (req, res) => {
-  const { username,  fullname, email,  number } = req.body;
+  const { username, fullname, email, number } = req.body;
   const selectedCourseAbbr = req.body.course;
   // Assume courseNames is defined somewhere
   const courseName = courseNames[selectedCourseAbbr] || 'Default Course Name';
 
   try {
-    const existingUser = await NonMoodleUser.findOne({ username:username });
+    const existingUser = await NonMoodleUser.findOne({ username: username });
     if (existingUser) {
       return res.status(400).json({ message: "Email already used" });
     }
@@ -1970,31 +1976,31 @@ app.post('/user-submit', upload.fields([
 
     const savedUser = await newUser.save();
 
-   
 
-   // Handle file uploads
-   const uploadedFiles = [];
-   const userFolder = username; // Use username as folder name
-   // Use MongoDB ID as folder name
 
-   
-   for (const [key, value] of Object.entries(req.files)) {
-    const file = value[0];
+    // Handle file uploads
+    const uploadedFiles = [];
+    const userFolder = username; // Use username as folder name
+    // Use MongoDB ID as folder name
 
-    const uploadResult = await s3.upload({
-      Bucket: 'nonmoodleuserdata', // Updated bucket name
-      Key: `${userFolder}/${file.originalname}`,
-      Body: file.buffer,
-      ACL: 'public-read'
-    }).promise();
 
-    uploadedFiles.push({ url: uploadResult.Location, title: file.originalname });
-  }
+    for (const [key, value] of Object.entries(req.files)) {
+      const file = value[0];
 
-  await NonMoodleUser.findByIdAndUpdate(savedUser._id, { // Make sure to update this model reference
-    $push: { uploadedFiles: { $each: uploadedFiles } }
-  }, { new: true });
-  console.log({ selectedCourseAbbr, courseName });
+      const uploadResult = await s3.upload({
+        Bucket: 'nonmoodleuserdata', // Updated bucket name
+        Key: `${userFolder}/${file.originalname}`,
+        Body: file.buffer,
+        ACL: 'public-read'
+      }).promise();
+
+      uploadedFiles.push({ url: uploadResult.Location, title: file.originalname });
+    }
+
+    await NonMoodleUser.findByIdAndUpdate(savedUser._id, { // Make sure to update this model reference
+      $push: { uploadedFiles: { $each: uploadedFiles } }
+    }, { new: true });
+    console.log({ selectedCourseAbbr, courseName });
     // Instead of redirecting directly, send the redirect URL in the response
     res.status(200).json({ success: true, redirectUrl: 'https://globalmedacademy.ccavenue.com/stores/storefront.do?command=validateMerchant&param=globalmedacademy#' });
   } catch (error) {
@@ -2014,14 +2020,14 @@ app.post('/delete-selected-users', authenticateAdminJWT, async function (req, re
 });
 app.post('/update-users', async (req, res) => {
   try {
-      const updates = req.body.updates;
-      for (const update of updates) {
-          await User.findByIdAndUpdate(update.id, { [update.field]: update.value });
-      }
-      res.json({ success: true });
+    const updates = req.body.updates;
+    for (const update of updates) {
+      await User.findByIdAndUpdate(update.id, { [update.field]: update.value });
+    }
+    res.json({ success: true });
   } catch (error) {
-      console.error("Error updating users:", error);
-      res.status(500).json({ success: false });
+    console.error("Error updating users:", error);
+    res.status(500).json({ success: false });
   }
 });
 app.listen(3000, function () {
