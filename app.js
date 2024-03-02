@@ -1110,12 +1110,13 @@ app.get('/success', async (req, res) => {
   }
 
   try {
+    const moodleUserId = await getMoodleUserId(username);
     // Find the course by courseID
     const course = await Course.findOne({ courseID: courseID });
     if (!course) return res.status(404).send('Course not found');
 
     const courseName = course.name;
-
+console.log(courseName);
     // Add the course to the user's purchased courses
     const user = await User.findByIdAndUpdate(userId, {
       $addToSet: { coursesPurchased: courseName }
@@ -1125,11 +1126,13 @@ app.get('/success', async (req, res) => {
       console.error('User not found:', userId);
       return res.status(404).send('User not found');
     }
-
+    const courseId = await getCourseIdByName(courseName);
+    const roleId = 5; // Assuming role ID for student
+    await enrollUserInMoodle(moodleUserId, courseId, roleId);
     // Additional logic (e.g., enrollment in Moodle, sending emails) goes here
 
     // Enroll the user in the Moodle course with category number D1
-    await enrollUserInCourse(user.username, '12');
+    // await enrollUserInCourse(user.username, '12');
 
     // Send a payment receipt to the user
     sendEmail({
