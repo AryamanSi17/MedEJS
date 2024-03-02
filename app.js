@@ -789,7 +789,9 @@ app.get('/buy-now/:courseID', async (req, res) => {
     if (!course) {
       return res.status(404).send("Course Not found");
     }
-
+// Accessing the course name
+const courseName = course.name;
+console.log(courseName); 
     // Assume user identification logic is here, e.g., from a JWT token
     const token = req.cookies.authToken;
     if (!token) {
@@ -1110,7 +1112,6 @@ app.get('/success', async (req, res) => {
   }
 
   try {
-    const moodleUserId = await getMoodleUserId(username);
     // Find the course by courseID
     const course = await Course.findOne({ courseID: courseID });
     if (!course) return res.status(404).send('Course not found');
@@ -1126,13 +1127,15 @@ console.log(courseName);
       console.error('User not found:', userId);
       return res.status(404).send('User not found');
     }
+    // Assuming you have a function to get Moodle user ID similar to your createUserInMoodle logic
+    const moodleUserId = await getMoodleUserId(user.username);
+
+    // Assuming you have a function to get Course ID by Name for Moodle
     const courseId = await getCourseIdByName(courseName);
     const roleId = 5; // Assuming role ID for student
-    await enrollUserInMoodle(moodleUserId, courseId, roleId);
-    // Additional logic (e.g., enrollment in Moodle, sending emails) goes here
 
-    // Enroll the user in the Moodle course with category number D1
-    // await enrollUserInCourse(user.username, '12');
+    // Enroll the user in the Moodle course
+    await enrollUserInMoodle(moodleUserId, courseId, roleId);
 
     // Send a payment receipt to the user
     sendEmail({
