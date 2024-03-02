@@ -1,6 +1,33 @@
-<%- include('header') %> <!-- Include the header file -->
+<html>
+  <head>
+    <style>
+      /* Simple Spinner Styles */
+      .spinner {
+          border: 4px solid rgba(0, 0, 0, .1);
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          border-left-color: #09f;
+          animation: spin 1s ease infinite;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          margin: -20px 0 0 -20px;
+      }
 
+      @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+      }
+
+      /* Optional: Hide form initially */
+      form {
+          display: none;
+      }
+  </style>
+  </head>
 <body>
+  <div class="spinner"></div>
     <form method="POST" name="customerData" action="/ccavRequestHandler">
         <table width="40%" height="100" border='1' align="center">
           <caption>
@@ -12,10 +39,10 @@
             <td>Merchant Id</td>
             <td><input type="text" name="merchant_id" value="<%= merchantId %>" /></td>
           </tr>
-          <tr>
+          <!-- <tr>
             <td>Order Id</td>
             <td><input type="hidden" name="order_id" value="{{orderId}}" /></td>
-          </tr>
+          </tr> -->
           <tr>
             <td>Currency</td>
             <td><input type="text" name="currency" value="INR" /></td>
@@ -37,7 +64,7 @@
             <td><input type="text" name="language" value="EN" /></td>
           </tr>
           <input type="hidden" name="courseName" value="<%= course.name %>">
-    <tr>
+    <!-- <tr>
         <td>Billing Tel:</td>
         <td><input type="text" name="billing_tel" value="9876543210" />
         </td>
@@ -120,8 +147,17 @@
     <tr>
         <td></td>
         <td><INPUT TYPE="submit" value="Checkout"></td>
-    </tr>
+    </tr> -->
     </table>
   </form>
+  <script>
+window.onload=function(){
+  setTimeout(function(){
+    document.querySelector('.spinner').style.display='block';
+    document.forms['customerData'].style.display='none';
+    document.forms['customerData'].submit();
+  },1000);
+}
+  </script>
 </body>
 </html>

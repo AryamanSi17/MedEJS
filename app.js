@@ -827,7 +827,7 @@ app.get('/buy-now/:courseID', async (req, res) => {
       },
       merchantId: "2619634",
   redirectUrl: `https://globalmedacademy.com/success?courseID=${req.params.courseID}`,
-  cancelUrl: "https://localhost:3000/ccavResponseHandler",
+  cancelUrl: "https://globalmedacademy.com/ccavResponseHandler",
   pageTitle: 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy',
   metaRobots: 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large',
   metaKeywords: 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ',
