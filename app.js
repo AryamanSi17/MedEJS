@@ -1128,6 +1128,23 @@ app.get('/success', async (req, res) => {
 
     // Additional logic (e.g., enrollment in Moodle, sending emails) goes here
 
+    // Enroll the user in the Moodle course with category number D1
+    await enrollUserInCourse(user.username, '12');
+
+    // Send a payment receipt to the user
+    sendEmail({
+      to: [user.username],
+      subject: 'Your Payment Receipt',
+      text: `Thank you for purchasing the course. Your payment was successful! We will send you the receipt!`
+    });
+
+    // Send a new enrollment message to the admin
+    sendEmail({
+      to: 'onlinemedcourses@gmail.com',
+      subject: 'New User Enrollment',
+      text: `A new user has enrolled in the course. \n\nUser Email: ${user.username}\nCourse: ${courseName}\nPayment Status: Successful`
+    });
+
     // Redirect to the user page with a success message
     res.redirect('/user?message=Payment successful! Course added.');
   } catch (error) {
