@@ -390,6 +390,54 @@ function setRoutes(app) {
       username: username, isBlogPage: false, firstname: firstname
     });
   });
+  app.get("/course-details-professional-certificate-in-family-medicine", function (req, res) {
+    const pageTitle = 'Professional Certificate Course in Family Medicine Program';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = '';
+    const ogDescription = '';
+    const canonicalLink = 'https://www.globalmedacademy.com/course-details-professional-certificate-in-family-medicine';
+    const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
+    res.render('course-details-professional-certificate-in-family-medicine', {
+      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
+      username: username, isBlogPage: false, firstname: firstname
+    });
+  });
+  app.get("/course-details-advanced-professional-certificate-in-family-medicine", function (req, res) {
+    const pageTitle = 'Advanced Professional Certificate Course in Family Medicine Program';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = '';
+    const ogDescription = '';
+    const canonicalLink = 'https://www.globalmedacademy.com/course-details-advanced-professional-certificate-in-family-medicine';
+    const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
+    res.render('course-details-advanced-professional-certificate-in-family-medicine', {
+      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
+      username: username, isBlogPage: false, firstname: firstname
+    });
+  });
+  app.get("/course-details-fellowship-in-family-medicine", function (req, res) {
+    const pageTitle = 'Fellowship in Family Medicine Program';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = '';
+    const ogDescription = '';
+    const canonicalLink = 'https://www.globalmedacademy.com/course-details-fellowship-in-family-medicine';
+    const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
+    res.render('course-details-fellowship-in-family-medicine', {
+      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
+      username: username, isBlogPage: false, firstname: firstname
+    });
+  });
 
   app.get("/course-details-anaphylaxis", function (req, res) {
     const pageTitle = 'Anaphylaxis';
