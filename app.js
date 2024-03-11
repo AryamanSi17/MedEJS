@@ -1089,81 +1089,81 @@ app.post('/user', async (req, res) => {
 //     res.status(500).send('Error creating checkout session');
 //   }
 // });
-app.get('/success', async (req, res) => {
-  const courseID = req.query.courseID; // Extract courseID from the URL
+// app.get('/success', async (req, res) => {
+//   const courseID = req.query.courseID; // Extract courseID from the URL
 
-  if (!courseID) {
-    return res.status(400).send('Course ID is required');
-  }
+//   if (!courseID) {
+//     return res.status(400).send('Course ID is required');
+//   }
 
-  // Extract the JWT token from the cookie
-  const token = req.cookies.authToken;
-  if (!token) {
-    return res.status(401).send('Unauthorized: No token provided');
-  }
+//   // Extract the JWT token from the cookie
+//   const token = req.cookies.authToken;
+//   if (!token) {
+//     return res.status(401).send('Unauthorized: No token provided');
+//   }
 
-  let userId;
-  try {
-    // Verify and decode the token to get the user's ID
-    const decoded = jwt.verify(token, JWT_SECRET);
-    userId = decoded.userId;
-  } catch (error) {
-    return res.status(401).send('Unauthorized: Invalid token');
-  }
+//   let userId;
+//   try {
+//     // Verify and decode the token to get the user's ID
+//     const decoded = jwt.verify(token, JWT_SECRET);
+//     userId = decoded.userId;
+//   } catch (error) {
+//     return res.status(401).send('Unauthorized: Invalid token');
+//   }
 
-  try {
-    // Find the course by courseID
-    const course = await Course.findOne({ courseID: courseID });
-    if (!course) return res.status(404).send('Course not found');
+//   try {
+//     // Find the course by courseID
+//     const course = await Course.findOne({ courseID: courseID });
+//     if (!course) return res.status(404).send('Course not found');
 
-    const courseName = course.name;
-    console.log(courseName);
-    // Add the course to the user's purchased courses
-    const user = await User.findByIdAndUpdate(userId, {
-      $addToSet: { coursesPurchased: courseName }
-    }, { new: true });
+//     const courseName = course.name;
+//     console.log(courseName);
+//     // Add the course to the user's purchased courses
+//     const user = await User.findByIdAndUpdate(userId, {
+//       $addToSet: { coursesPurchased: courseName }
+//     }, { new: true });
 
-    if (!user) {
-      console.error('User not found:', userId);
-      return res.status(404).send('User not found');
-    }
-    console.log(`User ${user.username} found. Proceeding to enroll in Moodle.`);
+//     if (!user) {
+//       console.error('User not found:', userId);
+//       return res.status(404).send('User not found');
+//     }
+//     console.log(`User ${user.username} found. Proceeding to enroll in Moodle.`);
 
-    // Assuming you have a function to get Moodle user ID similar to your createUserInMoodle logic
-    const moodleUserId = await getMoodleUserId(user.username);
+//     // Assuming you have a function to get Moodle user ID similar to your createUserInMoodle logic
+//     const moodleUserId = await getMoodleUserId(user.username);
 
-    // Assuming you have a function to get Course ID by Name for Moodle
-    const courseId = await getCourseIdByName(course.name);
-    const roleId = 5; // Assuming role ID for student
+//     // Assuming you have a function to get Course ID by Name for Moodle
+//     const courseId = await getCourseIdByName(course.name);
+//     const roleId = 5; // Assuming role ID for student
 
-    console.log(`Enrolling user in Moodle. MoodleUserId: ${moodleUserId}, CourseId: ${courseId}, RoleId: ${roleId}`);
+//     console.log(`Enrolling user in Moodle. MoodleUserId: ${moodleUserId}, CourseId: ${courseId}, RoleId: ${roleId}`);
 
-    // Enroll the user in the Moodle course
-    const enrollmentResponse = await enrollUserInMoodle(moodleUserId, courseId, roleId);
+//     // Enroll the user in the Moodle course
+//     const enrollmentResponse = await enrollUserInMoodle(moodleUserId, courseId, roleId);
 
-    console.log('Moodle enrollment response:', enrollmentResponse);
+//     console.log('Moodle enrollment response:', enrollmentResponse);
 
-    // Send a payment receipt to the user
-    sendEmail({
-      to: [user.username],
-      subject: 'Your Payment Receipt',
-      text: `Thank you for purchasing the course. Your payment was successful! We will send you the receipt!`
-    });
+//     // Send a payment receipt to the user
+//     sendEmail({
+//       to: [user.username],
+//       subject: 'Your Payment Receipt',
+//       text: `Thank you for purchasing the course. Your payment was successful! We will send you the receipt!`
+//     });
 
-    // Send a new enrollment message to the admin
-    sendEmail({
-      to: 'onlinemedcourses@gmail.com',
-      subject: 'New User Enrollment',
-      text: `A new user has enrolled in the course. \n\nUser Email: ${user.username}\nCourse: ${courseName}\nPayment Status: Successful`
-    });
+//     // Send a new enrollment message to the admin
+//     sendEmail({
+//       to: 'onlinemedcourses@gmail.com',
+//       subject: 'New User Enrollment',
+//       text: `A new user has enrolled in the course. \n\nUser Email: ${user.username}\nCourse: ${courseName}\nPayment Status: Successful`
+//     });
 
-    // Redirect to the user page with a success message
-    res.redirect('/user?message=Payment successful! Course added.');
-  } catch (error) {
-    console.error('Error in success route:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
+//     // Redirect to the user page with a success message
+//     res.redirect('/user?message=Payment successful! Course added.');
+//   } catch (error) {
+//     console.error('Error in success route:', error);
+//     res.status(500).send('Internal Server Error');
+//   }
+// });
 
 
 // app.get('/success', async (req, res) => {
@@ -1949,6 +1949,83 @@ app.post('/create-user', upload.fields([
     res.status(500).send("An error occurred during user registration.");
   }
 });
+//success route for verifying user after payment
+app.get('/success', async (req, res) => {
+  const courseID = req.query.courseID; // Extract courseID from the URL
+
+  if (!courseID) {
+    return res.status(400).send('Course ID is required');
+  }
+
+  // Extract the JWT token from the cookie
+  const token = req.cookies.authToken;
+  if (!token) {
+    return res.status(401).send('Unauthorized: No token provided');
+  }
+
+  let userId;
+  try {
+    // Verify and decode the token to get the user's ID
+    const decoded = jwt.verify(token, JWT_SECRET);
+    userId = decoded.userId;
+  } catch (error) {
+    return res.status(401).send('Unauthorized: Invalid token');
+  }
+
+  try {
+    // Find the course by courseID
+    const course = await Course.findOne({ courseID: courseID });
+    if (!course) return res.status(404).send('Course not found');
+
+    const courseName = course.name;
+    console.log(courseName);
+    // Add the course to the user's purchased courses
+    const user = await User.findByIdAndUpdate(userId, {
+      $addToSet: { coursesPurchased: courseName }
+    }, { new: true });
+
+    if (!user) {
+      console.error('User not found:', userId);
+      return res.status(404).send('User not found');
+    }
+    console.log(`User ${user.username} found. Proceeding to enroll in Moodle.`);
+
+    // Assuming you have a function to get Moodle user ID similar to your createUserInMoodle logic
+    const moodleUserId = await getMoodleUserId(user.username);
+
+    // Assuming you have a function to get Course ID by Name for Moodle
+    const courseId = await getCourseIdByName(course.name);
+    const roleId = 5; // Assuming role ID for student
+
+    console.log(`Enrolling user in Moodle. MoodleUserId: ${moodleUserId}, CourseId: ${courseId}, RoleId: ${roleId}`);
+
+    // Enroll the user in the Moodle course
+    const enrollmentResponse = await enrollUserInMoodle(moodleUserId, courseId, roleId);
+
+    console.log('Moodle enrollment response:', enrollmentResponse);
+
+    // Send a payment receipt to the user
+    sendEmail({
+      to: [user.username],
+      subject: 'Your Payment Receipt',
+      text: `Thank you for purchasing the course. Your payment was successful! We will send you the receipt!`
+    });
+
+    // Send a new enrollment message to the admin
+    sendEmail({
+      to: 'onlinemedcourses@gmail.com',
+      subject: 'New User Enrollment',
+      text: `A new user has enrolled in the course. \n\nUser Email: ${user.username}\nCourse: ${courseName}\nPayment Status: Successful`
+    });
+
+    // Redirect to the user page with a success message
+    res.redirect('/user?message=Payment successful! Course added.');
+  } catch (error) {
+    console.error('Error in success route:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 app.post('/user-submit', upload.fields([
   { name: 'officialIDCard' },
   { name: 'mciCertificate' },
