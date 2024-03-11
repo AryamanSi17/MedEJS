@@ -90,37 +90,42 @@ passport.use(new GoogleStrategy({
   clientSecret: process.env.CLIENT_SECRET,
   callbackURL: "https://globalmedacademy.com/auth/google/callback"
 },
-  async (accessToken, refreshToken, profile, done) => {
-    const email = profile.emails[0].value; // Assuming the email is always present
+async (accessToken, refreshToken, profile, done) => {
+  const email = profile.emails[0].value; // Assuming the email is always present
+  const fullname = profile.displayName; // Fetching the full name from Google profile
 
-    try {
-      // First, check if the email is already associated with an account (Google or otherwise)
-      let user = await User.findOne({ email: email });
+  try {
+    let user = await User.findOne({ email: email });
 
-      if (user) {
-        if (!user.googleId) {
-          user.googleId = profile.id;
-          await user.save();
-        }
-      }
-      else {
-        // No user found with this email, create a new account
-        user = await new User({
-          googleId: profile.id,
-          email: email,
-          displayName: profile.displayName,
-          // additional fields as needed
-          signupMethod: 'google'
-        });
+    if (user) {
+      // Update googleId if not present
+      if (!user.googleId) {
+        user.googleId = profile.id;
         await user.save();
       }
-      // User found or created successfully
-      return done(null, user);
-    } catch (error) {
-      return done(error);
+    } else {
+      // No user found with this email, create a new account
+      // Generate a password for the new user
+      const password = generatePassword(); 
+
+      user = await new User({
+        googleId: profile.id,
+        email: email,
+        fullname: fullname, // Store the full name
+        username: email, // Username as email
+        password: password, // Store the generated password
+        signupMethod: 'google'
+      });
+      await user.save();
     }
+    // User found or created successfully
+    return done(null, user);
+  } catch (error) {
+    return done(error);
   }
+}
 ));
+
 
 passport.serializeUser((user, done) => {
   done(null, user.id);

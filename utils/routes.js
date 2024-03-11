@@ -438,6 +438,54 @@ function setRoutes(app) {
       username: username, isBlogPage: false, firstname: firstname
     });
   });
+  app.get("/course-details-professional-certificate-in-gynecology-and-obstetrics", function (req, res) {
+    const pageTitle = 'Professional Certificate in Gynecology and Obstetrics';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = '';
+    const ogDescription = '';
+    const canonicalLink = 'https://www.globalmedacademy.com/course-details-professional-certificate-in-gynecology-and-obstetrics';
+    const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
+    res.render('course-details-professional-certificate-in-gynecology-and-obstetrics', {
+      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
+      username: username, isBlogPage: false, firstname: firstname
+    });
+  });
+  app.get("/course-details-advanced-professional-certificate-in-gynecology-and-obstetrics", function (req, res) {
+    const pageTitle = 'Advanced Professional Certificate in Gynecology and Obstetrics';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = '';
+    const ogDescription = '';
+    const canonicalLink = 'https://www.globalmedacademy.com/course-details-advanced-professional-certificate-in-gynecology-and-obstetrics';
+    const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
+    res.render('course-details-advanced-professional-certificate-in-gynecology-and-obstetrics', {
+      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
+      username: username, isBlogPage: false, firstname: firstname
+    });
+  });
+  app.get("/course-details-fellowship-in-gynecology-and-obstetrics", function (req, res) {
+    const pageTitle = 'Fellowship in Gynecology and Obstetrics';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = '';
+    const ogDescription = '';
+    const canonicalLink = 'https://www.globalmedacademy.com/course-details-fellowship-in-gynecology-and-obstetrics';
+    const username = req.session.username || null;
+    let firstname = null;
+    if (req.isUserLoggedIn && req.user && req.user.fullname) {
+      firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
+    }
+    res.render('course-details-fellowship-in-gynecology-and-obstetrics', {
+      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
+      username: username, isBlogPage: false, firstname: firstname
+    });
+  });
 
   app.get("/course-details-anaphylaxis", function (req, res) {
     const pageTitle = 'Anaphylaxis';
