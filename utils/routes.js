@@ -394,7 +394,7 @@ function setRoutes(app) {
     const pageTitle = 'Professional Certificate Course in Family Medicine Program';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = '';
-    const ogDescription = '';
+    const ogDescription = 'Certificate course in Family Medicine integrates clinical and theoretical approaches, offering healthcare professionals intensive theoretical case based knowledge.';
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-professional-certificate-in-family-medicine';
     const username = req.session.username || null;
     let firstname = null;
@@ -410,7 +410,7 @@ function setRoutes(app) {
     const pageTitle = 'Advanced Professional Certificate Course in Family Medicine Program';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = '';
-    const ogDescription = '';
+    const ogDescription = 'Advanced Professional Certificate Course in Family Medicine Program is a comprehensive course for healthcare professionals focusing on primary patient care.';
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-advanced-professional-certificate-in-family-medicine';
     const username = req.session.username || null;
     let firstname = null;
@@ -423,10 +423,10 @@ function setRoutes(app) {
     });
   });
   app.get("/course-details-fellowship-in-family-medicine", function (req, res) {
-    const pageTitle = 'Fellowship in Family Medicine Program';
+    const pageTitle = 'Fellowship in Family Medicine, Online Course For MBBS';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = '';
-    const ogDescription = '';
+    const ogDescription = 'Our Fellowship in Family Medicine is a comprehensive and flexible online fellowship course tailored for post-MBBS professionals.';
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-fellowship-in-family-medicine';
     const username = req.session.username || null;
     let firstname = null;
@@ -442,7 +442,7 @@ function setRoutes(app) {
     const pageTitle = 'Professional Certificate in Gynecology and Obstetrics';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = '';
-    const ogDescription = '';
+    const ogDescription = 'Certificate in Gynecology and Obstetrics Course is designed for healthcare professionals like you who are interested in upskilling in this field.';
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-professional-certificate-in-gynecology-and-obstetrics';
     const username = req.session.username || null;
     let firstname = null;
@@ -458,7 +458,7 @@ function setRoutes(app) {
     const pageTitle = 'Advanced Professional Certificate in Gynecology and Obstetrics';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = '';
-    const ogDescription = '';
+    const ogDescription = 'Comprehensive course is updated on the latest advancements for healthcare professionals who want to fast-track their careers in gynecology and obstetrics.';
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-advanced-professional-certificate-in-gynecology-and-obstetrics';
     const username = req.session.username || null;
     let firstname = null;
@@ -471,10 +471,10 @@ function setRoutes(app) {
     });
   });
   app.get("/course-details-fellowship-in-gynecology-and-obstetrics", function (req, res) {
-    const pageTitle = 'Fellowship in Gynecology and Obstetrics';
+    const pageTitle = 'Fellowship in Gynecology and Obstetrics, Course After MBBS';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = '';
-    const ogDescription = '';
+    const ogDescription = 'Fellowship in Gynecology and Obstetrics - Course is a blended learning program consisting of expert talks along with integrated assignments from eminent faculty.';
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-fellowship-in-gynecology-and-obstetrics';
     const username = req.session.username || null;
     let firstname = null;
@@ -488,10 +488,10 @@ function setRoutes(app) {
   });
 
   app.get("/course-details-anaphylaxis", function (req, res) {
-    const pageTitle = 'Anaphylaxis';
+    const pageTitle = 'Anaphylaxis Online Course in India';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = '';
-    const ogDescription = '';
+    const ogDescription = 'Anaphylaxis in Child Care Settings online course provides the information and resources needed to successfully manage anaphylaxis in centr.';
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-anaphylaxis';
     const username = req.session.username || null;
     let firstname = null;
@@ -504,10 +504,10 @@ function setRoutes(app) {
     });
   });
   app.get("/course-details-blood-transfusion", function (req, res) {
-    const pageTitle = 'Blood Transfusion';
+    const pageTitle = 'Blood Transfusion Training, BTT, e-Learning Program';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = '';
-    const ogDescription = '';
+    const ogDescription = 'Blood Transfusion Training (BTT) programme of e-learning resources provides training on the principles of safe and appropriate transfusion practice.';
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-blood-transfusion';
     const username = req.session.username || null;
     let firstname = null;
@@ -552,10 +552,10 @@ function setRoutes(app) {
     });
   });
   app.get("/course-details-breast-imaging", function (req, res) {
-    const pageTitle = 'Breast Imaging';
+    const pageTitle = 'Breast Imaging Fellowship Online in India';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = '';
-    const ogDescription = '';
+    const ogDescription = 'Fellowship in breast imaging in India includes training in all aspects of breast imaging and interventions.';
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-breast-imaging';
     const username = req.session.username || null;
     let firstname = null;
@@ -568,10 +568,10 @@ function setRoutes(app) {
     });
   });
   app.get("/ayush-course/cancer-careers-in-nursing-elearning-course", function (req, res) {
-    const pageTitle = 'Breast Imaging';
+    const pageTitle = 'Cancer Careers in Nursing e-learning Course Online';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = '';
-    const ogDescription = '';
+    const ogDescription = 'This programme has been developed to provide cancer-specific learning opportunities for registered nurses who provide care to people affected by cancer.';
     const canonicalLink = 'https://www.globalmedacademy.com/ayush-course/cancer-careers-in-nursing-elearning-course';
     const username = req.session.username || null;
     let firstname = null;
@@ -616,10 +616,10 @@ function setRoutes(app) {
     });
   });
   app.get("/ayush-course/course-details-breastmilk-provison-for-preterm-and-sick-neonates", function (req, res) {
-    const pageTitle = 'Breastmilk Provision for Preterm and Sick Neonates';
+    const pageTitle = 'Breastmilk Provision for Preterm, Sick Neonatal Care';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = '';
-    const ogDescription = '';
+    const ogDescription = 'This course will help key relevant staff in the support of breastmilk provision for preterm and sick term infants. ';
     const canonicalLink = 'https://www.globalmedacademy.com/ayush-course/course-details-breastmilk-provison-for-preterm-and-sick-neonates';
     const username = req.session.username || null;
     let firstname = null;
