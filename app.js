@@ -55,7 +55,7 @@ const ccavResponseHandler = require('./utils/ccavResponseHandler.js');
 
 const flash = require('connect-flash');
 let loggedIn = true;
-const { enrollUserInCourse } = require('./utils/enrollUser.js')
+const { enrollUserInCourse,searchAndLogCourseDetails } = require('./utils/enrollUser.js')
 const app = express();
 app.use(cookieSession({
   name: 'session',
@@ -1954,6 +1954,8 @@ app.post('/create-user', upload.fields([
     res.status(500).send("An error occurred during user registration.");
   }
 });
+// searchAndLogCourseDetails("Fellowship in Diabetes Management");
+
 //success route for verifying user after payment
 app.get('/success', async (req, res) => {
   const courseID = req.query.courseID; // Extract courseID from the URL
@@ -2001,7 +2003,7 @@ app.get('/success', async (req, res) => {
     // Assuming you have a function to get Course ID by Name for Moodle
     const courseId = await getCourseIdByName(courseNameForMoodle);
     const roleId = 5; // Assuming role ID for student
-
+    searchAndLogCourseDetails("courseName");
     console.log(`Enrolling user in Moodle. MoodleUserId: ${moodleUserId}, CourseId: ${courseId}, RoleId: ${roleId}`);
 
     // Enroll the user in the Moodle course

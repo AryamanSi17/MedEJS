@@ -56,7 +56,36 @@ const enrollUserInCourse = async (userEmail, courseId) => {
     throw new Error('Failed to enroll user in the course.');
   }
 };
+// Function to search for a course by its name (or any other criteria) and return its details
+const searchAndLogCourseDetails = async (courseName) => {
+  const formData = new FormData();
+  formData.append('moodlewsrestformat', 'json');
+  formData.append('wsfunction', 'core_course_search_courses');
+  formData.append('wstoken', process.env.MOODLE_TOKEN);
+  formData.append('criterianame', 'search'); // This is not a field filter but a search term
+  formData.append('criteriavalue', courseName);
+
+  try {
+    const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
+      headers: formData.getHeaders(),
+    });
+
+    if (response.data && response.data.courses && response.data.courses.length > 0) {
+      // Assuming the first course is the correct one
+      console.log('Course found:', response.data.courses[0]);
+      // Log the course details
+      console.log(`Course ID: ${response.data.courses[0].id}`);
+      console.log(`Course Full Name: ${response.data.courses[0].fullname}`);
+      console.log(`Course Short Name: ${response.data.courses[0].shortname}`);
+    } else {
+      console.log('No course found with the specified name.');
+    }
+  } catch (error) {
+    console.error('Error searching for course:', error.message);
+  }
+
+};
 
 module.exports = {
-  enrollUserInCourse
+  enrollUserInCourse,searchAndLogCourseDetails
 };
