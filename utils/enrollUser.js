@@ -85,7 +85,31 @@ const searchAndLogCourseDetails = async (courseName) => {
   }
 
 };
+async function getCourseIdByName(courseName) {
+  const formData = new FormData();
+  formData.append('moodlewsrestformat', 'json');
+  formData.append('wsfunction', 'core_course_search_courses');
+  formData.append('wstoken', process.env.MOODLE_TOKEN);
+  formData.append('criterianame', 'search');
+  formData.append('criteriavalue', courseName);
+
+  try {
+    const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
+      headers: formData.getHeaders()
+    });
+
+    if (response.data && response.data.courses && response.data.courses.length > 0) {
+      // Assuming the first course in the list is the correct one, since short names are typically unique
+      return response.data.courses[0].id; // Return the course ID
+    } else {
+      throw new Error('Course not found.');
+    }
+  } catch (error) {
+    console.error('Error getting course ID:', error);
+    throw error;
+  }
+}
 
 module.exports = {
-  enrollUserInCourse,searchAndLogCourseDetails
+  enrollUserInCourse,searchAndLogCourseDetails,getCourseIdByName
 };

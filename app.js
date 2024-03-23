@@ -55,7 +55,7 @@ const ccavResponseHandler = require('./utils/ccavResponseHandler.js');
 
 const flash = require('connect-flash');
 let loggedIn = true;
-const { enrollUserInCourse,searchAndLogCourseDetails } = require('./utils/enrollUser.js')
+const { enrollUserInCourse,searchAndLogCourseDetails,getCourseIdByName } = require('./utils/enrollUser.js')
 const app = express();
 app.use(cookieSession({
   name: 'session',
@@ -1825,30 +1825,8 @@ app.post('/update-user', async function (req, res) {
 
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
-async function getCourseIdByName(courseName) {
-  const formData = new FormData();
-  formData.append('moodlewsrestformat', 'json');
-  formData.append('wsfunction', 'core_course_get_courses');
-  formData.append('wstoken', process.env.MOODLE_TOKEN);
 
-  try {
-    const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
-      headers: formData.getHeaders()
-    });
-
-    const courses = response.data;
-    const course = courses.find(c => c.fullname === courseName);
-
-    if (course) {
-      return course.id; // Return the course ID
-    } else {
-      throw new Error('Course not found.');
-    }
-  } catch (error) {
-    console.error('Error getting course ID:', error);
-    throw error;
-  }
-}
+getCourseIdByName("Fellowship in Diabetes Management");
 // Mapping from course abbreviation to full course name
 const courseNames = {
   PCDM: "Professional Certificate in Diabetes Management",
@@ -2001,7 +1979,7 @@ app.get('/success', async (req, res) => {
     const moodleUserId = await getMoodleUserId(user.username);
     const courseNameForMoodle = "Fellowship in Diabetes Management";
     // Assuming you have a function to get Course ID by Name for Moodle
-    const courseId = await getCourseIdByName(courseNameForMoodle);
+    const courseId = await getCourseIdByName(courseName);
     const roleId = 5; // Assuming role ID for student
     searchAndLogCourseDetails(courseNameForMoodle);
     console.log(`Enrolling user in Moodle. MoodleUserId: ${moodleUserId}, CourseId: ${courseId}, RoleId: ${roleId}`);
