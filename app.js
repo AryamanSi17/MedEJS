@@ -2003,7 +2003,7 @@ app.get('/success', async (req, res) => {
     // Assuming you have a function to get Course ID by Name for Moodle
     const courseId = await getCourseIdByName(courseNameForMoodle);
     const roleId = 5; // Assuming role ID for student
-    searchAndLogCourseDetails("courseNameForMoodle");
+    searchAndLogCourseDetails(courseNameForMoodle);
     console.log(`Enrolling user in Moodle. MoodleUserId: ${moodleUserId}, CourseId: ${courseId}, RoleId: ${roleId}`);
 
     // Enroll the user in the Moodle course
