@@ -168,7 +168,21 @@ const userInterestSchema = new mongoose.Schema({
   courseInterested: String,
   country: String
 });
-
+const guestCheckoutSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  phoneNumber: String,
+  coursePurchased: [{
+    courseID: String,
+    courseName: String,
+    transactionId: String,
+    amount: Number,
+    currency: String,
+    purchaseDate: { type: Date, default: Date.now },
+    status: { type: String, default: 'pending' } // e.g., 'pending', 'completed'
+  }]
+});
+const GuestCheckout = mongoose.model('GuestCheckout', guestCheckoutSchema);
 const UserInterest = mongoose.model('UserInterest', userInterestSchema);
 
 const Transaction = mongoose.model('Transaction', transactionSchema);
@@ -176,4 +190,4 @@ const Transaction = mongoose.model('Transaction', transactionSchema);
 const NonMoodleUser = mongoose.model('NonMoodleUser', NonMoodleUserSchema);
 
 // Export the new model along with others
-module.exports = { mongoose, Course, User, File, Request, Session, UserSession, InstructorApplication, Transaction, NonMoodleUser, UserInterest };
+module.exports = { mongoose, Course, User, File, Request, Session, UserSession, InstructorApplication, Transaction, NonMoodleUser, UserInterest,GuestCheckout };
