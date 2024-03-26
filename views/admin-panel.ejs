@@ -96,13 +96,16 @@
             text-decoration: none;
             cursor: pointer;
         }
-        .criteria {
-    color: red; /* Default color indicating unfulfilled criteria */
-}
 
-.fulfilled {
-    color: green; /* Indicates the criteria is fulfilled */
-}
+        .criteria {
+            color: red;
+            /* Default color indicating unfulfilled criteria */
+        }
+
+        .fulfilled {
+            color: green;
+            /* Indicates the criteria is fulfilled */
+        }
 
 
         form {
@@ -393,7 +396,7 @@
                 <th>Enrollment Number</th>
                 <th>MCI Number</th>
                 <th>Referrals</th>
-                
+
             </tr>
         </thead>
         <tbody>
@@ -422,14 +425,16 @@
                     <td class="scrollable">
                         <% if (user.coursesPurchased && Array.isArray(user.coursesPurchased)) { %>
                             <% user.coursesPurchased.forEach(function(course) { %>
-                                <div><%= course %></div>
-                            <% }); %>
-                        <% } else { %>
-                            <div>No courses available</div>
-                        <% } %>
+                                <div>
+                                    <%= course %>
+                                </div>
+                                <% }); %>
+                                    <% } else { %>
+                                        <div>No courses available</div>
+                                        <% } %>
                     </td>
 
-                  
+
                     <td>
                         <%= user.enrollmentNumber%>
                     </td>
@@ -461,125 +466,186 @@
     </div>
     <h2>NonMoodle User List</h2>
     <table>
-      <thead>
-        <tr>
-          <th>Full Name</th>
-          <th>Email (Username)</th>
-          <th>Phone</th>
-          <th>Interested Courses</th>
-          <!-- Inside the NonMoodle Users table, within each row -->
-  
-        </tr>
-      </thead>
-      <tbody>
-        <% nonMoodleUsers.forEach(function(user) { %>
-          <tr>
-            <td><%= user.fullname %></td>
-            <td><%= user.username %></td>
-            <td><%= user.number %></td>
-            <td>
-              <% (user.coursesIntrested || []).forEach(function(course) { %>
-                <div><%= course %></div>
-              <% }); %>
-            </td>
-            <td>
-                <!-- Ensure this button is within the forEach loop for nonMoodleUsers -->
-                <button class="addToMoodleBtn" data-id="<%= user._id %>">Add to Moodle</button>
-              </td>
-            <!-- Add more data fields as needed -->
-          </tr>
-        <% }); %>
-      </tbody>
+        <thead>
+            <tr>
+                <th>Full Name</th>
+                <th>Email (Username)</th>
+                <th>Phone</th>
+                <th>Interested Courses</th>
+                <!-- Inside the NonMoodle Users table, within each row -->
+
+            </tr>
+        </thead>
+        <tbody>
+            <% nonMoodleUsers.forEach(function(user) { %>
+                <tr>
+                    <td>
+                        <%= user.fullname %>
+                    </td>
+                    <td>
+                        <%= user.username %>
+                    </td>
+                    <td>
+                        <%= user.number %>
+                    </td>
+                    <td>
+                        <% (user.coursesIntrested || []).forEach(function(course) { %>
+                            <div>
+                                <%= course %>
+                            </div>
+                            <% }); %>
+                    </td>
+                    <td>
+                        <!-- Ensure this button is within the forEach loop for nonMoodleUsers -->
+                        <button class="addToMoodleBtn" data-id="<%= user._id %>">Add to Moodle</button>
+                    </td>
+                    <!-- Add more data fields as needed -->
+                </tr>
+                <% }); %>
+        </tbody>
     </table>
-    
+    <h2>Guest Checkout List</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Course Purchased</th>
+                <th>Status</th>
+                <th>Documents</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% guestCheckouts.forEach(function(checkout) { %>
+                <tr>
+                    <td>
+                        <%= checkout.name %>
+                    </td>
+                    <td>
+                        <%= checkout.email %>
+                    </td>
+                    <td>
+                        <%= checkout.phoneNumber %>
+                    </td>
+                    <td>
+                        <% checkout.coursePurchased.forEach(function(course) { %>
+                            <div>
+                                <%= course.courseName %> (<%= course.status %>)
+                            </div>
+                            <% }); %>
+                    </td>
+                    <td>
+                        <!-- Example button for changing status; implement JS to handle click -->
+                        <form action="/update-guest-checkout-status" method="post">
+                            <input type="hidden" name="checkoutId" value="<%= checkout._id %>">
+                            <input type="hidden" name="newStatus" value="done">
+                            <button type="submit" class="status-btn">Mark as Done</button>
+                        </form>
+                    </td>
+                    <td>
+                        <!-- Example form for uploading documents; implement multipart/form-data and handle in backend -->
+                        <form action="/upload-documents/<%= checkout._id %>" method="post"
+                            enctype="multipart/form-data">
+                            <input type="file" name="documents" multiple>
+                            <button type="submit">Upload</button>
+                        </form>
+                    </td>
+                </tr>
+                <% }); %>
+        </tbody>
+    </table>
+
     <!-- Pagination for NonMoodleUsers -->
     <!-- Adjust the query parameter or logic as needed to differentiate pagination -->
     <div class="pagination">
-      <% if(currentPage > 1) { %>
-        <a href="/admin-panel?page=<%= currentPage - 1 %>&type=nonmoodle" class="pagination-arrow">&laquo; Previous</a>
-      <% } %>
-      <% if(currentPage < totalPagesNonMoodleUsers) { %>
-        <a href="/admin-panel?page=<%= currentPage + 1 %>&type=nonmoodle" class="pagination-arrow">Next &raquo;</a>
-      <% } %>
+        <% if(currentPage> 1) { %>
+            <a href="/admin-panel?page=<%= currentPage - 1 %>&type=nonmoodle" class="pagination-arrow">&laquo;
+                Previous</a>
+            <% } %>
+                <% if(currentPage < totalPagesNonMoodleUsers) { %>
+                    <a href="/admin-panel?page=<%= currentPage + 1 %>&type=nonmoodle" class="pagination-arrow">Next
+                        &raquo;</a>
+                    <% } %>
     </div>
- <!-- Add to Moodle Modal Structure -->
- <div id="addToMoodleModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Set Password for Moodle User</h2>
-        <form id="moodleUserForm" action="/migrateToMoodle" method="post">
-            <input type="hidden" id="moodleUserId" name="userId">
-            <label for="moodlePassword">Password:</label>
-            <input type="password" id="moodlePassword" name="password" required>
-            <div id="passwordRequirements">
-                <p id="minLength" class="criteria">At least 8 characters</p>
-                <p id="hasDigit" class="criteria">Contains a digit</p>
-                <p id="hasLowercase" class="criteria">Contains a lowercase letter</p>
-                <p id="hasUppercase" class="criteria">Contains an uppercase letter</p>
-                <p id="hasNonAlphanumeric" class="criteria">Contains a non-alphanumeric character</p>
-            </div>
-            <button type="submit">Submit</button>
-        </form>
+    <!-- Add to Moodle Modal Structure -->
+    <div id="addToMoodleModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Set Password for Moodle User</h2>
+            <form id="moodleUserForm" action="/migrateToMoodle" method="post">
+                <input type="hidden" id="moodleUserId" name="userId">
+                <label for="moodlePassword">Password:</label>
+                <input type="password" id="moodlePassword" name="password" required>
+                <div id="passwordRequirements">
+                    <p id="minLength" class="criteria">At least 8 characters</p>
+                    <p id="hasDigit" class="criteria">Contains a digit</p>
+                    <p id="hasLowercase" class="criteria">Contains a lowercase letter</p>
+                    <p id="hasUppercase" class="criteria">Contains an uppercase letter</p>
+                    <p id="hasNonAlphanumeric" class="criteria">Contains a non-alphanumeric character</p>
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
     </div>
-</div>
 
-  
-    
+
+
     <script>
-        document.getElementById('moodleUserForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
+        document.getElementById('moodleUserForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
 
-  const userId = document.getElementById('moodleUserId').value;
-  const password = document.getElementById('moodlePassword').value;
+            const userId = document.getElementById('moodleUserId').value;
+            const password = document.getElementById('moodlePassword').value;
 
-  try {
-    const response = await fetch('/migrateToMoodle', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userId, password }),
-    });
+            try {
+                const response = await fetch('/migrateToMoodle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ userId, password }),
+                });
 
-    if (response.ok) {
-      alert('User migrated successfully.');
-      window.location.reload(); // Refresh to show changes
-    } else {
-      throw new Error('Failed to migrate user.');
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    alert('Error migrating user.');
-  }
-});
+                if (response.ok) {
+                    alert('User migrated successfully.');
+                    window.location.reload(); // Refresh to show changes
+                } else {
+                    throw new Error('Failed to migrate user.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error migrating user.');
+            }
+        });
 
         document.querySelectorAll('.addToMoodleBtn').forEach(button => {
-  button.addEventListener('click', function() {
-    const userId = this.dataset.id;
-    document.getElementById('moodleUserId').value = userId; // Pass the user ID to the form
-    document.getElementById('addToMoodleModal').style.display = 'block';
-    document.body.classList.add('blur-effect'); // Apply blur to the background
-  });
-});
+            button.addEventListener('click', function () {
+                const userId = this.dataset.id;
+                document.getElementById('moodleUserId').value = userId; // Pass the user ID to the form
+                document.getElementById('addToMoodleModal').style.display = 'block';
+                document.body.classList.add('blur-effect'); // Apply blur to the background
+            });
+        });
 
-document.querySelector('.close').addEventListener('click', function() {
-  document.getElementById('addToMoodleModal').style.display = 'none';
-  document.body.classList.remove('blur-effect'); // Remove blur effect
-});
-document.getElementById('moodlePassword').addEventListener('input', function() {
-    const password = this.value;
-    const minLength = document.getElementById('minLength');
-    const hasDigit = document.getElementById('hasDigit');
-    const hasLowercase = document.getElementById('hasLowercase');
-    const hasUppercase = document.getElementById('hasUppercase');
-    const hasNonAlphanumeric = document.getElementById('hasNonAlphanumeric');
+        document.querySelector('.close').addEventListener('click', function () {
+            document.getElementById('addToMoodleModal').style.display = 'none';
+            document.body.classList.remove('blur-effect'); // Remove blur effect
+        });
+        document.getElementById('moodlePassword').addEventListener('input', function () {
+            const password = this.value;
+            const minLength = document.getElementById('minLength');
+            const hasDigit = document.getElementById('hasDigit');
+            const hasLowercase = document.getElementById('hasLowercase');
+            const hasUppercase = document.getElementById('hasUppercase');
+            const hasNonAlphanumeric = document.getElementById('hasNonAlphanumeric');
 
-    minLength.classList.toggle('fulfilled', password.length >= 8);
-    hasDigit.classList.toggle('fulfilled', /[0-9]/.test(password));
-    hasLowercase.classList.toggle('fulfilled', /[a-z]/.test(password));
-    hasUppercase.classList.toggle('fulfilled', /[A-Z]/.test(password));
-    hasNonAlphanumeric.classList.toggle('fulfilled', /[\W_]/.test(password));
-});
+            minLength.classList.toggle('fulfilled', password.length >= 8);
+            hasDigit.classList.toggle('fulfilled', /[0-9]/.test(password));
+            hasLowercase.classList.toggle('fulfilled', /[a-z]/.test(password));
+            hasUppercase.classList.toggle('fulfilled', /[A-Z]/.test(password));
+            hasNonAlphanumeric.classList.toggle('fulfilled', /[\W_]/.test(password));
+        });
 
         document.getElementById('createUserBtn').addEventListener('click', function () {
             document.getElementById('userForm').classList.add('active');
@@ -688,17 +754,17 @@ document.getElementById('moodlePassword').addEventListener('input', function() {
             }
         });
         document.querySelectorAll('.edit-icon').forEach(function (editIcon) {
-    editIcon.addEventListener('click', function () {
-        const row = this.closest('tr'); // Get the closest table row
+            editIcon.addEventListener('click', function () {
+                const row = this.closest('tr'); // Get the closest table row
 
-        // Toggle visibility of static text and input fields
-        row.querySelectorAll('.static-text').forEach(el => el.style.display = 'none');
-        row.querySelectorAll('.edit-field').forEach(el => el.style.display = 'inline');
+                // Toggle visibility of static text and input fields
+                row.querySelectorAll('.static-text').forEach(el => el.style.display = 'none');
+                row.querySelectorAll('.edit-field').forEach(el => el.style.display = 'inline');
 
-        // Enable save button
-        document.getElementById('saveChangesBtn').disabled = false;
-    });
-});
+                // Enable save button
+                document.getElementById('saveChangesBtn').disabled = false;
+            });
+        });
 
         document.getElementById('saveChangesBtn').addEventListener('click', function () {
             const editedFields = document.querySelectorAll('.edit-field');
@@ -728,6 +794,27 @@ document.getElementById('moodlePassword').addEventListener('input', function() {
                     console.error('Error:', error);
                 });
         });
+        document.querySelectorAll('.status-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const checkoutId = this.getAttribute('data-id');
+                fetch(`/update-guest-checkout-status/${checkoutId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'done' })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Status updated successfully');
+                            window.location.reload(); // Optionally reload or dynamically update the status on the page
+                        } else {
+                            alert('Error updating status');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        });
+
     </script>
 </body>
 

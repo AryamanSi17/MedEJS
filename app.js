@@ -793,7 +793,69 @@ app.get('/buy-now/:courseID', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+app.post('/guest-checkout/:courseID', async (req, res) => {
+  try {
+    const course = await Course.findOne({ courseID: req.params.courseID });
+    if (!course) {
+      return res.status(404).send("Course Not found");
+    }
 
+    const { name: userName, email: userEmail, phone } = req.body;
+ // Assuming these details are collected from the form
+
+    if (!userEmail) {
+      // You may want to validate the email or other inputs as necessary
+      return res.status(400).send('Invalid details');
+    }
+
+    console.log(`Creating transaction for guest user ${userName} (${userEmail}) and course ${course.name}`);
+
+    const transactionId = new Date().getTime().toString();
+
+    // Save guest user details in the database using the GuestCheckout model
+    const guestCheckoutEntry = await GuestCheckout.create({
+      name: userName,
+      email: userEmail,
+      phoneNumber: phone,
+      coursePurchased: [{
+        courseID: req.params.courseID,
+        courseName: course.name,
+        transactionId: transactionId,
+        amount: course.currentPrice,
+        currency: 'INR',
+        purchaseDate: new Date(),
+        status: 'pending',
+      }]
+    });
+
+
+   
+    
+    console.log(`Guest checkout saved for ${userName} (${userEmail})`);
+    console.log(`Transaction created with ID: ${transactionId} for guest user: ${userName} (${userEmail})`);
+
+    // Proceed with the payment preparation logic, similar to the buy-now route
+    res.render('dataFrom', { // Ensure this is the correct render view name
+      course: {
+        name: course.name,
+        price: course.currentPrice,
+      },
+      merchantId: "2619634",
+      redirectUrl: `https://globalmedacademy.com//guest-checkout-success`, // You might need to handle guest success differently
+      cancelUrl: "https://globalmedacademy.com/ccavResponseHandler",
+      pageTitle: 'Fellowship Course, Online Medical Certificate Courses - GlobalMedAcademy',
+      metaRobots: 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large',
+      metaKeywords: 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine ',
+      ogDescription: 'GlobalMedAcademy is a healthcare EdTech company. We provide various blended learning medical fellowship, certificate courses, and diplomas for medical professionals',
+      canonicalLink: 'https://www.globalmedacademy.com/',
+      isBlogPage: false,
+      // Add any guest-specific data here
+    });
+  } catch (error) {
+    console.error('Error processing guest checkout ', error);
+    res.status(500).send('Server error');
+  }
+});
 // ccavRequestHandler.js integration
 app.post('/ccavRequestHandler', function (request, response) {
   var workingKey = "1E9B36C49F90A45CEDA3827239927264"; // Test working key
@@ -921,54 +983,43 @@ app.get('/guest-checkout-form/:courseID', async (req, res) => {
   res.render('guest-checkout-form', { courseID, courseName: course.name, coursePrice: course.currentPrice });
 });
 
-app.post('/guest-checkout/:courseID', async (req, res) => {
-  const { name, email, phoneNumber } = req.body;
-  const { courseID } = req.params;
+app.get('/guest-checkout-success', (req, res) => {
+  const userName = req.query.userName;
+  const userEmail = req.query.userEmail;
+  const courseName = req.query.courseName;
 
-  const course = await Course.findOne({ courseID: courseID });
-  if (!course) {
-    return res.status(404).send("Course not found");
-  }
-
-  const transactionId = new Date().getTime().toString();
-
-  // Create guest checkout entry
-  await GuestCheckout.create({
-    name,
-    email,
-    phoneNumber,
-    coursePurchased: [{
-      courseID: courseID,
-      courseName: course.name,
-      transactionId,
-      amount: course.currentPrice,
-      currency: 'INR',
-      purchaseDate: new Date(),
-      status: 'pending',
-    }]
+  // Send a thank you email to the guest user
+  sendEmail({
+      to: userEmail,
+      subject: "Thank You for Your Purchase",
+      text: `Hello ${userName},\n\nThank you for purchasing the course: ${courseName}. Your details will be sent to you soon...`,
+      html: `<p>Hello <strong>${userName}</strong>,</p><p>Thank you for purchasing the course: <strong>${courseName}</strong>. Your details will be sent to you soon...</p>`
   });
 
-  // Encrypt data for CCAvenue
-  const formattedBody = qs.stringify({
-    order_id: transactionId,
-    currency: 'INR',
-    amount: course.currentPrice.toString(),
-    redirect_url: `https://globalmedacademy.com/ccavResponseHandler/guestsuccess`,
-    cancel_url: `https://globalmedacademy.com/ccavResponseHandler`,
-    // Add other necessary fields
-  });
-
-  const encRequest = encrypt(formattedBody, "1E9B36C49F90A45CEDA3827239927264");
-
-  // Form body for CCAvenue
-  const formBody = `<form id="ccavForm" method="post" action="https://test.ccavenue.com/transaction/transaction.do?command=initiateTransaction">
-                      <input type="hidden" name="encRequest" value="${encRequest}">
-                      <input type="hidden" name="access_code" value="AVUX05KH13BU86XUUB">
-                      <script type="text/javascript">document.getElementById("ccavForm").submit();</script>
-                    </form>`;
-
-  res.send(formBody);
+  const messagePage = `
+  <!DOCTYPE html>
+  <html>
+  <head>
+      <title>Payment Success</title>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <script>
+          setTimeout(function() {
+              window.location.href = '/';
+          }, 5000); // Redirect after 5 seconds
+      </script>
+  </head>
+  <body>
+      <h1>Thank You!</h1>
+      <p>Your payment was successful. You will be redirected to the home page shortly.</p>
+  </body>
+  </html>
+  `;
+  res.send(messagePage);
 });
+
+
+
 
 app.post('/webhook-success', async (req, res) => {
   console.log('Webhook hit received with POST request');
@@ -1506,39 +1557,57 @@ const authenticateAdminJWT = (req, res, next) => {
 
 app.get('/admin-panel', authenticateAdminJWT, async function (req, res) {
   const page = parseInt(req.query.page) || 1;
-  const pageSize = 10; // Fixed to 10 users per page
+  const pageSize = 10; // Fixed to 10 entities per page
 
   try {
-    // Fetch regular users with pagination
-    const users = await User.find({})
-      .skip((page - 1) * pageSize)
-      .limit(pageSize);
-    const totalUsers = await User.countDocuments();
+      const users = await User.find({})
+          .skip((page - 1) * pageSize)
+          .limit(pageSize);
+      const totalUsers = await User.countDocuments();
 
-    // Fetch NonMoodleUsers with pagination
-    const nonMoodleUsers = await NonMoodleUser.find({})
-      .skip((page - 1) * pageSize)
-      .limit(pageSize);
-    const totalNonMoodleUsers = await NonMoodleUser.countDocuments();
+      const nonMoodleUsers = await NonMoodleUser.find({})
+          .skip((page - 1) * pageSize)
+          .limit(pageSize);
+      const totalNonMoodleUsers = await NonMoodleUser.countDocuments();
 
-    // Calculate total pages for both collections
-    const totalPagesUsers = Math.ceil(totalUsers / pageSize);
-    const totalPagesNonMoodleUsers = Math.ceil(totalNonMoodleUsers / pageSize);
+      // Fetching GuestCheckout entries
+      const guestCheckouts = await GuestCheckout.find({})
+          .skip((page - 1) * pageSize)
+          .limit(pageSize);
+      const totalGuestCheckouts = await GuestCheckout.countDocuments();
 
-    // Render the admin panel with both user lists and pagination details
-    res.render('admin-panel', {
-      users,
-      nonMoodleUsers,
-      currentPage: page,
-      totalPagesUsers,
-      totalPagesNonMoodleUsers,
-      // You may pass additional variables as needed
-    });
+      const totalPagesUsers = Math.ceil(totalUsers / pageSize);
+      const totalPagesNonMoodleUsers = Math.ceil(totalNonMoodleUsers / pageSize);
+      const totalPagesGuestCheckouts = Math.ceil(totalGuestCheckouts / pageSize);
+
+      res.render('admin-panel', {
+          users,
+          nonMoodleUsers,
+          guestCheckouts, // Pass the guest checkouts to the template
+          currentPage: page,
+          totalPagesUsers,
+          totalPagesNonMoodleUsers,
+          totalPagesGuestCheckouts,
+      });
   } catch (error) {
-    console.error("Error fetching users:", error);
-    res.status(500).send("Error fetching user data");
+      console.error("Error fetching entities:", error);
+      res.status(500).send("Error fetching data");
   }
 });
+app.post('/update-guest-checkout-status', async (req, res) => {
+  try {
+      const { checkoutId, newStatus } = req.body;
+      // Assuming `coursePurchased` is an array and you want to update all courses within a checkout
+      await GuestCheckout.updateOne({ "_id": checkoutId }, 
+                                     { "$set": { "coursePurchased.$[].status": newStatus } });
+      res.redirect('/admin-panel?statusUpdated=true'); // Redirect back to the admin panel, optionally with a query param to show a success message
+  } catch (error) {
+      console.error("Error updating guest checkout status:", error);
+      res.status(500).send("Error updating status");
+  }
+});
+
+
 app.post('/migrateToMoodle', async (req, res) => {
   const { userId, password } = req.body;
 

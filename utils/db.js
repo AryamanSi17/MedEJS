@@ -180,8 +180,13 @@ const guestCheckoutSchema = new mongoose.Schema({
     currency: String,
     purchaseDate: { type: Date, default: Date.now },
     status: { type: String, default: 'pending' } // e.g., 'pending', 'completed'
+  }],
+  uploadedFiles: [{ // Added to handle document uploads
+    url: String,
+    title: String
   }]
 });
+
 const GuestCheckout = mongoose.model('GuestCheckout', guestCheckoutSchema);
 const UserInterest = mongoose.model('UserInterest', userInterestSchema);
 
