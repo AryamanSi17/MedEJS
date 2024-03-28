@@ -1,94 +1,80 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guest Checkout</title>
-    <link rel="stylesheet" href="style.css"> <!-- Link to your CSS file -->
-    <style>
-        body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f7f6;
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
+<%- include('header-subroute') %>
+<style>
+    .form-container {
+        width: 100%; /* Adjust the width as needed */
+        max-width: 895px; /* Set a max-width for larger screens */
+        padding: 80px;
+        margin: 0 auto; /* Center horizontally */
+        position: relative; /* Ensure the container is positioned relative to its normal position */
+        top: 50%; /* Move down by half the height of the viewport */
+        transform: translateY(15%); /* Shift upward by half its own height to center vertically */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: adds a subtle shadow */
+        border-radius: 8px; /* Optional: rounds the corners */
+    }
 
-.form-container {
-    background: #ffffff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    max-width: 400px;
-    width: 100%;
-}
+    .form-group {
+        margin-bottom: 20px; /* Adds spacing between form fields */
+        width: 100%; /* Ensures form fields take up the full width of the .form-container */
+    }
 
-h2 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-}
+    input[type="text"],
+    input[type="email"],
+    input[type="text"] {
+        width: calc(100% - 20px); /* Adjusts the width to account for padding */
+        padding: 10px;
+        margin: 4px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px; /* Optional: rounds the corners */
+    }
 
-.form-group {
-    margin-bottom: 20px;
-}
+    .submit-btn {
+        background-color: #4CAF50; /* Green background */
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 4px; /* Optional: rounds the corners */
+        cursor: pointer;
+        width: 100%;
+    }
 
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    color: #666;
-}
+    .submit-btn:hover {
+        background-color: #45a049; /* Darker shade of green */
+    }
+</style>
 
-.form-group input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-sizing: border-box; /* Makes sure padding does not affect the total width */
-}
-
-.submit-btn {
-    width: 100%;
-    background-color: #007bff;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.submit-btn:hover {
-    background-color: #0056b3;
-}
-
-    </style>
-</head>
-<body>
     <div class="form-container">
         <h2>Guest Checkout for <%= courseName %></h2>
-        <form action="/guest-checkout/<%= courseID %>" method="POST">
-            <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" id="name" name="name" required>
+        <form action="/guest-checkout/<%= courseID %>" method="POST" class="row row--15" id="formforteacher">
+            <div id="billing-form">
+              
+        
+                <div class="row">
+                    <!-- Full name field -->
+                    <div class="col-md-6 col-12 mb--20">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" name="name" placeholder="Full Name" required>
+                    </div>
+        
+                    <!-- Email field -->
+                    <div class="col-md-6 col-12 mb--20">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Email" required>
+                    </div>
+        
+                    <!-- Phone number field -->
+                    <div class="col-md-6 col-12 mb--20">
+                        <label for="phone">Phone Number</label>
+                        <input type="text" id="phone" name="phone" placeholder="Phone Number" required>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">Proceed to Payment</button>
             </div>
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div class="form-group">
-                <label for="phone">Phone</label>
-                <input type="text" id="phone" name="phone" required>
-            </div>
-            <!-- Optionally, display course information here -->
-            <div class="form-group">
-                <strong>Course:</strong> <%= courseName %> <br>
-                <strong>Price:</strong> <%= coursePrice %>
-            </div>
-            <button type="submit" class="submit-btn">Proceed to Payment</button>
         </form>
+        
     </div>
-</body>
-</html>
+    <br>
+    <br>
+    <br>
+    <%- include('footer-subroute') %>

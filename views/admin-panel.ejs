@@ -544,12 +544,9 @@
                         </form>
                     </td>
                     <td>
-                        <!-- Example form for uploading documents; implement multipart/form-data and handle in backend -->
-                        <form action="/upload-documents/<%= checkout._id %>" method="post"
-                            enctype="multipart/form-data">
-                            <input type="file" name="documents" multiple>
-                            <button type="submit">Upload</button>
-                        </form>
+                        <form enctype="multipart/form-data" method="post" action="/process-guest-checkout">
+                        <button class="manageGuestBtn" data-id="<%= checkout._id %>">Manage Guest</button>
+                    </form>
                     </td>
                 </tr>
                 <% }); %>
@@ -588,6 +585,30 @@
             </form>
         </div>
     </div>
+<!-- The Modal -->
+<div id="guestManageModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Manage Guest Checkout</h2>
+        <form id="guestManageForm" action="/manage-guest-checkout" method="post" enctype="multipart/form-data">
+            <input type="hidden" id="guestId" name="guestId">
+            <input type="file" name="officialIDCard" accept="image/*" required>
+            <label for="officialIDCard">Official ID Card</label><br>
+            <input type="file" name="medicalCertificate" accept="image/*" required>
+            <label for="medicalCertificate">Medical Certificate</label><br>
+            <input type="file" name="mciCertificate" accept="image/*" required>
+            <label for="mciCertificate">MCI Certificate</label><br>
+            <input type="file" name="degree" accept="image/*" required>
+            <label for="degree">Degree</label><br>
+            <input type="file" name="passportPhoto" accept="image/*" required>
+            <label for="passportPhoto">Passport Photo</label><br>
+            <label for="password">Password</label>
+            <input type="password" id="guestPassword" name="password" required>
+            <!-- Include password criteria indicators here, similar to your existing admin panel logic -->
+            <button type="submit">OK</button>
+        </form>
+    </div>
+</div>
 
 
 
@@ -646,6 +667,17 @@
             hasUppercase.classList.toggle('fulfilled', /[A-Z]/.test(password));
             hasNonAlphanumeric.classList.toggle('fulfilled', /[\W_]/.test(password));
         });
+        document.querySelectorAll('.manageGuestBtn').forEach(button => {
+    button.addEventListener('click', function () {
+        const guestId = this.getAttribute('data-id');
+        document.getElementById('guestId').value = guestId; // Pass the guest ID to the form
+        document.getElementById('guestManageModal').style.display = 'block';
+    });
+});
+
+document.querySelector('.close').addEventListener('click', function () {
+    document.getElementById('guestManageModal').style.display = 'none';
+});
 
         document.getElementById('createUserBtn').addEventListener('click', function () {
             document.getElementById('userForm').classList.add('active');

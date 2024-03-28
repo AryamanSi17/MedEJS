@@ -171,16 +171,22 @@ function setRoutes(app) {
       username: username, isBlogPage: false, firstname: firstname
     });
   });
-  // app.get('/paymentForm',function(req,res){
-  //   const pageTitle = 'Admission Guide - GlobalMedAcademy';
-  //   const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
-  //   const metaKeywords = '';
-  //   const ogDescription = '';
-  //   const canonicalLink = 'https://globalmedacademy.com/admission-guide';
-  //   const username = req.session.username || null;
-  //   res.render('paymentForm', { pageTitle, metaRobots, metaKeywords, ogDescription,canonicalLink,isUserLoggedIn: req.isUserLoggedIn,
-  //     username: username  });
-  //  });
+  app.get('/guest-checkout-form/:courseID', async (req, res) => {
+    const pageTitle = 'Guest Checkout - GlobalMedAcademy';
+    const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    const metaKeywords = '';
+    const ogDescription = 'If you have any queries, read our privacy policy and terms and conditions carefully.';
+    const canonicalLink = 'https://www.globalmedacademy.com/guest-checkout-form';
+    const username = req.session.username || null;
+    
+    const courseID = req.params.courseID;
+    const course = await Course.findOne({ courseID: courseID });
+    if (!course) {
+      return res.status(404).send("Course not found");
+    }
+    res.render('guest-checkout-form', { courseID, courseName: course.name, coursePrice: course.currentPrice ,pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, 
+   isBlogPage: false});
+  });
   app.get("/terms-conditions", function (req, res) {
     const pageTitle = 'Terms and Conditions - GlobalMedAcademy';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';

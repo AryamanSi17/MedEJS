@@ -971,18 +971,22 @@ function customDecrypt(encText, workingKey) {
   decoded += decipher.final('utf8');
   return decoded;
 }
-app.get('/guest-checkout-form/:courseID', async (req, res) => {
+app.get('/guest-pay/:courseID', async (req, res) => {
+  const pageTitle = 'Guest Checkout - GlobalMedAcademy';
+  const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+  const metaKeywords = '';
+  const ogDescription = 'If you have any queries, read our privacy policy and terms and conditions carefully.';
+  const canonicalLink = 'https://www.globalmedacademy.com/guest-checkout-form';
+  const username = req.session.username || null;
+  
   const courseID = req.params.courseID;
   const course = await Course.findOne({ courseID: courseID });
   if (!course) {
     return res.status(404).send("Course not found");
   }
-
-  // Render guest checkout form
-  // Replace with your form rendering logic as needed
-  res.render('guest-checkout-form', { courseID, courseName: course.name, coursePrice: course.currentPrice });
+  res.render('guest-checkout-form', { courseID, courseName: course.name, coursePrice: course.currentPrice ,pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, 
+ isBlogPage: false});
 });
-
 app.get('/guest-checkout-success', (req, res) => {
   const userName = req.query.userName;
   const userEmail = req.query.userEmail;
@@ -1606,7 +1610,58 @@ app.post('/update-guest-checkout-status', async (req, res) => {
       res.status(500).send("Error updating status");
   }
 });
+app.post('/manage-guest-checkout', upload.fields([
+  { name: 'officialIDCard' },
+  { name: 'medicalCertificate' },
+  { name: 'mciCertificate' },
+  { name: 'degree' },
+  { name: 'passportPhoto' }
+]), async (req, res) => {
+  const { checkoutId, email, password } = req.body;
 
+  try {
+    const uploadedFiles = [];
+    let userFolder = 'guest-checkout'; // Default folder name
+
+    if (email) {
+      userFolder = email.replace(/\s+/g, '_'); // Folder name based on user email
+    }
+
+    for (const [key, fileArray] of Object.entries(req.files)) {
+      const file = fileArray[0];
+      const uploadResult = await s3.upload({
+        Bucket: 'lmsuploadedfilesdata',
+        Key: `${userFolder}/${file.originalname}`,
+        Body: file.buffer,
+        ACL: 'public-read'
+      }).promise();
+
+      uploadedFiles.push({ url: uploadResult.Location, title: file.originalname });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    let user = await User.findOne({ username: email });
+    if (!user) {
+      user = await User.create({
+        username: email,
+        password: hashedPassword,
+        uploadedFiles: uploadedFiles,
+        // Add any other fields as necessary
+      });
+    } else {
+      await User.updateOne({ _id: user._id }, { $push: { uploadedFiles: { $each: uploadedFiles } } });
+    }
+
+    // Optionally, update the guest checkout status
+    await GuestCheckout.findByIdAndUpdate(checkoutId, { status: 'processed' });
+
+    res.json({ message: 'Guest checkout processed and user updated', userId: user._id });
+  } catch (error) {
+    console.error("Error processing guest checkout:", error);
+    res.status(500).send("Error processing request");
+  }
+});
 
 app.post('/migrateToMoodle', async (req, res) => {
   const { userId, password } = req.body;
