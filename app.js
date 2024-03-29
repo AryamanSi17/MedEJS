@@ -1610,6 +1610,7 @@ app.post('/update-guest-checkout-status', async (req, res) => {
       res.status(500).send("Error updating status");
   }
 });
+
 app.post('/manage-guest-checkout', upload.fields([
   { name: 'officialIDCard' },
   { name: 'medicalCertificate' },
@@ -1617,18 +1618,33 @@ app.post('/manage-guest-checkout', upload.fields([
   { name: 'degree' },
   { name: 'passportPhoto' }
 ]), async (req, res) => {
-  const { checkoutId, email, password } = req.body;
+  const { email, password, coursePurchased } = req.body;
 
   try {
-    const uploadedFiles = [];
-    let userFolder = 'guest-checkout'; // Default folder name
-
-    if (email) {
-      userFolder = email.replace(/\s+/g, '_'); // Folder name based on user email
+    // Fetch guest checkout details by email
+    const guestCheckout = await GuestCheckout.findOne({ email: email });
+    if (!guestCheckout) {
+      return res.status(404).send("Guest checkout details not found for the provided email");
     }
 
-    for (const [key, fileArray] of Object.entries(req.files)) {
-      const file = fileArray[0];
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Assuming createUserInMoodle, getMoodleUserId, enrollUserInMoodle are correctly implemented
+    await createUserInMoodle(email, password, guestCheckout.name, guestCheckout.phoneNumber, email);
+    const moodleUserId = await getMoodleUserId(email);
+
+    // Enroll user in Moodle course
+    const courseId = await getCourseIdByName(coursePurchased);
+    const roleId = 5; // Assuming roleId 5 is for students
+    await enrollUserInMoodle(moodleUserId, courseId, roleId);
+
+    // Process uploaded files
+    const uploadedFiles = [];
+    const userFolder = `guest-${email.replace(/[@\.]/g, '_')}`; // Sanitize email for use in file path
+
+    for (const [key, value] of Object.entries(req.files)) {
+      const file = value[0];
+
       const uploadResult = await s3.upload({
         Bucket: 'lmsuploadedfilesdata',
         Key: `${userFolder}/${file.originalname}`,
@@ -1639,29 +1655,33 @@ app.post('/manage-guest-checkout', upload.fields([
       uploadedFiles.push({ url: uploadResult.Location, title: file.originalname });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Update guest checkout with uploaded files information
+    await GuestCheckout.findByIdAndUpdate(guestCheckout._id, {
+      $push: { uploadedFiles: { $each: uploadedFiles } }
+    }, { new: true });
 
-    let user = await User.findOne({ username: email });
-    if (!user) {
-      user = await User.create({
-        username: email,
-        password: hashedPassword,
-        uploadedFiles: uploadedFiles,
-        // Add any other fields as necessary
-      });
-    } else {
-      await User.updateOne({ _id: user._id }, { $push: { uploadedFiles: { $each: uploadedFiles } } });
-    }
+    // Send confirmation email
+    sendEmail({
+      to: email,
+      subject: 'Welcome to Our Learning Platform!',
+      text: `Dear ${guestCheckout.name},\n\n` +
+        `You have been successfully enrolled in ${coursePurchased}.\n` +
+        `Your access credentials are as follows:\n` +
+        `Username: ${email}\n` +
+        `Password: ${password}\n\n` +
+        `You can now access your course materials and start learning. If you encounter any issues, please contact support.\n\n` +
+        `Best,\n` +
+        `The Learning Platform Team`
+    });
 
-    // Optionally, update the guest checkout status
-    await GuestCheckout.findByIdAndUpdate(checkoutId, { status: 'processed' });
-
-    res.json({ message: 'Guest checkout processed and user updated', userId: user._id });
+    res.redirect('/admin-panel?guestCheckoutAdded=true');
   } catch (error) {
     console.error("Error processing guest checkout:", error);
     res.status(500).send("Error processing request");
   }
 });
+
+
 
 app.post('/migrateToMoodle', async (req, res) => {
   const { userId, password } = req.body;
