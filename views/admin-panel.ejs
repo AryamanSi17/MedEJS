@@ -309,570 +309,630 @@
     <header>
         <a href="/"><img src="../assets/images/logo/logo.png" alt="Logo" id="logo"></a>
         <!-- You can add more header content here if needed -->
+        <button onclick="window.location.href='/admin-panel?view=users'">Users</button>
+        <button onclick="window.location.href='/admin-panel?view=courses'">Courses</button>
         <button id="logoutBtn" onclick="location.href='/admin-login'">Logout</button>
     </header>
     <h1>Admin Panel</h1>
+    <!-- Inside <header> or immediately below it -->
+    <% if (view==='users' ) { %>
+        <button id="createUserBtn">Create New User</button>
 
-    <button id="createUserBtn">Create New User</button>
-
-    <!-- The Modal -->
-    <div id="userForm" class="form-container">
-        <span class="close-form">&times;</span>
-        <form action="/create-user" id="addUserForm" method="post" enctype="multipart/form-data">
-            <input type="text" name="fullname" placeholder="Full Name" required>
-            <input type="email" name="username" placeholder="Email " required>
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-                <div id="password-criteria">
-                    <p id="length" class="criteria">At least 8 characters</p>
-                    <p id="digit" class="criteria">Contains a digit</p>
-                    <p id="lowercase" class="criteria">Contains a lowercase letter</p>
-                    <p id="uppercase" class="criteria">Contains an uppercase letter</p>
-                    <p id="non-alphanumeric" class="criteria">Contains a non-alphanumeric character</p>
+        <!-- The Modal -->
+        <div id="userForm" class="form-container">
+            <span class="close-form">&times;</span>
+            <form action="/create-user" id="addUserForm" method="post" enctype="multipart/form-data">
+                <input type="text" name="fullname" placeholder="Full Name" required>
+                <input type="email" name="username" placeholder="Email " required>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                    <div id="password-criteria">
+                        <p id="length" class="criteria">At least 8 characters</p>
+                        <p id="digit" class="criteria">Contains a digit</p>
+                        <p id="lowercase" class="criteria">Contains a lowercase letter</p>
+                        <p id="uppercase" class="criteria">Contains an uppercase letter</p>
+                        <p id="non-alphanumeric" class="criteria">Contains a non-alphanumeric character</p>
+                    </div>
                 </div>
-            </div>
 
-            <input type="text" name="phone" placeholder="Phone">
-            <select name="course" id="course" required>
-                <option value="">Select a Course</option>
-                <option value="PCDM">Professional Certificate in Diabetes Management</option>
-                <option value="ACDM">Advance Certificate in Diabetes Management</option>
-                <option value="FDM">Fellowship in Diabetes Management</option>
-                <option value="PCC">Professional Certificate in Critical Care</option>
-                <option value="ACC">Advance Certificate in Critical Care</option>
-                <option value="FCC">Fellowship in Critical Care</option>
-                <option value="PCGP">Professional Certificate in General Practice</option>
-                <option value="ACGP">Advance Certificate in General Practice</option>
-                <option value="FGP">Fellowship in General Practice</option>
-                <option value="PCIM">Professional Certificate in Internal Medicine</option>
-                <option value="ACIM">Advance Certificate in Internal Medicine</option>
-                <option value="FIM">Fellowship in Internal Medicine</option>
-            </select>
-            <br>
-            <div class="input-group">
-                <label for="enrollmentNumber">Enrollment Number</label>
-                <input type="text" id="enrollmentNumber" name="enrollmentNumber" required>
-            </div>
-            <input type="text" name="mciNumber" placeholder="MCI Number">
-            <input type="text" name="address" placeholder="Address">
-            <input type="text" name="idNumber" placeholder="ID Number">
-            <div class="file-upload-section">
-                <input type="file" name="officialIDCard" accept="image/*" required>
+                <input type="text" name="phone" placeholder="Phone">
+                <select name="course" id="course" required>
+                    <option value="">Select a Course</option>
+                    <option value="PCDM">Professional Certificate in Diabetes Management</option>
+                    <option value="ACDM">Advance Certificate in Diabetes Management</option>
+                    <option value="FDM">Fellowship in Diabetes Management</option>
+                    <option value="PCC">Professional Certificate in Critical Care</option>
+                    <option value="ACC">Advance Certificate in Critical Care</option>
+                    <option value="FCC">Fellowship in Critical Care</option>
+                    <option value="PCGP">Professional Certificate in General Practice</option>
+                    <option value="ACGP">Advance Certificate in General Practice</option>
+                    <option value="FGP">Fellowship in General Practice</option>
+                    <option value="PCIM">Professional Certificate in Internal Medicine</option>
+                    <option value="ACIM">Advance Certificate in Internal Medicine</option>
+                    <option value="FIM">Fellowship in Internal Medicine</option>
+                </select>
                 <br>
-                <label for="officialIDCard">Official ID Card</label>
+                <div class="input-group">
+                    <label for="enrollmentNumber">Enrollment Number</label>
+                    <input type="text" id="enrollmentNumber" name="enrollmentNumber" required>
+                </div>
+                <input type="text" name="mciNumber" placeholder="MCI Number">
+                <input type="text" name="address" placeholder="Address">
+                <input type="text" name="idNumber" placeholder="ID Number">
+                <div class="file-upload-section">
+                    <input type="file" name="officialIDCard" accept="image/*" required>
+                    <br>
+                    <label for="officialIDCard">Official ID Card</label>
+                    <br>
+                    <br>
+                    <input type="file" name="mciCertificate" accept="image/*" required>
+                    <br>
+                    <label for="mciCertificate">MCI Certificate</label>
+                    <br>
+                    <br>
+                    <input type="file" name="degree" accept="image/*" required>
+                    <br>
+                    <label for="degree">Degree</label><br>
+                    <br>
+                    <input type="file" name="passportPhoto" accept="image/*" required>
+                    <br>
+                    <label for="passportPhoto">Passport Photo</label><br>
+                </div>
                 <br>
                 <br>
-                <input type="file" name="mciCertificate" accept="image/*" required>
-                <br>
-                <label for="mciCertificate">MCI Certificate</label>
-                <br>
-                <br>
-                <input type="file" name="degree" accept="image/*" required>
-                <br>
-                <label for="degree">Degree</label><br>
-                <br>
-                <input type="file" name="passportPhoto" accept="image/*" required>
-                <br>
-                <label for="passportPhoto">Passport Photo</label><br>
-            </div>
-            <br>
-            <br>
-            <button type="submit">Add User</button>
-        </form>
+                <button type="submit">Add User</button>
+            </form>
 
-    </div>
-    <h2>User List</h2>
-    <button id="deleteSelectedBtn">Delete Selected</button>
-    <table>
-        <thead>
-            <tr>
-                <th>Select</th>
-                <th>Full Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Address</th>
-                <th>Courses Purchased</th>
-                <th>Enrollment Number</th>
-                <th>MCI Number</th>
-                <th>Referrals</th>
-
-            </tr>
-        </thead>
-        <tbody>
-            <% users.forEach(function(user) { %>
+        </div>
+        <h2>User List</h2>
+        <button id="deleteSelectedBtn">Delete Selected</button>
+        <table>
+            <thead>
                 <tr>
-                    <td>
-                        <input type="checkbox" class="user-checkbox" value="<%= user._id %>">
-                    </td>
-                    <td>
-                        <span class="edit-icon">✏️</span>
-                        <span class="static-text">
+                    <th>Select</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Courses Purchased</th>
+                    <th>Enrollment Number</th>
+                    <th>MCI Number</th>
+                    <th>Referrals</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <% users.forEach(function(user) { %>
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="user-checkbox" value="<%= user._id %>">
+                        </td>
+                        <td>
+                            <span class="edit-icon">✏️</span>
+                            <span class="static-text">
+                                <%= user.fullname %>
+                            </span>
+                            <input type="text" value="<%= user.fullname %>" class="edit-field" data-id="<%= user._id %>"
+                                data-field="fullname" style="display: none;">
+                        </td>
+                        <td>
+                            <%= user.username %>
+                        </td>
+                        <td>
+                            <%= user.phone %>
+                        </td>
+                        <td class="scrollable">
+                            <%= user.address %>
+                        </td>
+                        <td class="scrollable">
+                            <% if (user.coursesPurchased && Array.isArray(user.coursesPurchased)) { %>
+                                <% user.coursesPurchased.forEach(function(course) { %>
+                                    <div>
+                                        <%= course %>
+                                    </div>
+                                    <% }); %>
+                                        <% } else { %>
+                                            <div>No courses available</div>
+                                            <% } %>
+                        </td>
+
+
+                        <td>
+                            <%= user.enrollmentNumber%>
+                        </td>
+                        <td>
+                            <%= user.mciNumber %>
+                        </td>
+                        <td>
+                            <% user.referrals.forEach(function(referral) { %>
+                                <div>
+                                    <%= referral.friendName %> - <%= referral.recommendedCourse %>
+                                </div>
+                                <% }); %>
+                        </td>
+                    </tr>
+                    <% }); %>
+            </tbody>
+        </table>
+        <br>
+        <br>
+        <button id="saveChangesBtn">Save Changes</button>
+        <!-- Pagination Navigation -->
+        <div class="pagination">
+            <% if(currentPage> 1) { %>
+                <a href="/admin-panel?page=<%= currentPage - 1 %>" class="pagination-arrow">&laquo; Previous</a>
+                <% } %>
+                    <% if(currentPage < totalPagesUsers) { %>
+                        <a href="/admin-panel?page=<%= currentPage + 1 %>" class="pagination-arrow">Next &raquo;</a>
+                        <% } %>
+        </div>
+        <h2>NonMoodle User List</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Email (Username)</th>
+                    <th>Phone</th>
+                    <th>Interested Courses</th>
+                    <!-- Inside the NonMoodle Users table, within each row -->
+
+                </tr>
+            </thead>
+            <tbody>
+                <% nonMoodleUsers.forEach(function(user) { %>
+                    <tr>
+                        <td>
                             <%= user.fullname %>
-                        </span>
-                        <input type="text" value="<%= user.fullname %>" class="edit-field" data-id="<%= user._id %>"
-                            data-field="fullname" style="display: none;">
-                    </td>
-                    <td>
-                        <%= user.username %>
-                    </td>
-                    <td>
-                        <%= user.phone %>
-                    </td>
-                    <td class="scrollable">
-                        <%= user.address %>
-                    </td>
-                    <td class="scrollable">
-                        <% if (user.coursesPurchased && Array.isArray(user.coursesPurchased)) { %>
-                            <% user.coursesPurchased.forEach(function(course) { %>
+                        </td>
+                        <td>
+                            <%= user.username %>
+                        </td>
+                        <td>
+                            <%= user.number %>
+                        </td>
+                        <td>
+                            <% (user.coursesIntrested || []).forEach(function(course) { %>
                                 <div>
                                     <%= course %>
                                 </div>
                                 <% }); %>
-                                    <% } else { %>
-                                        <div>No courses available</div>
-                                        <% } %>
-                    </td>
-
-
-                    <td>
-                        <%= user.enrollmentNumber%>
-                    </td>
-                    <td>
-                        <%= user.mciNumber %>
-                    </td>
-                    <td>
-                        <% user.referrals.forEach(function(referral) { %>
-                            <div>
-                                <%= referral.friendName %> - <%= referral.recommendedCourse %>
-                            </div>
-                            <% }); %>
-                    </td>
-                </tr>
-                <% }); %>
-        </tbody>
-    </table>
-    <br>
-    <br>
-    <button id="saveChangesBtn">Save Changes</button>
-    <!-- Pagination Navigation -->
-    <div class="pagination">
-        <% if(currentPage> 1) { %>
-            <a href="/admin-panel?page=<%= currentPage - 1 %>" class="pagination-arrow">&laquo; Previous</a>
-            <% } %>
-                <% if(currentPage < totalPagesUsers) { %>
-                    <a href="/admin-panel?page=<%= currentPage + 1 %>" class="pagination-arrow">Next &raquo;</a>
-                    <% } %>
-    </div>
-    <h2>NonMoodle User List</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Full Name</th>
-                <th>Email (Username)</th>
-                <th>Phone</th>
-                <th>Interested Courses</th>
-                <!-- Inside the NonMoodle Users table, within each row -->
-
-            </tr>
-        </thead>
-        <tbody>
-            <% nonMoodleUsers.forEach(function(user) { %>
+                        </td>
+                        <td>
+                            <!-- Ensure this button is within the forEach loop for nonMoodleUsers -->
+                            <button class="addToMoodleBtn" data-id="<%= user._id %>">Add to Moodle</button>
+                        </td>
+                        <!-- Add more data fields as needed -->
+                    </tr>
+                    <% }); %>
+            </tbody>
+        </table>
+        <h2>Guest Checkout List</h2>
+        <table>
+            <thead>
                 <tr>
-                    <td>
-                        <%= user.fullname %>
-                    </td>
-                    <td>
-                        <%= user.username %>
-                    </td>
-                    <td>
-                        <%= user.number %>
-                    </td>
-                    <td>
-                        <% (user.coursesIntrested || []).forEach(function(course) { %>
-                            <div>
-                                <%= course %>
-                            </div>
-                            <% }); %>
-                    </td>
-                    <td>
-                        <!-- Ensure this button is within the forEach loop for nonMoodleUsers -->
-                        <button class="addToMoodleBtn" data-id="<%= user._id %>">Add to Moodle</button>
-                    </td>
-                    <!-- Add more data fields as needed -->
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Course Purchased</th>
+                    <th>Status</th>
+                    <th>Documents</th>
                 </tr>
-                <% }); %>
-        </tbody>
-    </table>
-    <h2>Guest Checkout List</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone Number</th>
-                <th>Course Purchased</th>
-                <th>Status</th>
-                <th>Documents</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% guestCheckouts.forEach(function(checkout) { %>
-                <tr>
-                    <td>
-                        <%= checkout.name %>
-                    </td>
-                    <td>
-                        <%= checkout.email %>
-                    </td>
-                    <td>
-                        <%= checkout.phoneNumber %>
-                    </td>
-                    <td>
-                        <% checkout.coursePurchased.forEach(function(course) { %>
-                            <div>
-                                <%= course.courseName %> (<%= course.status %>)
-                            </div>
+            </thead>
+            <tbody>
+                <% guestCheckouts.forEach(function(checkout) { %>
+                    <tr>
+                        <td>
+                            <%= checkout.name %>
+                        </td>
+                        <td>
+                            <%= checkout.email %>
+                        </td>
+                        <td>
+                            <%= checkout.phoneNumber %>
+                        </td>
+                        <td>
+                            <% checkout.coursePurchased.forEach(function(course) { %>
+                                <div>
+                                    <%= course.courseName %> (<%= course.status %>)
+                                </div>
+                                <% }); %>
+                        </td>
+                        <td>
+                            <!-- Example button for changing status; implement JS to handle click -->
+                            <form action="/update-guest-checkout-status" method="post">
+                                <input type="hidden" name="checkoutId" value="<%= checkout._id %>">
+                                <input type="hidden" name="newStatus" value="done">
+                                <button type="submit" class="status-btn">Mark as Done</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form enctype="multipart/form-data" method="post" action="/manage-guest-checkout">
+                                <!-- Note how the data-email attribute is dynamically set with checkout.email -->
+                                <button type="button" class="manageGuestBtn" data-id="<%= checkout._id %>"
+                                    data-email="<%= checkout.email %>">Manage Guest</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <% }); %>
+
+            </tbody>
+        </table>
+
+        <!-- Pagination for NonMoodleUsers -->
+        <!-- Adjust the query parameter or logic as needed to differentiate pagination -->
+        <div class="pagination">
+            <% if(currentPage> 1) { %>
+                <a href="/admin-panel?page=<%= currentPage - 1 %>&type=nonmoodle" class="pagination-arrow">&laquo;
+                    Previous</a>
+                <% } %>
+                    <% if(currentPage < totalPagesNonMoodleUsers) { %>
+                        <a href="/admin-panel?page=<%= currentPage + 1 %>&type=nonmoodle" class="pagination-arrow">Next
+                            &raquo;</a>
+                        <% } %>
+        </div>
+        <!-- Add to Moodle Modal Structure -->
+        <div id="addToMoodleModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Set Password for Moodle User</h2>
+                <form id="moodleUserForm" action="/migrateToMoodle" method="post">
+                    <input type="hidden" id="moodleUserId" name="userId">
+                    <label for="moodlePassword">Password:</label>
+                    <input type="password" id="moodlePassword" name="password" required>
+                    <div id="passwordRequirements">
+                        <p id="minLength" class="criteria">At least 8 characters</p>
+                        <p id="hasDigit" class="criteria">Contains a digit</p>
+                        <p id="hasLowercase" class="criteria">Contains a lowercase letter</p>
+                        <p id="hasUppercase" class="criteria">Contains an uppercase letter</p>
+                        <p id="hasNonAlphanumeric" class="criteria">Contains a non-alphanumeric character</p>
+                    </div>
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+        </div>
+        <!-- The Modal -->
+        <div id="guestManageModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Manage Guest Checkout</h2>
+                <form id="guestManageForm" action="/manage-guest-checkout" method="post" enctype="multipart/form-data">
+                    <label for="guestEmail">Email</label>
+                    <input type="email" id="guestEmail" name="email" required readonly>
+                    <select name="coursePurchased" id="coursePurchased" required>
+                        <option value="">Select a Course</option>
+                        <option value="Professional Certificate in Diabetes Management">Professional Certificate in
+                            Diabetes Management</option>
+                        <option value="Advance Certificate in Diabetes Management">Advance Certificate in Diabetes
+                            Management</option>
+                        <!-- Add more course options here -->
+                    </select>
+                    <input type="file" name="officialIDCard" accept="image/*" required>
+                    <label for="officialIDCard">Official ID Card</label><br>
+                    <input type="file" name="medicalCertificate" accept="image/*" required>
+                    <label for="medicalCertificate">Medical Certificate</label><br>
+                    <input type="file" name="mciCertificate" accept="image/*" required>
+                    <label for="mciCertificate">MCI Certificate</label><br>
+                    <input type="file" name="degree" accept="image/*" required>
+                    <label for="degree">Degree</label><br>
+                    <input type="file" name="passportPhoto" accept="image/*" required>
+                    <label for="passportPhoto">Passport Photo</label><br>
+                    <label for="password">Password</label>
+                    <input type="password" id="guestPassword" name="password" required>
+                    <button type="submit">OK</button>
+                </form>
+            </div>
+        </div>
+        <% } else if (view==='courses' ) { %>
+
+            <h2>Courses List</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Course ID</th>
+                        <th>Name</th>
+                        <th>Current Price</th>
+                        <th>Discounted Price</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% courses.forEach(function(course) { %>
+                        <tr>
+                            <form action="/update-course/<%= course.courseID %>" method="post">
+                                <td>
+                                    <%= course.courseID %>
+                                </td>
+                                <td>
+                                    <%= course.name %>
+                                </td>
+                                <td>
+                                    <input type="number" name="currentPrice" value="<%= course.currentPrice %>" />
+                                </td>
+                                <td>
+                                    <input type="number" name="discountedPrice" value="<%= course.discountedPrice %>" />
+                                </td>
+                                <td>
+                                    <textarea name="description"><%= course.description %></textarea>
+                                </td>
+                                <td>
+                                    <button type="submit">Save</button>
+                                </td>
+                            </form>
+                        </tr>
                         <% }); %>
-                    </td>
-                    <td>
-                        <!-- Example button for changing status; implement JS to handle click -->
-                        <form action="/update-guest-checkout-status" method="post">
-                            <input type="hidden" name="checkoutId" value="<%= checkout._id %>">
-                            <input type="hidden" name="newStatus" value="done">
-                            <button type="submit" class="status-btn">Mark as Done</button>
-                        </form>
-                    </td>
-                    <td>
-                        <form enctype="multipart/form-data" method="post" action="/manage-guest-checkout">
-                            <!-- Note how the data-email attribute is dynamically set with checkout.email -->
-                            <button type="button" class="manageGuestBtn" data-id="<%= checkout._id %>" data-email="<%= checkout.email %>">Manage Guest</button>
-                        </form>
-                    </td>
-                </tr>
-              <% }); %>
-              
-        </tbody>
-    </table>
+                </tbody>
 
-    <!-- Pagination for NonMoodleUsers -->
-    <!-- Adjust the query parameter or logic as needed to differentiate pagination -->
-    <div class="pagination">
-        <% if(currentPage> 1) { %>
-            <a href="/admin-panel?page=<%= currentPage - 1 %>&type=nonmoodle" class="pagination-arrow">&laquo;
-                Previous</a>
+            </table>
+            <!-- Add Pagination for Courses Here -->
             <% } %>
-                <% if(currentPage < totalPagesNonMoodleUsers) { %>
-                    <a href="/admin-panel?page=<%= currentPage + 1 %>&type=nonmoodle" class="pagination-arrow">Next
-                        &raquo;</a>
-                    <% } %>
-    </div>
-    <!-- Add to Moodle Modal Structure -->
-    <div id="addToMoodleModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Set Password for Moodle User</h2>
-            <form id="moodleUserForm" action="/migrateToMoodle" method="post">
-                <input type="hidden" id="moodleUserId" name="userId">
-                <label for="moodlePassword">Password:</label>
-                <input type="password" id="moodlePassword" name="password" required>
-                <div id="passwordRequirements">
-                    <p id="minLength" class="criteria">At least 8 characters</p>
-                    <p id="hasDigit" class="criteria">Contains a digit</p>
-                    <p id="hasLowercase" class="criteria">Contains a lowercase letter</p>
-                    <p id="hasUppercase" class="criteria">Contains an uppercase letter</p>
-                    <p id="hasNonAlphanumeric" class="criteria">Contains a non-alphanumeric character</p>
-                </div>
-                <button type="submit">Submit</button>
-            </form>
-        </div>
-    </div>
-    <!-- The Modal -->
-    <div id="guestManageModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>  
-            <h2>Manage Guest Checkout</h2>
-            <form id="guestManageForm" action="/manage-guest-checkout" method="post" enctype="multipart/form-data">
-                <label for="guestEmail">Email</label>
-                <input type="email" id="guestEmail" name="email" required readonly>
-                <select name="coursePurchased" id="coursePurchased" required>
-                    <option value="">Select a Course</option>
-                    <option value="Professional Certificate in Diabetes Management">Professional Certificate in Diabetes Management</option>
-                    <option value="Advance Certificate in Diabetes Management">Advance Certificate in Diabetes Management</option>
-                    <!-- Add more course options here -->
-                </select>
-                <input type="file" name="officialIDCard" accept="image/*" required>
-                <label for="officialIDCard">Official ID Card</label><br>
-                <input type="file" name="medicalCertificate" accept="image/*" required>
-                <label for="medicalCertificate">Medical Certificate</label><br>
-                <input type="file" name="mciCertificate" accept="image/*" required>
-                <label for="mciCertificate">MCI Certificate</label><br>
-                <input type="file" name="degree" accept="image/*" required>
-                <label for="degree">Degree</label><br>
-                <input type="file" name="passportPhoto" accept="image/*" required>
-                <label for="passportPhoto">Passport Photo</label><br>
-                <label for="password">Password</label>
-                <input type="password" id="guestPassword" name="password" required>
-                <button type="submit">OK</button>
-            </form>
-        </div>
-    </div>
-    
 
 
-    <script>
-        document.getElementById('moodleUserForm').addEventListener('submit', async function (e) {
-            e.preventDefault();
 
-            const userId = document.getElementById('moodleUserId').value;
-            const password = document.getElementById('moodlePassword').value;
 
-            try {
-                const response = await fetch('/migrateToMoodle', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ userId, password }),
-                });
+                <script>
+                    document.getElementById('moodleUserForm').addEventListener('submit', async function (e) {
+                        e.preventDefault();
 
-                if (response.ok) {
-                    alert('User migrated successfully.');
-                    window.location.reload(); // Refresh to show changes
-                } else {
-                    throw new Error('Failed to migrate user.');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error migrating user.');
-            }
-        });
+                        const userId = document.getElementById('moodleUserId').value;
+                        const password = document.getElementById('moodlePassword').value;
 
-        document.querySelectorAll('.addToMoodleBtn').forEach(button => {
-            button.addEventListener('click', function () {
-                const userId = this.dataset.id;
-                document.getElementById('moodleUserId').value = userId; // Pass the user ID to the form
-                document.getElementById('addToMoodleModal').style.display = 'block';
-                document.body.classList.add('blur-effect'); // Apply blur to the background
-            });
-        });
+                        try {
+                            const response = await fetch('/migrateToMoodle', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ userId, password }),
+                            });
 
-        document.querySelector('.close').addEventListener('click', function () {
-            document.getElementById('addToMoodleModal').style.display = 'none';
-            document.body.classList.remove('blur-effect'); // Remove blur effect
-        });
-        document.getElementById('moodlePassword').addEventListener('input', function () {
-            const password = this.value;
-            const minLength = document.getElementById('minLength');
-            const hasDigit = document.getElementById('hasDigit');
-            const hasLowercase = document.getElementById('hasLowercase');
-            const hasUppercase = document.getElementById('hasUppercase');
-            const hasNonAlphanumeric = document.getElementById('hasNonAlphanumeric');
-
-            minLength.classList.toggle('fulfilled', password.length >= 8);
-            hasDigit.classList.toggle('fulfilled', /[0-9]/.test(password));
-            hasLowercase.classList.toggle('fulfilled', /[a-z]/.test(password));
-            hasUppercase.classList.toggle('fulfilled', /[A-Z]/.test(password));
-            hasNonAlphanumeric.classList.toggle('fulfilled', /[\W_]/.test(password));
-        });
-        document.querySelectorAll('.manageGuestBtn').forEach(button => {
-            button.addEventListener('click', function () {
-                const email = this.dataset.email; // Assuming you're using data attributes to store the email
-        
-        // Populate the form fields
-        document.getElementById('guestEmail').value = email;
-        
-        // Show the modal
-        document.getElementById('guestManageModal').style.display = 'block';
-                event.preventDefault();
-                const guestId = this.getAttribute('data-id');
-                document.getElementById('guestId').value = guestId; // Pass the guest ID to the form
-                document.getElementById('guestManageModal').style.display = 'block';
-            });
-        });
-
-        document.querySelector('.close').addEventListener('click', function () {
-            document.getElementById('guestManageModal').style.display = 'none';
-        });
-
-        document.getElementById('createUserBtn').addEventListener('click', function () {
-            document.getElementById('userForm').classList.add('active');
-        });
-
-        document.getElementsByClassName('close-form')[0].addEventListener('click', function () {
-            document.getElementById('userForm').classList.remove('active');
-        });
-
-        document.getElementById('password').addEventListener('input', function () {
-            const password = this.value;
-            document.getElementById('length').classList.toggle('fulfilled', password.length >= 8);
-            document.getElementById('digit').classList.toggle('fulfilled', /\d/.test(password));
-            document.getElementById('lowercase').classList.toggle('fulfilled', /[a-z]/.test(password));
-            document.getElementById('uppercase').classList.toggle('fulfilled', /[A-Z]/.test(password));
-            document.getElementById('non-alphanumeric').classList.toggle('fulfilled', /\W|_/.test(password));
-        });
-        window.onload = function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            const userAdded = urlParams.get('userAdded');
-
-            if (userAdded === 'true') {
-                alert('User added successfully');
-                // Alternatively, use a more sophisticated modal instead of alert
-            }
-        };
-        function generateEnrollmentNumber(courseValue) {
-            let prefix;
-            let middleDigits;
-            switch (courseValue) {
-                case 'FCC':
-                case 'FGP':
-                case 'FDM':
-                    prefix = 'FCC';
-                    middleDigits = '52';
-                    break;
-                case 'PCC':
-                case 'PCGP':
-                case 'PCDM':
-                    prefix = 'PCC';
-                    middleDigits = '13';
-                    break;
-                case 'ACC':
-                case 'ACGP':
-                case 'ACDM':
-                    prefix = 'ACC';
-                    middleDigits = '26';
-                    break;
-                // Add other cases as needed
-                default:
-                    prefix = '';
-                    middleDigits = '';
-            }
-            const randomPart = Math.floor(10 + Math.random() * 90); // Random 2-digit number
-            return prefix + middleDigits + '2402' + '00' + randomPart.toString().padStart(2, '0');
-        }
-
-        document.getElementById('course').addEventListener('change', function () {
-            const selectedCourseValue = this.value;
-            const enrollmentNumber = generateEnrollmentNumber(selectedCourseValue);
-            document.getElementById('enrollmentNumber').value = enrollmentNumber;
-        });
-        document.getElementById('course').addEventListener('change', function () {
-            const selectedCourseValue = this.value;
-            const enrollmentNumber = generateEnrollmentNumber(selectedCourseValue);
-            document.getElementById('enrollmentNumber').value = enrollmentNumber;
-        });
-
-        // Enable/disable delete selected button based on checkbox state
-        const userCheckboxes = document.querySelectorAll('.user-checkbox');
-        const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
-        deleteSelectedBtn.disabled = true; // Initially disabled
-
-        userCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function () {
-                const anyChecked = Array.from(userCheckboxes).some(cb => cb.checked);
-                deleteSelectedBtn.disabled = !anyChecked;
-            });
-        });
-
-        // Delete selected users
-        deleteSelectedBtn.addEventListener('click', function () {
-            const selectedUsers = Array.from(userCheckboxes)
-                .filter(cb => cb.checked)
-                .map(cb => cb.value);
-
-            if (selectedUsers.length > 0 && confirm('Are you sure you want to delete the selected users?')) {
-                fetch('/delete-selected-users', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ userIds: selectedUsers }),
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            window.location.reload(); // Reload the page to update the user list
-                        } else {
-                            alert('Error deleting users');
+                            if (response.ok) {
+                                alert('User migrated successfully.');
+                                window.location.reload(); // Refresh to show changes
+                            } else {
+                                throw new Error('Failed to migrate user.');
+                            }
+                        } catch (error) {
+                            console.error('Error:', error);
+                            alert('Error migrating user.');
                         }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
                     });
-            }
-        });
-        document.querySelectorAll('.edit-icon').forEach(function (editIcon) {
-            editIcon.addEventListener('click', function () {
-                const row = this.closest('tr'); // Get the closest table row
 
-                // Toggle visibility of static text and input fields
-                row.querySelectorAll('.static-text').forEach(el => el.style.display = 'none');
-                row.querySelectorAll('.edit-field').forEach(el => el.style.display = 'inline');
+                    document.querySelectorAll('.addToMoodleBtn').forEach(button => {
+                        button.addEventListener('click', function () {
+                            const userId = this.dataset.id;
+                            document.getElementById('moodleUserId').value = userId; // Pass the user ID to the form
+                            document.getElementById('addToMoodleModal').style.display = 'block';
+                            document.body.classList.add('blur-effect'); // Apply blur to the background
+                        });
+                    });
 
-                // Enable save button
-                document.getElementById('saveChangesBtn').disabled = false;
-            });
-        });
-        window.onload = function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            const guestCheckoutAdded = urlParams.get('guestCheckoutAdded');
+                    document.querySelector('.close').addEventListener('click', function () {
+                        document.getElementById('addToMoodleModal').style.display = 'none';
+                        document.body.classList.remove('blur-effect'); // Remove blur effect
+                    });
+                    document.getElementById('moodlePassword').addEventListener('input', function () {
+                        const password = this.value;
+                        const minLength = document.getElementById('minLength');
+                        const hasDigit = document.getElementById('hasDigit');
+                        const hasLowercase = document.getElementById('hasLowercase');
+                        const hasUppercase = document.getElementById('hasUppercase');
+                        const hasNonAlphanumeric = document.getElementById('hasNonAlphanumeric');
 
-            if (guestCheckoutAdded === 'true') {
-                alert('Guest checkout added successfully');
-                // Alternatively, use more sophisticated modal or notification system instead of alert
-            }
-        };
+                        minLength.classList.toggle('fulfilled', password.length >= 8);
+                        hasDigit.classList.toggle('fulfilled', /[0-9]/.test(password));
+                        hasLowercase.classList.toggle('fulfilled', /[a-z]/.test(password));
+                        hasUppercase.classList.toggle('fulfilled', /[A-Z]/.test(password));
+                        hasNonAlphanumeric.classList.toggle('fulfilled', /[\W_]/.test(password));
+                    });
+                    document.querySelectorAll('.manageGuestBtn').forEach(button => {
+                        button.addEventListener('click', function () {
+                            const email = this.dataset.email; // Assuming you're using data attributes to store the email
 
-        document.getElementById('saveChangesBtn').addEventListener('click', function () {
-            const editedFields = document.querySelectorAll('.edit-field');
-            const updates = Array.from(editedFields).map(field => ({
-                id: field.dataset.id,
-                field: field.dataset.field,
-                value: field.value
-            }));
+                            // Populate the form fields
+                            document.getElementById('guestEmail').value = email;
 
-            fetch('/update-users', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ updates }),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Users updated successfully');
-                        window.location.reload();
-                    } else {
-                        alert('Error updating users');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        });
-        document.querySelectorAll('.status-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                const checkoutId = this.getAttribute('data-id');
-                fetch(`/update-guest-checkout-status/${checkoutId}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: 'done' })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            alert('Status updated successfully');
-                            window.location.reload(); // Optionally reload or dynamically update the status on the page
-                        } else {
-                            alert('Error updating status');
+                            // Show the modal
+                            document.getElementById('guestManageModal').style.display = 'block';
+                            event.preventDefault();
+                            const guestId = this.getAttribute('data-id');
+                            document.getElementById('guestId').value = guestId; // Pass the guest ID to the form
+                            document.getElementById('guestManageModal').style.display = 'block';
+                        });
+                    });
+
+                    document.querySelector('.close').addEventListener('click', function () {
+                        document.getElementById('guestManageModal').style.display = 'none';
+                    });
+
+                    document.getElementById('createUserBtn').addEventListener('click', function () {
+                        document.getElementById('userForm').classList.add('active');
+                    });
+
+                    document.getElementsByClassName('close-form')[0].addEventListener('click', function () {
+                        document.getElementById('userForm').classList.remove('active');
+                    });
+
+                    document.getElementById('password').addEventListener('input', function () {
+                        const password = this.value;
+                        document.getElementById('length').classList.toggle('fulfilled', password.length >= 8);
+                        document.getElementById('digit').classList.toggle('fulfilled', /\d/.test(password));
+                        document.getElementById('lowercase').classList.toggle('fulfilled', /[a-z]/.test(password));
+                        document.getElementById('uppercase').classList.toggle('fulfilled', /[A-Z]/.test(password));
+                        document.getElementById('non-alphanumeric').classList.toggle('fulfilled', /\W|_/.test(password));
+                    });
+                    window.onload = function () {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const userAdded = urlParams.get('userAdded');
+
+                        if (userAdded === 'true') {
+                            alert('User added successfully');
+                            // Alternatively, use a more sophisticated modal instead of alert
                         }
-                    })
-                    .catch(error => console.error('Error:', error));
-            });
-        });
+                    };
+                    function generateEnrollmentNumber(courseValue) {
+                        let prefix;
+                        let middleDigits;
+                        switch (courseValue) {
+                            case 'FCC':
+                            case 'FGP':
+                            case 'FDM':
+                                prefix = 'FCC';
+                                middleDigits = '52';
+                                break;
+                            case 'PCC':
+                            case 'PCGP':
+                            case 'PCDM':
+                                prefix = 'PCC';
+                                middleDigits = '13';
+                                break;
+                            case 'ACC':
+                            case 'ACGP':
+                            case 'ACDM':
+                                prefix = 'ACC';
+                                middleDigits = '26';
+                                break;
+                            // Add other cases as needed
+                            default:
+                                prefix = '';
+                                middleDigits = '';
+                        }
+                        const randomPart = Math.floor(10 + Math.random() * 90); // Random 2-digit number
+                        return prefix + middleDigits + '2402' + '00' + randomPart.toString().padStart(2, '0');
+                    }
 
-    </script>
+                    document.getElementById('course').addEventListener('change', function () {
+                        const selectedCourseValue = this.value;
+                        const enrollmentNumber = generateEnrollmentNumber(selectedCourseValue);
+                        document.getElementById('enrollmentNumber').value = enrollmentNumber;
+                    });
+                    document.getElementById('course').addEventListener('change', function () {
+                        const selectedCourseValue = this.value;
+                        const enrollmentNumber = generateEnrollmentNumber(selectedCourseValue);
+                        document.getElementById('enrollmentNumber').value = enrollmentNumber;
+                    });
+
+                    // Enable/disable delete selected button based on checkbox state
+                    const userCheckboxes = document.querySelectorAll('.user-checkbox');
+                    const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+                    deleteSelectedBtn.disabled = true; // Initially disabled
+
+                    userCheckboxes.forEach(checkbox => {
+                        checkbox.addEventListener('change', function () {
+                            const anyChecked = Array.from(userCheckboxes).some(cb => cb.checked);
+                            deleteSelectedBtn.disabled = !anyChecked;
+                        });
+                    });
+
+                    // Delete selected users
+                    deleteSelectedBtn.addEventListener('click', function () {
+                        const selectedUsers = Array.from(userCheckboxes)
+                            .filter(cb => cb.checked)
+                            .map(cb => cb.value);
+
+                        if (selectedUsers.length > 0 && confirm('Are you sure you want to delete the selected users?')) {
+                            fetch('/delete-selected-users', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ userIds: selectedUsers }),
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        window.location.reload(); // Reload the page to update the user list
+                                    } else {
+                                        alert('Error deleting users');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                });
+                        }
+                    });
+                    document.querySelectorAll('.edit-icon').forEach(function (editIcon) {
+                        editIcon.addEventListener('click', function () {
+                            const row = this.closest('tr'); // Get the closest table row
+
+                            // Toggle visibility of static text and input fields
+                            row.querySelectorAll('.static-text').forEach(el => el.style.display = 'none');
+                            row.querySelectorAll('.edit-field').forEach(el => el.style.display = 'inline');
+
+                            // Enable save button
+                            document.getElementById('saveChangesBtn').disabled = false;
+                        });
+                    });
+                    window.onload = function () {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const guestCheckoutAdded = urlParams.get('guestCheckoutAdded');
+
+                        if (guestCheckoutAdded === 'true') {
+                            alert('Guest checkout added successfully');
+                            // Alternatively, use more sophisticated modal or notification system instead of alert
+                        }
+                    };
+
+                    document.getElementById('saveChangesBtn').addEventListener('click', function () {
+                        const editedFields = document.querySelectorAll('.edit-field');
+                        const updates = Array.from(editedFields).map(field => ({
+                            id: field.dataset.id,
+                            field: field.dataset.field,
+                            value: field.value
+                        }));
+
+                        fetch('/update-users', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ updates }),
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert('Users updated successfully');
+                                    window.location.reload();
+                                } else {
+                                    alert('Error updating users');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                            });
+                    });
+                    document.querySelectorAll('.status-btn').forEach(button => {
+                        button.addEventListener('click', function () {
+                            const checkoutId = this.getAttribute('data-id');
+                            fetch(`/update-guest-checkout-status/${checkoutId}`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ status: 'done' })
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        alert('Status updated successfully');
+                                        window.location.reload(); // Optionally reload or dynamically update the status on the page
+                                    } else {
+                                        alert('Error updating status');
+                                    }
+                                })
+                                .catch(error => console.error('Error:', error));
+                        });
+                    });
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const updateStatus = urlParams.get('update');
+
+                        if (updateStatus === 'success') {
+                            alert('Course updated successfully.');
+                        } else if (updateStatus === 'error') {
+                            alert('Error updating course.');
+                        }
+                    });
+
+                </script>
 </body>
 
 </html>

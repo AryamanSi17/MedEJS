@@ -1558,46 +1558,57 @@ const authenticateAdminJWT = (req, res, next) => {
     res.redirect('/admin-login');
   }
 };
-
 app.get('/admin-panel', authenticateAdminJWT, async function (req, res) {
+  const view = req.query.view || 'users'; // Default to 'users' view
   const page = parseInt(req.query.page) || 1;
-  const pageSize = 10; // Fixed to 10 entities per page
+  const pageSize = 10;
 
   try {
-      const users = await User.find({})
-          .skip((page - 1) * pageSize)
-          .limit(pageSize);
-      const totalUsers = await User.countDocuments();
-
-      const nonMoodleUsers = await NonMoodleUser.find({})
-          .skip((page - 1) * pageSize)
-          .limit(pageSize);
-      const totalNonMoodleUsers = await NonMoodleUser.countDocuments();
-
-      // Fetching GuestCheckout entries
-      const guestCheckouts = await GuestCheckout.find({})
-          .skip((page - 1) * pageSize)
-          .limit(pageSize);
-      const totalGuestCheckouts = await GuestCheckout.countDocuments();
-
-      const totalPagesUsers = Math.ceil(totalUsers / pageSize);
-      const totalPagesNonMoodleUsers = Math.ceil(totalNonMoodleUsers / pageSize);
-      const totalPagesGuestCheckouts = Math.ceil(totalGuestCheckouts / pageSize);
-
-      res.render('admin-panel', {
-          users,
-          nonMoodleUsers,
-          guestCheckouts, // Pass the guest checkouts to the template
+      // Common data for pagination
+      let context = {
           currentPage: page,
-          totalPagesUsers,
-          totalPagesNonMoodleUsers,
-          totalPagesGuestCheckouts,
-      });
+          view,
+      };
+
+      if (view === 'users') {
+          // Fetch user-related data only if in the 'users' view
+          const users = await User.find({}).skip((page - 1) * pageSize).limit(pageSize);
+          const totalUsers = await User.countDocuments();
+
+          const nonMoodleUsers = await NonMoodleUser.find({}).skip((page - 1) * pageSize).limit(pageSize);
+          const totalNonMoodleUsers = await NonMoodleUser.countDocuments();
+
+          const guestCheckouts = await GuestCheckout.find({}).skip((page - 1) * pageSize).limit(pageSize);
+          const totalGuestCheckouts = await GuestCheckout.countDocuments();
+
+          const totalPagesUsers = Math.ceil(totalUsers / pageSize);
+          const totalPagesNonMoodleUsers = Math.ceil(totalNonMoodleUsers / pageSize);
+          const totalPagesGuestCheckouts = Math.ceil(totalGuestCheckouts / pageSize);
+
+          Object.assign(context, {
+              users,
+              nonMoodleUsers,
+              guestCheckouts,
+              totalPagesUsers,
+              totalPagesNonMoodleUsers,
+              totalPagesGuestCheckouts,
+          });
+      } else if (view === 'courses') {
+          // Fetch course-related data only if in the 'courses' view
+          const courses = await Course.find({})
+          const totalCourses = await Course.countDocuments();
+          const totalPagesCourses = Math.ceil(totalCourses / pageSize);
+
+          Object.assign(context, { courses, totalPagesCourses });
+      }
+
+      res.render('admin-panel', context);
   } catch (error) {
       console.error("Error fetching entities:", error);
       res.status(500).send("Error fetching data");
   }
 });
+
 app.post('/update-guest-checkout-status', async (req, res) => {
   try {
       const { checkoutId, newStatus } = req.body;
@@ -1763,6 +1774,21 @@ app.post('/update-user', async function (req, res) {
     res.status(500).send("Error updating user data");
   }
 });
+app.post('/update-course/:courseId', async function(req, res) {
+  const { courseId } = req.params;
+  const updatedCourse = req.body;
+
+  try {
+      await Course.findOneAndUpdate({ courseID: courseId }, updatedCourse);
+      // Redirect to the admin panel with a success message
+      res.redirect('/admin-panel?update=success');
+  } catch (error) {
+      console.error("Error updating course:", error);
+      // Redirect to the admin panel with an error message
+      res.redirect('/admin-panel?update=error');
+  }
+});
+
 
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -2021,6 +2047,9 @@ app.post('/delete-selected-users', authenticateAdminJWT, async function (req, re
     res.status(500).json({ success: false });
   }
 });
+
+
+
 app.post('/update-users', async (req, res) => {
   try {
     const updates = req.body.updates;

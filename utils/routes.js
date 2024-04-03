@@ -63,7 +63,14 @@ function setRoutes(app) {
 
   app.get("/data", (req, res) => {
     res.render("data");
-  })
+  });
+  function formatNumberIndian(number) {
+    var x = number.toString();
+    var lastThree = x.substring(x.length - 3);
+    var otherNumbers = x.substring(0, x.length - 3);
+    if (otherNumbers != '') lastThree = ',' + lastThree;
+    return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+}
   app.get("/course-masonry", async function (req, res) {
     const pageTitle = 'Professional, Advanced, Fellowship courses';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
@@ -75,10 +82,24 @@ function setRoutes(app) {
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
       firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
     }
-    res.render('course-masonry', {
-      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false, firstname: firstname
-    });
+    try {
+      let courseData = await Course.find({});
+      // Format course prices
+      courseData = courseData.map(course => {
+        if (course.currentPrice) course.formattedCurrentPrice = formatNumberIndian(course.currentPrice);
+        if (course.discountedPrice) course.formattedDiscountedPrice = formatNumberIndian(course.discountedPrice);
+        return course;
+      });
+      // Render the EJS template and pass the courses data
+      res.render('course-masonry', {
+          pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, 
+          isUserLoggedIn: req.isUserLoggedIn, username, firstname,  // Pass courses data to the template
+          isBlogPage: false,courses: courseData,
+      });
+  } catch (error) {
+      console.error('Error fetching courses:', error);
+      res.status(500).send('Internal Server Error');
+  }
 
   });
 
@@ -220,7 +241,7 @@ function setRoutes(app) {
     });
   });
 
-  app.get("/course-details-fellowship-in-internal-medicine", function (req, res) {
+  app.get("/course-details-fellowship-in-internal-medicine",async function (req, res) {
     const pageTitle = 'Fellowship in Internal Medicine Program, Internal Medicine Online';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'fellowship in internal medicine, internal medicine subspecialty, fellowship in general medicine, fellowships of internal medicine, online internal medicine fellowship, fellowship in internal medicine program, general medicine fellowship';
@@ -230,13 +251,29 @@ function setRoutes(app) {
     let firstname = null;
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
       firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
-    }
-    res.render('course-details-fellowship-in-internal-medicine', {
-      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false, firstname: firstname
-    });
+    }try {
+      // Query the database for the course by a unique identifier, e.g., name
+      const courseDetails = await Course.findOne({ name: "Fellowship in General Practice (Internal Medicine)" });
+
+      if (!courseDetails) {
+          // Handle case where course is not found
+          console.error('Course not found');
+          return res.status(404).send('Course not found');
+      }
+
+      res.render('course-details-fellowship-in-internal-medicine', {
+          pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, 
+          isUserLoggedIn: req.isUserLoggedIn, username, isBlogPage: false, firstname,
+          // Pass the fetched course details to the template
+          currentPrice: courseDetails.currentPrice,
+          discountedPrice: courseDetails.discountedPrice
+      });
+  } catch (error) {
+      console.error('Error fetching course details:', error);
+      res.status(500).send('Internal Server Error');
+  }
   });
-  app.get("/course-details-fellowship-in-diabetes-management", function (req, res) {
+  app.get("/course-details-fellowship-in-diabetes-management",async function (req, res) {
     const pageTitle = 'Fellowship in Diabetes Mellitus Online, Fellowship Courses Diabetology';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'fellowship in diabetology, fellowship in diabetes, fellowship in diabetes mellitus, diabetes fellowship online, diabetes fellowship courses, fellowship in diabetology online, diabetology fellowship online, online fellowship in diabetology, diabetes fellowship for family physician, diabetes fellowship for primary care physicians, diabetes fellowship program, online diabetology fellowship, fellowship in diabetes management program';
@@ -244,15 +281,18 @@ function setRoutes(app) {
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-fellowship-in-diabetes-management';
     const username = req.session.username || null;
     let firstname = null;
+     // Fetch course data from MongoDB
+     const course = await Course.findOne({ courseDetailLink: "/course-details-fellowship-in-diabetes-management" });
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
       firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
     }
     res.render('course-details-fellowship-in-diabetes-management', {
       pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false, firstname: firstname
-    });
+      username: username, isBlogPage: false, firstname: firstname,
+      currentPrice: course.currentPrice, discountedPrice: course.discountedPrice // Pass course prices to the template
   });
-  app.get("/course-details-fellowship-in-integrated-diabetes-management", function (req, res) {
+  });
+  app.get("/course-details-fellowship-in-integrated-diabetes-management",async function (req, res) {
     const pageTitle = 'Fellowship in Integrated Diabetes Management, Fellowship Courses Diabetology';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'fellowship in integrated diabetes, fellowships in integrated diabetes management,  diabetes management fellowship online, diabetes fellowship courses, fellowship in diabetology online, diabetology fellowship online, online fellowship in diabetology';
@@ -262,13 +302,29 @@ function setRoutes(app) {
     let firstname = null;
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
       firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
-    }
-    res.render('course-details-fellowship-in-integrated-diabetes-management', {
-      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false, firstname: firstname
-    });
+    }try {
+      // Query the database for the course by a unique identifier, e.g., name
+      const courseDetails = await Course.findOne({ name: "Fellowship in Integrated Management of Diabetes" });
+
+      if (!courseDetails) {
+          // Handle case where course is not found
+          console.error('Course not found');
+          return res.status(404).send('Course not found');
+      }
+
+      res.render('course-details-fellowship-in-integrated-diabetes-management', {
+          pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, 
+          isUserLoggedIn: req.isUserLoggedIn, username, isBlogPage: false, firstname,
+          // Pass the fetched course details to the template
+          currentPrice: courseDetails.currentPrice,
+          discountedPrice: courseDetails.discountedPrice
+      });
+  } catch (error) {
+      console.error('Error fetching course details:', error);
+      res.status(500).send('Internal Server Error');
+  }
   });
-  app.get("/course-details-fellowship-in-critical-care", function (req, res) {
+  app.get("/course-details-fellowship-in-critical-care",async function (req, res) {
     const pageTitle = 'Fellowship in Critical Care, Intensive Care, Internal Medicine Programs';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'fellowship in critical care, critical care medicine fellowship, fellowship in intensive care medicine, fellowship in critical care medicine online, critical care internal medicine, critical care medicine fellowship programs';
@@ -278,13 +334,29 @@ function setRoutes(app) {
     let firstname = null;
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
       firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
-    }
-    res.render('course-details-fellowship-in-critical-care', {
-      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false, firstname: firstname
-    });
+    }try {
+      // Query the database for the course by a unique identifier, e.g., name
+      const courseDetails = await Course.findOne({ name: "Fellowship in Critical Care" });
+
+      if (!courseDetails) {
+          // Handle case where course is not found
+          console.error('Course not found');
+          return res.status(404).send('Course not found');
+      }
+
+      res.render('course-details-fellowship-in-critical-care', {
+          pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, 
+          isUserLoggedIn: req.isUserLoggedIn, username, isBlogPage: false, firstname,
+          // Pass the fetched course details to the template
+          currentPrice: courseDetails.currentPrice,
+          discountedPrice: courseDetails.discountedPrice
+      });
+  } catch (error) {
+      console.error('Error fetching course details:', error);
+      res.status(500).send('Internal Server Error');
+  }
   });
-  app.get("/course-details-advanced-professional-certificate-in-critical-care", function (req, res) {
+  app.get("/course-details-advanced-professional-certificate-in-critical-care",async function (req, res) {
     const pageTitle = 'Advanced Certificate in Critical Care Medicine, Intesive Care';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'emergency medical technician course, diploma in critical care medicine, advanced diploma in critical care, certificate in emergency medicine, advance diploma in critical care, advanced certificate in critical care medicine, certificate course in critical care medicine, certificate in critical care medicine, diploma in critical care after mbbs, emergency certificate medical, advanced certificate in critical care nursing, advanced certificate in neonatal critical care, advanced diploma in critical care nursing, advanced diploma in nursing critical care, certificate in critical care, certified critical care paramedic, critical care certificate program, diploma in intensive care medicine, pediatric critical care certification';
@@ -294,13 +366,29 @@ function setRoutes(app) {
     let firstname = null;
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
       firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
-    }
-    res.render('course-details-advanced-professional-certificate-in-critical-care', {
-      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false, firstname: firstname
-    });
+    }try {
+      // Query the database for the course by a unique identifier, e.g., name
+      const courseDetails = await Course.findOne({ name: "Advanced Professional Certificate in Critical Care" });
+
+      if (!courseDetails) {
+          // Handle case where course is not found
+          console.error('Course not found');
+          return res.status(404).send('Course not found');
+      }
+
+      res.render('course-details-advanced-professional-certificate-in-critical-care', {
+          pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, 
+          isUserLoggedIn: req.isUserLoggedIn, username, isBlogPage: false, firstname,
+          // Pass the fetched course details to the template
+          currentPrice: courseDetails.currentPrice,
+          discountedPrice: courseDetails.discountedPrice
+      });
+  } catch (error) {
+      console.error('Error fetching course details:', error);
+      res.status(500).send('Internal Server Error');
+  }
   });
-  app.get("/course-details-professional-certificate-in-diabetes-management", function (req, res) {
+  app.get("/course-details-professional-certificate-in-diabetes-management", async function (req, res) {
     const pageTitle = 'Professional Diabetes Certificate Course, Diabetology Online Programs';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'diabetes management, diabetes certificate course, certificate course in diabetology, certificate in diabetes, diabetes certificate course online, certificate course in diabetes management, advanced certificate course in diabetes, certificate in diabetes management, certificate in diabetes mellitus, certificate in diabetology, advanced certificate in diabetes mellitus, advanced diabetes management, certificate course in diabetes mellitus, diabetes certificate program online';
@@ -311,12 +399,31 @@ function setRoutes(app) {
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
       firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
     }
-    res.render('course-details-professional-certificate-in-diabetes-management', {
-      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false, firstname: firstname
-    });
-  });
-  app.get("/course-details-advanced-professional-certificate-in-diabetes-management", function (req, res) {
+    
+    try {
+        // Query the database for the course by a unique identifier, e.g., name
+        const courseDetails = await Course.findOne({ name: "Professional Certificate in Diabetes Management" });
+
+        if (!courseDetails) {
+            // Handle case where course is not found
+            console.error('Course not found');
+            return res.status(404).send('Course not found');
+        }
+
+        res.render('course-details-professional-certificate-in-diabetes-management', {
+            pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, 
+            isUserLoggedIn: req.isUserLoggedIn, username, isBlogPage: false, firstname,
+            // Pass the fetched course details to the template
+            currentPrice: courseDetails.currentPrice,
+            discountedPrice: courseDetails.discountedPrice
+        });
+    } catch (error) {
+        console.error('Error fetching course details:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+  app.get("/course-details-advanced-professional-certificate-in-diabetes-management", async function (req, res) {
     const pageTitle = 'Advanced Certificate in Diabetes Mellitus, Diabetology Online';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'diabetes management, diabetes certificate course, certificate course in diabetology, certificate in diabetes, diabetes certificate course online, certificate course in diabetes management, advanced certificate course in diabetes, certificate in diabetes management, certificate in diabetes mellitus, certificate in diabetology, advanced certificate in diabetes mellitus, advanced diabetes management, certificate course in diabetes mellitus, diabetes certificate program online';
@@ -326,13 +433,29 @@ function setRoutes(app) {
     let firstname = null;
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
       firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
-    }
-    res.render('course-details-advanced-professional-certificate-in-diabetes-management', {
-      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false, firstname: firstname
-    });
+    }try {
+      // Query the database for the course by a unique identifier, e.g., name
+      const courseDetails = await Course.findOne({ name: "Advanced Professional Certificate in Diabetes Management" });
+
+      if (!courseDetails) {
+          // Handle case where course is not found
+          console.error('Course not found');
+          return res.status(404).send('Course not found');
+      }
+
+      res.render('course-details-advanced-professional-certificate-in-diabetes-management', {
+          pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, 
+          isUserLoggedIn: req.isUserLoggedIn, username, isBlogPage: false, firstname,
+          // Pass the fetched course details to the template
+          currentPrice: courseDetails.currentPrice,
+          discountedPrice: courseDetails.discountedPrice
+      });
+  } catch (error) {
+      console.error('Error fetching course details:', error);
+      res.status(500).send('Internal Server Error');
+  }
   });
-  app.get("/course-details-professional-certificate-in-general-practice", function (req, res) {
+  app.get("/course-details-professional-certificate-in-general-practice",async function (req, res) {
     const pageTitle = 'Professional Certificate in General Practice';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'diabetes management, diabetes certificate course, certificate course in diabetology, certificate in diabetes, diabetes certificate course online, certificate course in diabetes management, advanced certificate course in diabetes, certificate in diabetes management, certificate in diabetes mellitus, certificate in diabetology, advanced certificate in diabetes mellitus, advanced diabetes management, certificate course in diabetes mellitus, diabetes certificate program online';
@@ -342,13 +465,29 @@ function setRoutes(app) {
     let firstname = null;
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
       firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
-    }
-    res.render('course-details-professional-certificate-in-general-practice', {
-      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false, firstname: firstname
-    });
+    }try {
+      // Query the database for the course by a unique identifier, e.g., name
+      const courseDetails = await Course.findOne({ name: "Professional Certificate in General Practice (Internal Medicine)" });
+
+      if (!courseDetails) {
+          // Handle case where course is not found
+          console.error('Course not found');
+          return res.status(404).send('Course not found');
+      }
+
+      res.render('course-details-professional-certificate-in-general-practice', {
+          pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, 
+          isUserLoggedIn: req.isUserLoggedIn, username, isBlogPage: false, firstname,
+          // Pass the fetched course details to the template
+          currentPrice: courseDetails.currentPrice,
+          discountedPrice: courseDetails.discountedPrice
+      });
+  } catch (error) {
+      console.error('Error fetching course details:', error);
+      res.status(500).send('Internal Server Error');
+  }
   });
-  app.get("/course-details-fellowship-in-general-practice", function (req, res) {
+  app.get("/course-details-fellowship-in-general-practice",async function (req, res) {
     const pageTitle = 'Fellowship in General Practice, Online Course, After MBBS';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'fellowship in general practice, online fellowship in general practice';
@@ -358,13 +497,29 @@ function setRoutes(app) {
     let firstname = null;
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
       firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
-    }
-    res.render('course-details-fellowship-in-general-practice', {
-      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false, firstname: firstname
-    });
+    }try {
+      // Query the database for the course by a unique identifier, e.g., name
+      const courseDetails = await Course.findOne({ name: "Fellowship in General Practice (Internal Medicine)" });
+
+      if (!courseDetails) {
+          // Handle case where course is not found
+          console.error('Course not found');
+          return res.status(404).send('Course not found');
+      }
+
+      res.render('course-details-fellowship-in-general-practice', {
+          pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, 
+          isUserLoggedIn: req.isUserLoggedIn, username, isBlogPage: false, firstname,
+          // Pass the fetched course details to the template
+          currentPrice: courseDetails.currentPrice,
+          discountedPrice: courseDetails.discountedPrice
+      });
+  } catch (error) {
+      console.error('Error fetching course details:', error);
+      res.status(500).send('Internal Server Error');
+  }
   });
-  app.get("/course-details-advanced-professional-certificate-in-general-practice", function (req, res) {
+  app.get("/course-details-advanced-professional-certificate-in-general-practice", async function (req, res) {
     const pageTitle = 'Advanced Professional Certificate in General Practice';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'diabetes management, diabetes certificate course, certificate course in diabetology, certificate in diabetes, diabetes certificate course online, certificate course in diabetes management, advanced certificate course in diabetes, certificate in diabetes management, certificate in diabetes mellitus, certificate in diabetology, advanced certificate in diabetes mellitus, advanced diabetes management, certificate course in diabetes mellitus, diabetes certificate program online';
@@ -374,13 +529,29 @@ function setRoutes(app) {
     let firstname = null;
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
       firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
-    }
-    res.render('course-details-advanced-professional-certificate-in-general-practice', {
-      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false, firstname: firstname
-    });
+    }try {
+      // Query the database for the course by a unique identifier, e.g., name
+      const courseDetails = await Course.findOne({ name: "Advanced Professional Certificate in General Practice (Internal Medicine)" });
+
+      if (!courseDetails) {
+          // Handle case where course is not found
+          console.error('Course not found');
+          return res.status(404).send('Course not found');
+      }
+
+      res.render('course-details-advanced-professional-certificate-in-general-practice', {
+          pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, 
+          isUserLoggedIn: req.isUserLoggedIn, username, isBlogPage: false, firstname,
+          // Pass the fetched course details to the template
+          currentPrice: courseDetails.currentPrice,
+          discountedPrice: courseDetails.discountedPrice
+      });
+  } catch (error) {
+      console.error('Error fetching course details:', error);
+      res.status(500).send('Internal Server Error');
+  }
   });
-  app.get("/course-details-professional-certificate-in-critical-care", function (req, res) {
+  app.get("/course-details-professional-certificate-in-critical-care", async function (req, res) {
     const pageTitle = 'Professional Certificate Course in Critical Care Medicine Program';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = 'professional certificate in emergency medicine, certificate course in critical care medicine, professional certificate in critical care medicine, professional certificate in critical care, professional critical care certificate program';
@@ -391,12 +562,29 @@ function setRoutes(app) {
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
       firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
     }
-    res.render('course-details-professional-certificate-in-critical-care', {
-      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false, firstname: firstname
-    });
+    try {
+      // Query the database for the course by a unique identifier, e.g., name
+      const courseDetails = await Course.findOne({ name: "Professional Certificate in Critical Care" });
+
+      if (!courseDetails) {
+          // Handle case where course is not found
+          console.error('Course not found');
+          return res.status(404).send('Course not found');
+      }
+
+      res.render('course-details-professional-certificate-in-critical-care', {
+          pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, 
+          isUserLoggedIn: req.isUserLoggedIn, username, isBlogPage: false, firstname,
+          // Pass the fetched course details to the template
+          currentPrice: courseDetails.currentPrice,
+          discountedPrice: courseDetails.discountedPrice
+      });
+  } catch (error) {
+      console.error('Error fetching course details:', error);
+      res.status(500).send('Internal Server Error');
+  }
   });
-  app.get("/course-details-professional-certificate-in-family-medicine", function (req, res) {
+  app.get("/course-details-professional-certificate-in-family-medicine",async function (req, res) {
     const pageTitle = 'Professional Certificate Course in Family Medicine Program';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = '';
@@ -406,13 +594,29 @@ function setRoutes(app) {
     let firstname = null;
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
       firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
-    }
-    res.render('course-details-professional-certificate-in-family-medicine', {
-      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false, firstname: firstname
-    });
+    }try {
+      // Query the database for the course by a unique identifier, e.g., name
+      const courseDetails = await Course.findOne({ name: "Professional Certificate in Family Medicine" });
+
+      if (!courseDetails) {
+          // Handle case where course is not found
+          console.error('Course not found');
+          return res.status(404).send('Course not found');
+      }
+
+      res.render('course-details-professional-certificate-in-family-medicine', {
+          pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, 
+          isUserLoggedIn: req.isUserLoggedIn, username, isBlogPage: false, firstname,
+          // Pass the fetched course details to the template
+          currentPrice: courseDetails.currentPrice,
+          discountedPrice: courseDetails.discountedPrice
+      });
+  } catch (error) {
+      console.error('Error fetching course details:', error);
+      res.status(500).send('Internal Server Error');
+  }
   });
-  app.get("/course-details-advanced-professional-certificate-in-family-medicine", function (req, res) {
+  app.get("/course-details-advanced-professional-certificate-in-family-medicine",async function (req, res) {
     const pageTitle = 'Advanced Professional Certificate Course in Family Medicine Program';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = '';
@@ -422,13 +626,29 @@ function setRoutes(app) {
     let firstname = null;
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
       firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
-    }
-    res.render('course-details-advanced-professional-certificate-in-family-medicine', {
-      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false, firstname: firstname
-    });
+    }try {
+      // Query the database for the course by a unique identifier, e.g., name
+      const courseDetails = await Course.findOne({ name: "Advanced Professional Certificate in Family Medicine" });
+
+      if (!courseDetails) {
+          // Handle case where course is not found
+          console.error('Course not found');
+          return res.status(404).send('Course not found');
+      }
+
+      res.render('course-details-advanced-professional-certificate-in-family-medicine', {
+          pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, 
+          isUserLoggedIn: req.isUserLoggedIn, username, isBlogPage: false, firstname,
+          // Pass the fetched course details to the template
+          currentPrice: courseDetails.currentPrice,
+          discountedPrice: courseDetails.discountedPrice
+      });
+  } catch (error) {
+      console.error('Error fetching course details:', error);
+      res.status(500).send('Internal Server Error');
+  }
   });
-  app.get("/course-details-fellowship-in-family-medicine", function (req, res) {
+  app.get("/course-details-fellowship-in-family-medicine",async function (req, res) {
     const pageTitle = 'Fellowship in Family Medicine, Online Course For MBBS';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = '';
@@ -438,13 +658,29 @@ function setRoutes(app) {
     let firstname = null;
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
       firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
-    }
-    res.render('course-details-fellowship-in-family-medicine', {
-      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false, firstname: firstname
-    });
+    }try {
+      // Query the database for the course by a unique identifier, e.g., name
+      const courseDetails = await Course.findOne({ name: "Fellowship in Family Medicine" });
+
+      if (!courseDetails) {
+          // Handle case where course is not found
+          console.error('Course not found');
+          return res.status(404).send('Course not found');
+      }
+
+      res.render('course-details-fellowship-in-family-medicine', {
+          pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, 
+          isUserLoggedIn: req.isUserLoggedIn, username, isBlogPage: false, firstname,
+          // Pass the fetched course details to the template
+          currentPrice: courseDetails.currentPrice,
+          discountedPrice: courseDetails.discountedPrice
+      });
+  } catch (error) {
+      console.error('Error fetching course details:', error);
+      res.status(500).send('Internal Server Error');
+  }
   });
-  app.get("/course-details-professional-certificate-in-gynecology-and-obstetrics", function (req, res) {
+  app.get("/course-details-professional-certificate-in-gynecology-and-obstetrics",async function (req, res) {
     const pageTitle = 'Professional Certificate in Gynecology and Obstetrics';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = '';
@@ -454,13 +690,29 @@ function setRoutes(app) {
     let firstname = null;
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
       firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
-    }
-    res.render('course-details-professional-certificate-in-gynecology-and-obstetrics', {
-      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false, firstname: firstname
-    });
+    }try {
+      // Query the database for the course by a unique identifier, e.g., name
+      const courseDetails = await Course.findOne({ name: "Professional Certificate in Gynecology and Obstetrics" });
+
+      if (!courseDetails) {
+          // Handle case where course is not found
+          console.error('Course not found');
+          return res.status(404).send('Course not found');
+      }
+
+      res.render('course-details-professional-certificate-in-gynecology-and-obstetrics', {
+          pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, 
+          isUserLoggedIn: req.isUserLoggedIn, username, isBlogPage: false, firstname,
+          // Pass the fetched course details to the template
+          currentPrice: courseDetails.currentPrice,
+          discountedPrice: courseDetails.discountedPrice
+      });
+  } catch (error) {
+      console.error('Error fetching course details:', error);
+      res.status(500).send('Internal Server Error');
+  }
   });
-  app.get("/course-details-advanced-professional-certificate-in-gynecology-and-obstetrics", function (req, res) {
+  app.get("/course-details-advanced-professional-certificate-in-gynecology-and-obstetrics",async function (req, res) {
     const pageTitle = 'Advanced Professional Certificate in Gynecology and Obstetrics';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = '';
@@ -470,13 +722,29 @@ function setRoutes(app) {
     let firstname = null;
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
       firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
-    }
-    res.render('course-details-advanced-professional-certificate-in-gynecology-and-obstetrics', {
-      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false, firstname: firstname
-    });
+    }try {
+      // Query the database for the course by a unique identifier, e.g., name
+      const courseDetails = await Course.findOne({ name: "Advanced Professional Certificate in Gynecology and Obstetrics" });
+
+      if (!courseDetails) {
+          // Handle case where course is not found
+          console.error('Course not found');
+          return res.status(404).send('Course not found');
+      }
+
+      res.render('course-details-advanced-professional-certificate-in-gynecology-and-obstetrics', {
+          pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, 
+          isUserLoggedIn: req.isUserLoggedIn, username, isBlogPage: false, firstname,
+          // Pass the fetched course details to the template
+          currentPrice: courseDetails.currentPrice,
+          discountedPrice: courseDetails.discountedPrice
+      });
+  } catch (error) {
+      console.error('Error fetching course details:', error);
+      res.status(500).send('Internal Server Error');
+  }
   });
-  app.get("/course-details-fellowship-in-gynecology-and-obstetrics", function (req, res) {
+  app.get("/course-details-fellowship-in-gynecology-and-obstetrics",async function (req, res) {
     const pageTitle = 'Fellowship in Gynecology and Obstetrics, Course After MBBS';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
     const metaKeywords = '';
@@ -486,11 +754,27 @@ function setRoutes(app) {
     let firstname = null;
     if (req.isUserLoggedIn && req.user && req.user.fullname) {
       firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
-    }
-    res.render('course-details-fellowship-in-gynecology-and-obstetrics', {
-      pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, isUserLoggedIn: req.isUserLoggedIn,
-      username: username, isBlogPage: false, firstname: firstname
-    });
+    }try {
+      // Query the database for the course by a unique identifier, e.g., name
+      const courseDetails = await Course.findOne({ name: "	Fellowship in Gynecology and Obstetrics" });
+
+      if (!courseDetails) {
+          // Handle case where course is not found
+          console.error('Course not found');
+          return res.status(404).send('Course not found');
+      }
+
+      res.render('course-details-fellowship-in-gynecology-and-obstetrics', {
+          pageTitle, metaRobots, metaKeywords, ogDescription, canonicalLink, 
+          isUserLoggedIn: req.isUserLoggedIn, username, isBlogPage: false, firstname,
+          // Pass the fetched course details to the template
+          currentPrice: courseDetails.currentPrice,
+          discountedPrice: courseDetails.discountedPrice
+      });
+  } catch (error) {
+      console.error('Error fetching course details:', error);
+      res.status(500).send('Internal Server Error');
+  }
   });
 
   app.get("/course-details-anaphylaxis", function (req, res) {
