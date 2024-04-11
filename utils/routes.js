@@ -756,7 +756,7 @@ function setRoutes(app) {
       firstname = req.user.fullname.split(' ')[0]; // Extract the first name from the full name
     }try {
       // Query the database for the course by a unique identifier, e.g., name
-      const courseDetails = await Course.findOne({ name: "	Fellowship in Gynecology and Obstetrics" });
+      const courseDetails = await Course.findOne({ name: "Fellowship in Gynecology and Obstetrics" });
 
       if (!courseDetails) {
           // Handle case where course is not found
