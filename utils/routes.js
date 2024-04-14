@@ -1084,12 +1084,20 @@ function setRoutes(app) {
       renderView = 'blog-details-7'; // Assuming you'll create a new view for this blog post
     }
     else if (blogTitle === "fellowship-in-diabetes-mellitus-blog") {
-      pageTitle = 'Tap into Your Potential with GlobalMed Academy’s (GMA)  Online ‘Fellowship in Critical Care’';
+      pageTitle = 'Fellowship in Diabetes Mellitus - Blog';
       metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
       metaKeywords = 'Medical Research, Future of Medicine, Medical Innovations';
       ogDescription = 'Dive deep into the advancements and potential of future medical research.';
       canonicalLink = 'https://www.globalmedacademy.com/blog/fellowship-in-diabetes-mellitus-blog';
       renderView = 'blog-details-8'; // Assuming you'll create a new view for this blog post
+    }
+    else if (blogTitle === "navigating-pain-management-in-hospitals-a-comprehensive-guide") {
+      pageTitle = 'Navigating Pain Management in Hospitals: A Comprehensive Guide';
+      metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+      metaKeywords = 'Medical Research, Future of Medicine, Medical Innovations';
+      ogDescription = 'Dive deep into the advancements and potential of future medical research.';
+      canonicalLink = 'https://www.globalmedacademy.com/blog/navigating-pain-management-in-hospitals-a-comprehensive-guide';
+      renderView = 'blog-details-9'; // Assuming you'll create a new view for this blog post
     }
   
     // Check to ensure we have pageTitle (and by extension, the other meta data),
