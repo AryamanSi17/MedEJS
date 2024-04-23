@@ -858,8 +858,8 @@ app.post('/guest-checkout/:courseID', async (req, res) => {
 });
 // ccavRequestHandler.js integration
 app.post('/ccavRequestHandler', function (request, response) {
-  var workingKey = "1E9B36C49F90A45CEDA3827239927264"; // Test working key
-  var accessCode = "AVUX05KH13BU86XUUB"; // Test access code
+  var workingKey = "41F0052B4F5A9278198DEED49BED2A4D"; // Test working key
+  var accessCode = "AVCQ66LB93CI44QCIC"; // Test access code
   var encRequest = '';
 
   // Convert the request body to a query string format
