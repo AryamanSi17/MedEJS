@@ -2085,8 +2085,7 @@ app.get('/search-courses', async (req, res) => {
       });
   }
   try {
-      const courses = await searchCourses(searchQuery);
-      console.log("Courses found:", courses.length); // This will tell you how many courses matched the search
+      const courses = await searchCourses(searchQuery); // This will tell you how many courses matched the search
       res.render('search-course', {
           courses: courses,
           isUserLoggedIn: req.isUserLoggedIn,
