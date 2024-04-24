@@ -794,9 +794,9 @@ function setRoutes(app) {
       username: username, isBlogPage: false, firstname: firstname
     });
   });
-  app.get("/course-details-obsgynae", function (req, res) {
-    res.render("course-details-obsgynae");
-  });
+  // app.get("/course-details-obsgynae", function (req, res) {
+  //   res.render("course-details-obsgynae");
+  // });
   app.get("/about-us", function (req, res) {
     const pageTitle = 'About Fellowship, Ceritifcate Courses Online - GlobalMedAcademy';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';

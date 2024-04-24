@@ -42,6 +42,7 @@ const rawBodyParser = bodyParser.raw({ type: '*/*' });
 const AWS = require('aws-sdk');
 const upload = multer({ storage: multer.memoryStorage() });
 const qs = require('querystring');
+const searchCourses = require('./utils/searchCourses');
 
 // Configure the AWS SDK to use DigitalOcean Spaces
 const spacesEndpoint = new AWS.Endpoint('blr1.digitaloceanspaces.com');
@@ -2062,6 +2063,51 @@ app.post('/update-users', async (req, res) => {
     res.status(500).json({ success: false });
   }
 });
+app.get('/search-courses', async (req, res) => {
+  const searchQuery = req.query.query;
+  console.log("Search query received:", searchQuery); // Check the input from the user
+
+  if (!searchQuery) {
+      console.log("No search query provided");
+      return res.render('search-course', {
+        courses: [],
+        isUserLoggedIn: req.isUserLoggedIn,
+        message: "Please enter a valid search term.",
+
+        pageTitle: 'About Fellowship, Certificate Courses Online - GlobalMedAcademy',
+        metaRobots: 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large',
+        metaKeywords: 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine',
+        ogDescription: 'GlobalMedAcademy (GMA) is a cutting-edge Medical Ed-tech organization that provides specialized courses for medical graduates through hybrid learning approach.',
+        canonicalLink: 'https://www.globalmedacademy.com/about-us',
+        username: req.session.username || null,
+        firstname: req.isUserLoggedIn && req.user && req.user.fullname ? req.user.fullname.split(' ')[0] : null,
+        isBlogPage: false
+      });
+  }
+  try {
+      const courses = await searchCourses(searchQuery);
+      console.log("Courses found:", courses.length); // This will tell you how many courses matched the search
+      res.render('search-course', {
+          courses: courses,
+          isUserLoggedIn: req.isUserLoggedIn,
+          message: "Please enter a valid search term.",
+
+          pageTitle: 'About Fellowship, Certificate Courses Online - GlobalMedAcademy',
+          metaRobots: 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large',
+          metaKeywords: 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine',
+          ogDescription: 'GlobalMedAcademy (GMA) is a cutting-edge Medical Ed-tech organization that provides specialized courses for medical graduates through hybrid learning approach.',
+          canonicalLink: 'https://www.globalmedacademy.com/about-us',
+          username: req.session.username || null,
+          firstname: req.isUserLoggedIn && req.user && req.user.fullname ? req.user.fullname.split(' ')[0] : null,
+          isBlogPage: false
+      });
+  } catch (error) {
+      console.error('Search Error:', error);
+      res.status(500).send('Error retrieving courses');
+  }
+});
+
+
 app.listen(3000, function () {
   console.log("Server started successfully!");
 });
