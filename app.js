@@ -1800,6 +1800,7 @@ const courseNames = {
   PCDM: "Professional Certificate in Diabetes Management",
   ACDM: "Advanced Certificate in Diabetes Management",
   FDM: "Fellowship in Diabetes Management",
+  FIMD: "Fellowship in Integrated Management of Diabetes",
   PCC: "Professional Certificate in Critical Care",
   ACC: "Advance Certificate in Critical Care",
   FCC: "Fellowship in Critical Care",
