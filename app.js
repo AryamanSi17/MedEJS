@@ -2079,24 +2079,24 @@ app.get('/search-courses', async (req, res) => {
         metaRobots: 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large',
         metaKeywords: 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine',
         ogDescription: 'GlobalMedAcademy (GMA) is a cutting-edge Medical Ed-tech organization that provides specialized courses for medical graduates through hybrid learning approach.',
-        canonicalLink: 'https://www.globalmedacademy.com/about-us',
+        canonicalLink: 'https://www.globalmedacademy.com/search-course',
         username: req.session.username || null,
         firstname: req.isUserLoggedIn && req.user && req.user.fullname ? req.user.fullname.split(' ')[0] : null,
         isBlogPage: false
       });
   }
   try {
-      const courses = await searchCourses(searchQuery); // This will tell you how many courses matched the search
+      const courses = await searchCourses(searchQuery);
+       // This will tell you how many courses matched the search
       res.render('search-course', {
           courses: courses,
           isUserLoggedIn: req.isUserLoggedIn,
           message: "Please enter a valid search term.",
-
           pageTitle: 'About Fellowship, Certificate Courses Online - GlobalMedAcademy',
           metaRobots: 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large',
           metaKeywords: 'certificate courses online, fellowship course, fellowship course details, fellowship in diabetology, critical care medicine, internal medicine',
           ogDescription: 'GlobalMedAcademy (GMA) is a cutting-edge Medical Ed-tech organization that provides specialized courses for medical graduates through hybrid learning approach.',
-          canonicalLink: 'https://www.globalmedacademy.com/about-us',
+          canonicalLink: 'https://www.globalmedacademy.com/search-course',
           username: req.session.username || null,
           firstname: req.isUserLoggedIn && req.user && req.user.fullname ? req.user.fullname.split(' ')[0] : null,
           isBlogPage: false

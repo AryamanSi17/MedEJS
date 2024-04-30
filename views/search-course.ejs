@@ -34,7 +34,7 @@
     
         .rbt-card-img img {
             width: 100%; /* Full width */
-            height: 200px; /* Fixed height for consistency */
+            height: 300px; /* Fixed height for consistency */
             object-fit: cover; /* Cover fit for no image distortion */
         }
     
@@ -72,7 +72,7 @@
                                     <li><i class="feather-book"></i> <span class="start-date">Loading date...</span></li> -->
                                     <li><i class="feather-clock"></i> <%= course.duration %></li>
                                 </ul>
-                                <p class="rbt-card-text">Support and provide counseling to all diabetic patients & their families</p>
+                                <p class="rbt-card-text"><%= course.description %></p>
                                 <a class="rbt-btn-link" href="<%= course.courseDetailLink %>">Learn More<i class="feather-arrow-right"></i></a>
                             </div>
                         </div>
