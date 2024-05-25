@@ -242,10 +242,10 @@ function setRoutes(app) {
   });
 
   app.get("/course-details-fellowship-in-internal-medicine",async function (req, res) {
-    const pageTitle = 'Fellowship in Internal Medicine Program, Internal Medicine Online';
+    const pageTitle = 'Fellowship in Internal Medicine, General Practice, Online Course, After MBBS';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
-    const metaKeywords = 'fellowship in internal medicine, internal medicine subspecialty, fellowship in general medicine, fellowships of internal medicine, online internal medicine fellowship, fellowship in internal medicine program, general medicine fellowship';
-    const ogDescription = 'Internal medicine fellowship help you to become a board-certified subspecialist. Join our fellowship programs and learn more with CPD standards certified course.';
+    const metaKeywords = 'fellowship in general practice, online fellowship in general practice, fellowship in internal medicine';
+    const ogDescription = 'Fellowship in Internal Medicine/General Practice to meet the pressing demand for specialized medical training in Indias intricate healthcare landscape.';
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-fellowship-in-internal-medicine';
     const username = req.session.username || null;
     let firstname = null;
@@ -488,10 +488,10 @@ function setRoutes(app) {
   }
   });
   app.get("/course-details-fellowship-in-general-practice",async function (req, res) {
-    const pageTitle = 'Fellowship in General Practice, Online Course, After MBBS';
+    const pageTitle = 'Fellowship in Internal Medicine, General Practice, Online Course, After MBBS';
     const metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
-    const metaKeywords = 'fellowship in general practice, online fellowship in general practice';
-    const ogDescription = "Fellowship in General Practice to meet the pressing demand for specialized medical training in India's intricate healthcare landscape";
+    const metaKeywords = 'fellowship in general practice, online fellowship in general practice, fellowship in internal medicine';
+    const ogDescription = "Fellowship in Internal Medicine/General Practice to meet the pressing demand for specialized medical training in India's intricate healthcare landscape.";
     const canonicalLink = 'https://www.globalmedacademy.com/course-details-fellowship-in-general-practice';
     const username = req.session.username || null;
     let firstname = null;
