@@ -964,6 +964,14 @@ function setRoutes(app) {
       canonicalLink = 'https://www.globalmedacademy.com/blog/empowering-physicians-to-specialize-in-family-medicine-how-fellowship-transforms-care';
       renderView = 'blog-details-10'; // Assuming you'll create a new view for this blog post
     }
+    else if (blogTitle === "empowering-excellence-in-diabetes-care-through-advanced-fellowship-training") {
+      pageTitle = 'Empowering Excellence in Diabetes Care Through Advanced Fellowship Training';
+      metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+      metaKeywords = 'Medical Research, Future of Medicine, Medical Innovations';
+      ogDescription = 'Dive deep into the advancements and potential of future medical research.';
+      canonicalLink = 'https://www.globalmedacademy.com/blog/empowering-excellence-in-diabetes-care-through-advanced-fellowship-training';
+      renderView = 'blog-details-11'; // Assuming you'll create a new view for this blog post
+    }
   
     // Check to ensure we have pageTitle (and by extension, the other meta data),
     // which ensures the blogTitle provided in the URL is valid.
