@@ -972,14 +972,15 @@ function setRoutes(app) {
       canonicalLink = 'https://www.globalmedacademy.com/blog/empowering-excellence-in-diabetes-care-through-advanced-fellowship-training';
       renderView = 'blog-details-11'; // Assuming you'll create a new view for this blog post
     }
-    else if (blogTitle === "empowering-specialists-with-advanced-expertise-in-gynecology-and-obstetrics") {
-      pageTitle = 'Empowering Specialists with Advanced Expertise in Gynecology and Obstetrics';
+    else if (blogTitle === "empowering-cardiovascular-excellence-fellowship-in-clinical-cardiology-for-a-healthier-india") {
+      pageTitle = 'Empowering Cardiovascular Excellence: Fellowship in Clinical Cardiology for a Healthier India';
       metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
-      metaKeywords = 'Medical Research, Future of Medicine, Medical Innovations';
-      ogDescription = 'Dive deep into the advancements and potential of future medical research.';
-      canonicalLink = 'https://www.globalmedacademy.com/blog/empowering-specialists-with-advanced-expertise-in-gynecology-and-obstetrics';
-      renderView = 'blog-details-12'; // Assuming you'll create a new view for this blog post
+      metaKeywords = 'Cardiology, Heart Health, Cardiovascular Diseases, Medical Training';
+      ogDescription = 'Explore the Fellowship in Clinical Cardiology aimed at addressing the cardiovascular challenges in India through advanced training and expertise.';
+      canonicalLink = 'https://www.globalmedacademy.com/blog/empowering-cardiovascular-excellence-fellowship-in-clinical-cardiology-for-a-healthier-india';
+      renderView = 'blog-details-13'; // Using the updated view number for this blog post
     }
+
   
     // Check to ensure we have pageTitle (and by extension, the other meta data),
     // which ensures the blogTitle provided in the URL is valid.
