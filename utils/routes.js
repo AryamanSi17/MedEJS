@@ -980,6 +980,24 @@ function setRoutes(app) {
       canonicalLink = 'https://www.globalmedacademy.com/blog/empowering-cardiovascular-excellence-fellowship-in-clinical-cardiology-for-a-healthier-india';
       renderView = 'blog-details-13'; // Using the updated view number for this blog post
     }
+    else if (blogTitle === "discover-how-a-fellowship-in-critical-care-medicine-transforms-expertise-into-lifesaving-skills") {
+      pageTitle = 'Discover How a Fellowship in Critical Care Medicine Transforms Expertise into Lifesaving Skills';
+      metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+      metaKeywords = 'Critical Care Medicine, Medical Training, Intensive Care, Lifesaving Skills';
+      ogDescription = 'Explore how a fellowship in Critical Care Medicine develops expertise in managing life-threatening conditions and prepares physicians for a challenging yet rewarding career.';
+      canonicalLink = 'https://www.globalmedacademy.com/blog/discover-how-a-fellowship-in-critical-care-medicine-transforms-expertise-into-lifesaving-skills';
+      renderView = 'blog-details-14'; // Update the view number as appropriate
+  }
+  
+    else if (blogTitle === "how-fellowships-in-family-medicine-empower-physicians-to-deliver-specialized-comprehensive-care") {
+      pageTitle = 'How Fellowships in Family Medicine Empower Physicians to Deliver Specialized, Comprehensive Care';
+      metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+      metaKeywords = 'Family Medicine, Medical Training, Healthcare, Comprehensive Care';
+      ogDescription = 'Discover how fellowships in Family Medicine equip physicians with specialized skills to provide comprehensive care and advance in their careers.';
+      canonicalLink = 'https://www.globalmedacademy.com/blog/how-fellowships-in-family-medicine-empower-physicians-to-deliver-specialized-comprehensive-care';
+      renderView = 'blog-details-15'; // Using the updated view number for this blog post
+    }
+
 
   
     // Check to ensure we have pageTitle (and by extension, the other meta data),
