@@ -997,7 +997,15 @@ function setRoutes(app) {
       canonicalLink = 'https://www.globalmedacademy.com/blog/how-fellowships-in-family-medicine-empower-physicians-to-deliver-specialized-comprehensive-care';
       renderView = 'blog-details-15'; // Using the updated view number for this blog post
     }
-
+    else if (blogTitle === "how-fellowship-in-internal-medicine-sharpens-expertise-for-exceptional-patient-care") {
+      pageTitle = 'How Fellowship in Internal Medicine Sharpens Expertise for Exceptional Patient Care';
+      metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+      metaKeywords = 'Internal Medicine, Fellowship, Medical Training, Healthcare, Patient Care';
+      ogDescription = 'Explore how a fellowship in Internal Medicine enhances a physician’s expertise, enabling them to provide exceptional patient care and manage complex medical conditions.';
+      canonicalLink = 'https://www.globalmedacademy.com/blog/how-fellowship-in-internal-medicine-sharpens-expertise-for-exceptional-patient-care';
+      renderView = 'blog-details-16'; // Updated view number for this new blog post
+  }
+  
 
   
     // Check to ensure we have pageTitle (and by extension, the other meta data),
