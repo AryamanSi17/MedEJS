@@ -1013,6 +1013,15 @@ function setRoutes(app) {
       canonicalLink = 'https://www.globalmedacademy.com/blog/how-fellowship-in-internal-medicine-sharpens-expertise-for-exceptional-patient-care';
       renderView = 'blog-details-16'; // Updated view number for this new blog post
   }
+  else if (blogTitle === "empowering-excellence-in-child-healthcare-through-fellowship-in-pediatrics") {
+    pageTitle = 'Empowering Excellence in Child Healthcare Through Fellowship in Pediatrics';
+    metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+    metaKeywords = 'Pediatrics, Fellowship, Child Healthcare, Medical Training, Pediatric Care';
+    ogDescription = 'Discover how a fellowship in Pediatrics empowers healthcare professionals to provide exceptional care for infants, children, and adolescents, advancing expertise in various pediatric specialties.';
+    canonicalLink = 'https://www.globalmedacademy.com/blog/empowering-excellence-in-child-healthcare-through-fellowship-in-pediatrics';
+    renderView = 'blog-details-17'; // Updated view number for this new blog post
+}
+
   
 
   
