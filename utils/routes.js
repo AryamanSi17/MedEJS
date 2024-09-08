@@ -1021,6 +1021,14 @@ function setRoutes(app) {
     canonicalLink = 'https://www.globalmedacademy.com/blog/empowering-excellence-in-child-healthcare-through-fellowship-in-pediatrics';
     renderView = 'blog-details-17'; // Updated view number for this new blog post
 }
+else if (blogTitle === "discover-how-advanced-training-in-family-medicine-transforms-patient-care") {
+  pageTitle = 'Discover How Advanced Training in Family Medicine Transforms Patient Care';
+  metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+  metaKeywords = 'Family Medicine, Advanced Training, Primary Care, Healthcare, Preventive Medicine';
+  ogDescription = 'Explore how advanced training in Family Medicine enhances clinical expertise, focusing on holistic patient care, chronic disease management, preventive medicine, and leadership in healthcare.';
+  canonicalLink = 'https://www.globalmedacademy.com/blog/discover-how-advanced-training-in-family-medicine-transforms-patient-care';
+  renderView = 'blog-details-18'; // Updated view number for this new blog post
+}
 
   
 
