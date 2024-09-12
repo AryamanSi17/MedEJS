@@ -1029,6 +1029,14 @@ else if (blogTitle === "discover-how-advanced-training-in-family-medicine-transf
   canonicalLink = 'https://www.globalmedacademy.com/blog/discover-how-advanced-training-in-family-medicine-transforms-patient-care';
   renderView = 'blog-details-18'; // Updated view number for this new blog post
 }
+else if (blogTitle === "advanced-professional-certificate-in-critical-care-medicine") {
+  pageTitle = 'Advanced Professional Certificate in Critical Care Medicine: Learn Life-Saving Interventions';
+  metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+  metaKeywords = 'Critical Care Medicine, Advanced Certificate, Intensive Care, Healthcare, Life-Saving Interventions, ICU';
+  ogDescription = 'Discover how the Advanced Professional Certificate in Critical Care Medicine equips healthcare providers with the skills to manage critically ill patients in high-pressure environments like ICUs.';
+  canonicalLink = 'https://www.globalmedacademy.com/blog/advanced-professional-certificate-in-critical-care-medicine';
+  renderView = 'blog-details-19'; // Updated view number for this new blog post
+}
 
   
 
