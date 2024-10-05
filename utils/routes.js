@@ -1037,6 +1037,14 @@ else if (blogTitle === "advanced-professional-certificate-in-critical-care-medic
   canonicalLink = 'https://www.globalmedacademy.com/blog/advanced-professional-certificate-in-critical-care-medicine';
   renderView = 'blog-details-19'; // Updated view number for this new blog post
 }
+else if (blogTitle === "discover-how-to-excel-in-heart-care-with-a-cardiology-fellowship") {
+  pageTitle = 'Fellowship in Clinical Cardiology: Master the Art of Heart Care';
+  metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+  metaKeywords = 'Cardiology Fellowship, Clinical Cardiology, Heart Care, Cardiovascular Diseases, Cardiology Training, Heart Health';
+  ogDescription = 'Learn how the Fellowship in Clinical Cardiology equips healthcare professionals with the advanced skills and knowledge needed to treat cardiovascular diseases and excel in heart care.';
+  canonicalLink = 'https://www.globalmedacademy.com/blog/discover-how-to-excel-in-heart-care-with-a-cardiology-fellowship';
+  renderView = 'blog-details-20'; // Updated view number for the new blog post
+}
 
   
 
