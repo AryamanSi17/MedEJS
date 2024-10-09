@@ -1045,6 +1045,14 @@ else if (blogTitle === "discover-how-to-excel-in-heart-care-with-a-cardiology-fe
   canonicalLink = 'https://www.globalmedacademy.com/blog/discover-how-to-excel-in-heart-care-with-a-cardiology-fellowship';
   renderView = 'blog-details-20'; // Updated view number for the new blog post
 }
+else if (blogTitle === "empowering-healthcare-professionals-for-a-growing-global-challenge-diabetes-management") {
+  pageTitle = 'Empowering Healthcare Professionals: Advanced Diabetes Management Program';
+  metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+  metaKeywords = 'Diabetes Management, Diabetes Care, Diabetes Treatment, Advanced Diabetes Certificate, Diabetes Training, Chronic Disease Management';
+  ogDescription = 'The Advanced Professional Certificate in Diabetes Management equips healthcare professionals with specialized knowledge and skills to effectively manage diabetes and improve patient care.';
+  canonicalLink = 'https://www.globalmedacademy.com/blog/empowering-healthcare-professionals-for-a-growing-global-challenge-diabetes-management';
+  renderView = 'blog-details-21'; // Updated view number for the new blog post
+}
 
   
 
