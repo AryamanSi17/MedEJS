@@ -1053,6 +1053,15 @@ else if (blogTitle === "empowering-healthcare-professionals-for-a-growing-global
   canonicalLink = 'https://www.globalmedacademy.com/blog/empowering-healthcare-professionals-for-a-growing-global-challenge-diabetes-management';
   renderView = 'blog-details-21'; // Updated view number for the new blog post
 }
+else if (blogTitle === "empower-your-practice-in-gynecology-and-obstetrics-with-our-professional-certificate") {
+  pageTitle = 'Empower Your Practice: Advanced Gynecology and Obstetrics Certification';
+  metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+  metaKeywords = 'Gynecology and Obstetrics, Women’s Health, OB-GYN, Advanced Gynecology Certificate, Obstetrics Training, Reproductive Health, Maternal Care';
+  ogDescription = 'The Advanced Professional Certificate in Gynecology and Obstetrics provides healthcare professionals with the expertise to manage women’s reproductive health, pregnancy, and childbirth effectively.';
+  canonicalLink = 'https://www.globalmedacademy.com/blog/empower-your-practice-in-gynecology-and-obstetrics-with-our-professional-certificate';
+  renderView = 'blog-details-22'; // Updated view number for the new blog post
+}
+
 
   
 
