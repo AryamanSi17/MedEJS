@@ -56,7 +56,7 @@ const ccavResponseHandler = require('./utils/ccavResponseHandler.js');
 
 const flash = require('connect-flash');
 let loggedIn = true;
-const { enrollUserInCourse,searchAndLogCourseDetails,getCourseIdByName } = require('./utils/enrollUser.js')
+const { enrollUserInCourse,searchAndLogCourseDetails,getOrCreateCourseIdByName } = require('./utils/enrollUser.js')
 const app = express();
 app.use(cookieSession({
   name: 'session',
@@ -1646,7 +1646,7 @@ app.post('/manage-guest-checkout', upload.fields([
     const moodleUserId = await getMoodleUserId(email);
 
     // Enroll user in Moodle course
-    const courseId = await getCourseIdByName(coursePurchased);
+    const courseId = await getOrCreateCourseIdByName(coursePurchased);
     const roleId = 5; // Assuming roleId 5 is for students
     await enrollUserInMoodle(moodleUserId, courseId, roleId);
 
@@ -1730,7 +1730,7 @@ app.post('/migrateToMoodle', async (req, res) => {
 
     // Enroll user in Moodle courses
     for (let courseName of coursesFullNames) {
-      const courseId = await getCourseIdByName(courseName); // Make sure this function matches the course name to its Moodle ID
+      const courseId = await getOrCreateCourseIdByName(courseName); // Make sure this function matches the course name to its Moodle ID
       const roleId = 5; // Assuming role ID for student
       await enrollUserInMoodle(moodleUserId, courseId, roleId);
     }
@@ -1794,7 +1794,6 @@ app.post('/update-course/:courseId', async function(req, res) {
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 
-getCourseIdByName("Fellowship in Diabetes Management");
 // Mapping from course abbreviation to full course name
 const courseNames = {
   PCDM: "Professional Certificate in Diabetes Management",
@@ -1810,55 +1809,67 @@ const courseNames = {
   PCIM: "Professional Certificate in Internal Medicine",
   ACIM: "Advance Certificate in Internal Medicine",
   FIM: "Fellowship in Internal Medicine",
+  FFM: "Fellowship in Family Medicine" // New course added
 };
+
 app.post('/create-user', upload.fields([
   { name: 'officialIDCard' },
   { name: 'mciCertificate' },
   { name: 'degree' },
   { name: 'passportPhoto' }
 ]), async (req, res) => {
-
-  const { username, password, fullname, email, enrollmentNumber } = req.body;
+  const { username, password, fullname, email, enrollmentNumber, phone, mciNumber, address, idNumber } = req.body;
   const selectedCourseAbbr = req.body.course;
-  const courseName = courseNames[selectedCourseAbbr] || 'Default Course Name'; // Use full course name
+  const courseName = courseNames[selectedCourseAbbr] || 'Default Course Name';
+  const roleId = 5; // Assuming role ID for student
+
   try {
-    // Hash password
+    // Step 1: Hash password
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Create user in Moodle
-    await createUserInMoodle(username, password, fullname, '.', username);
-    // Get Moodle user ID
-    const moodleUserId = await getMoodleUserId(username);
+    // Step 2: Create user in Moodle and retrieve user ID
+    let moodleUserId;
+    try {
+      await createUserInMoodle(username, password, fullname, '.', username);
+      moodleUserId = await getUserIdFromUsername(username);
+    } catch (error) {
+      throw new Error('Failed to create user in Moodle or retrieve Moodle user ID.');
+    }
 
-    const courseId = await getCourseIdByName(courseName);
-    const roleId = 5; // Assuming role ID for student
-    await enrollUserInMoodle(moodleUserId, courseId, roleId);
+    // Step 3: Get or create the course in Moodle
+    let courseId;
+    try {
+      courseId = await getOrCreateCourseIdByName(courseName); // This will create the course if missing
+    } catch (error) {
+      throw new Error('Failed to retrieve or create course in Moodle.');
+    }
 
-    //  if (!enrollmentResponse.success) {
-    //      throw new Error(enrollmentResponse.message);
-    //  }
-    // Create user in your database
+    // Step 4: Enroll user in the Moodle course
+    try {
+      await enrollUserInCourse(username, courseId);
+    } catch (error) {
+      throw new Error('Failed to enroll user in the Moodle course.');
+    }
+
+    // Step 5: Create user in local database
     const newUser = new User({
       username,
       password: hashedPassword,
       fullname,
       email,
-      phone: req.body.phone,
-      coursesPurchased: req.body.course,
-      mciNumber: req.body.mciNumber,
-      address: req.body.address,
-      idNumber: req.body.idNumber,
+      phone,
+      mciNumber,
+      address,
+      idNumber,
       enrollmentNumber,
-      coursesPurchased: [courseName],
-      // ... other user fields from req.body
+      coursesPurchased: [courseName]
     });
 
     const savedUser = await newUser.save();
 
-    // Handle file uploads
+    // Step 6: Handle file uploads to S3
     const uploadedFiles = [];
-    const userFolder = username; // Use username as folder name
-    // Use MongoDB ID as folder name
+    const userFolder = `guest-${username.replace(/[@\.]/g, '_')}`; // Sanitize email for use in file path
 
     for (const [key, value] of Object.entries(req.files)) {
       const file = value[0];
@@ -1877,7 +1888,7 @@ app.post('/create-user', upload.fields([
       $push: { uploadedFiles: { $each: uploadedFiles } }
     }, { new: true });
 
-    // Send confirmation email
+    // Step 7: Send confirmation email
     sendEmail({
       to: username,
       subject: 'Welcome to GlobalMed Academy!',
@@ -1896,11 +1907,13 @@ app.post('/create-user', upload.fields([
     });
 
     res.redirect('/admin-panel?userAdded=true');
+
   } catch (error) {
-    console.error('Error in /create-user route:', error);
+    console.error('Error in /create-user route:', error.message);
     res.status(500).send("An error occurred during user registration.");
   }
 });
+
 // searchAndLogCourseDetails("Fellowship in Diabetes Management");
 
 //success route for verifying user after payment
@@ -1948,7 +1961,7 @@ app.get('/success', async (req, res) => {
     const moodleUserId = await getMoodleUserId(user.username);
     const courseNameForMoodle = "Fellowship in Diabetes Management";
     // Assuming you have a function to get Course ID by Name for Moodle
-    const courseId = await getCourseIdByName(courseName);
+    const courseId = await getOrCreateCourseIdByName(courseName);
     const roleId = 5; // Assuming role ID for student
     searchAndLogCourseDetails(courseNameForMoodle);
     console.log(`Enrolling user in Moodle. MoodleUserId: ${moodleUserId}, CourseId: ${courseId}, RoleId: ${roleId}`);

@@ -22,24 +22,24 @@ const getUserIdFromUsername = async (email) => {
       throw new Error('User not found.');
     }
   } catch (error) {
-    console.log(error);
+    console.error('Error fetching Moodle user ID:', error.message);
     throw new Error('Failed to retrieve user ID.');
   }
 };
 
 // Function to enroll user in a course
 const enrollUserInCourse = async (userEmail, courseId) => {
-  const moodleUserId = await getUserIdFromUsername(userEmail); // Fetch Moodle user ID based on email
-
-  const formData = new FormData();
-  formData.append('moodlewsrestformat', 'json');
-  formData.append('wsfunction', 'enrol_manual_enrol_users');
-  formData.append('wstoken', process.env.MOODLE_TOKEN);
-  formData.append('enrolments[0][roleid]', 5);
-  formData.append('enrolments[0][userid]', moodleUserId); // Using Moodle user ID
-  formData.append('enrolments[0][courseid]', courseId); // Using the course ID
-
   try {
+    const moodleUserId = await getUserIdFromUsername(userEmail); // Fetch Moodle user ID based on email
+
+    const formData = new FormData();
+    formData.append('moodlewsrestformat', 'json');
+    formData.append('wsfunction', 'enrol_manual_enrol_users');
+    formData.append('wstoken', process.env.MOODLE_TOKEN);
+    formData.append('enrolments[0][roleid]', 5); // Assuming role ID for student
+    formData.append('enrolments[0][userid]', moodleUserId); // Using Moodle user ID
+    formData.append('enrolments[0][courseid]', courseId); // Using the course ID
+
     const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
       headers: formData.getHeaders()
     });
@@ -47,16 +47,19 @@ const enrollUserInCourse = async (userEmail, courseId) => {
     if (response.status === 200) {
       console.log('User enrolled in the course successfully.');
       console.log(response.data);
+      return response.data; // Return the enrollment response
     } else {
       console.log('Failed to enroll user in the course.');
       console.log(response.data);
+      throw new Error('Enrollment failed');
     }
   } catch (error) {
-    console.log(error);
+    console.error('Error enrolling user in course:', error.message);
     throw new Error('Failed to enroll user in the course.');
   }
 };
-// Function to search for a course by its name (or any other criteria) and return its details
+
+// Function to search for a course by its name and return its details
 const searchAndLogCourseDetails = async (courseName) => {
   const formData = new FormData();
   formData.append('moodlewsrestformat', 'json');
@@ -73,43 +76,66 @@ const searchAndLogCourseDetails = async (courseName) => {
     if (response.data && response.data.courses && response.data.courses.length > 0) {
       // Assuming the first course is the correct one
       console.log('Course found:', response.data.courses[0]);
-      // Log the course details
       console.log(`Course ID: ${response.data.courses[0].id}`);
       console.log(`Course Full Name: ${response.data.courses[0].fullname}`);
       console.log(`Course Short Name: ${response.data.courses[0].shortname}`);
+      return response.data.courses[0];
     } else {
       console.log('No course found with the specified name.');
+      return null;
     }
   } catch (error) {
     console.error('Error searching for course:', error.message);
+    throw new Error('Failed to search for course.');
   }
-
 };
-async function getCourseIdByName(courseName) {
+
+// Function to create a new course in Moodle
+const createCourseInMoodle = async (courseName) => {
   const formData = new FormData();
   formData.append('moodlewsrestformat', 'json');
-  formData.append('wsfunction', 'core_course_search_courses');
+  formData.append('wsfunction', 'core_course_create_courses');
   formData.append('wstoken', process.env.MOODLE_TOKEN);
-  formData.append('criterianame', 'search');
-  formData.append('criteriavalue', courseName);
+  formData.append('courses[0][fullname]', courseName);
+  formData.append('courses[0][shortname]', courseName.replace(/\s+/g, '_'));
+  formData.append('courses[0][categoryid]', 1); // Set to appropriate Moodle category ID
+  formData.append('courses[0][visible]', 1); // Make the course visible
 
   try {
     const response = await axios.post('https://moodle.upskill.globalmedacademy.com/webservice/rest/server.php', formData, {
       headers: formData.getHeaders()
     });
 
-    if (response.data && response.data.courses && response.data.courses.length > 0) {
-      // Assuming the first course in the list is the correct one, since short names are typically unique
-      return response.data.courses[0].id; // Return the course ID
+    if (response.data && response.data[0] && response.data[0].id) {
+      console.log(`Course created with ID: ${response.data[0].id}`);
+      return response.data[0].id;
     } else {
-      throw new Error('Course not found.');
+      throw new Error('Failed to create course in Moodle.');
     }
   } catch (error) {
-    console.error('Error getting course ID:', error);
+    console.error('Error creating course in Moodle:', error.message);
+    throw new Error('Failed to create course in Moodle.');
+  }
+};
+
+// Function to get or create course ID by name
+async function getOrCreateCourseIdByName(courseName) {
+  try {
+    const course = await searchAndLogCourseDetails(courseName); // Search for the course
+    if (course) {
+      return course.id; // Return the existing course ID
+    } else {
+      // Course not found, so create it
+      return await createCourseInMoodle(courseName);
+    }
+  } catch (error) {
+    console.error('Error getting or creating course ID:', error.message);
     throw error;
   }
 }
 
 module.exports = {
-  enrollUserInCourse,searchAndLogCourseDetails,getCourseIdByName
+  enrollUserInCourse,
+  searchAndLogCourseDetails,
+  getOrCreateCourseIdByName
 };
