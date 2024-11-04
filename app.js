@@ -1272,8 +1272,8 @@ app.post('/reset-password/:token', async (req, res) => {
         return res.redirect(`/reset-password/${token}?message=${encodeURIComponent('Your local password has been updated, but there was an error updating your Moodle password.')}`);
       } else {
         console.log(`Moodle password updated for user: ${user.username}`);
-        // Redirect to login route after successful password reset with success message
-        return res.redirect(`/loginn?message=${encodeURIComponent('Your password has been successfully reset.')}`);
+        // Redirect to the Moodle login page after successful password reset
+        return res.redirect(`https://moodle.upskill.globalmedacademy.com/login/index.php?message=${encodeURIComponent('Your password has been successfully reset.')}`);
       }
     } catch (moodleError) {
       // Handle the case where the Moodle password update fails
