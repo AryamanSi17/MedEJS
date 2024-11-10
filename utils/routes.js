@@ -1061,6 +1061,23 @@ else if (blogTitle === "empower-your-practice-in-gynecology-and-obstetrics-with-
   canonicalLink = 'https://www.globalmedacademy.com/blog/empower-your-practice-in-gynecology-and-obstetrics-with-our-professional-certificate';
   renderView = 'blog-details-22'; // Updated view number for the new blog post
 }
+if (blogTitle === "empower-your-expertise-transforming-passion-into-precision-in-internal-medicine-fellowship") {
+  pageTitle = 'Empower Your Expertise: Transforming Passion into Precision in Internal Medicine Fellowship';
+  metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+  metaKeywords = 'Internal Medicine, Fellowship, Advanced Internal Medicine, Healthcare, Medical Specialization, Chronic Disease Management, Preventive Care';
+  ogDescription = 'A Fellowship in Internal Medicine is an essential step for physicians committed to advancing their expertise in adult medicine. Discover the opportunities in specialized internal medicine care.';
+  canonicalLink = 'https://www.globalmedacademy.com/blog/empower-your-expertise-transforming-passion-into-precision-in-internal-medicine-fellowship';
+  renderView = 'blog-details-23'; // Updated view number for the new blog post
+}
+
+else if (blogTitle === "advance-your-career-with-a-fellowship-in-critical-care-medicine-to-life-saving-care-in-high-stakes-environments") {
+  pageTitle = 'Advance Your Career with a Fellowship in Critical Care Medicine to Life-Saving Care in High-Stakes Environments';
+  metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+  metaKeywords = 'Critical Care Medicine, Fellowship, Intensive Care, Critical Care Training, ICU, Life-Saving Care, Emergency Medicine, High-Stakes Healthcare';
+  ogDescription = 'A Fellowship in Critical Care Medicine equips physicians with the skills to manage critically ill patients in high-acuity settings, focusing on life-saving techniques and advanced patient care.';
+  canonicalLink = 'https://www.globalmedacademy.com/blog/advance-your-career-with-a-fellowship-in-critical-care-medicine-to-life-saving-care-in-high-stakes-environments';
+  renderView = 'blog-details-24'; // Updated view number for the new blog post
+}
 
 
   
