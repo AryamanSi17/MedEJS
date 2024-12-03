@@ -1078,7 +1078,23 @@ else if (blogTitle === "advance-your-career-with-a-fellowship-in-critical-care-m
   canonicalLink = 'https://www.globalmedacademy.com/blog/advance-your-career-with-a-fellowship-in-critical-care-medicine-to-life-saving-care-in-high-stakes-environments';
   renderView = 'blog-details-24'; // Updated view number for the new blog post
 }
+else if (blogTitle === "empowering-clinicians-to-transform-lives-through-expert-diabetes-care") {
+  pageTitle = 'Empowering Clinicians to Transform Lives through Expert Diabetes Care';
+  metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+  metaKeywords = 'Diabetes Management, Fellowship, Endocrinology, Expert Diabetes Care, Chronic Disease Management, Diabetes Treatment, Patient-Centered Care';
+  ogDescription = 'A Fellowship in Diabetes Management equips healthcare providers with advanced skills and knowledge to manage diabetes effectively, improving patient outcomes and transforming lives.';
+  canonicalLink = 'https://www.globalmedacademy.com/blog/empowering-clinicians-to-transform-lives-through-expert-diabetes-care';
+  renderView = 'blog-details-25'; // Updated view number for the new blog post
+}
 
+else if (blogTitle === "deepen-your-expertise-broaden-your-impact-specialize-with-a-fellowship-in-family-medicine") {
+  pageTitle = 'Deepen Your Expertise, Broaden Your Impact: Specialize with a Fellowship in Family Medicine';
+  metaRobots = 'follow, index, max-snippet:-1, max-video-preview:-1, max-image-preview:large';
+  metaKeywords = 'Family Medicine, Fellowship, Holistic Care, Preventive Healthcare, Chronic Disease Management, Rural Medicine, Geriatric Medicine, Palliative Care';
+  ogDescription = 'A Fellowship in Family Medicine provides advanced training, allowing physicians to specialize in areas such as geriatrics, sports medicine, obstetrics, and rural health, improving care and community impact.';
+  canonicalLink = 'https://www.globalmedacademy.com/blog/deepen-your-expertise-broaden-your-impact-specialize-with-a-fellowship-in-family-medicine';
+  renderView = 'blog-details-26'; // Updated view number for the new blog post
+}
 
   
 
