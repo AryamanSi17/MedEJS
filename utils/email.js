@@ -11,8 +11,8 @@ const transporter = nodemailer.createTransport({
 
 function sendEmail({ to = [], subject = '', text = '', html = '' }) { 
     const mailOptions = {
-        from: 'noreply@globalmedacademy.com', // Updated sender address
-        to: to,  // Accepts dynamic recipients
+        from: 'noreply@globalmedacademy.com', 
+        to: to,  
         subject: subject,
         text: text,
         html: html 
